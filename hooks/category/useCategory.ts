@@ -1,4 +1,4 @@
-import { beanoiRequest } from "api/utils";
+import { request } from "api/utils";
 import { useQuery } from "react-query";
 import { TCategory } from "types/category";
 import { ErrorResponse } from "types/request";
@@ -8,7 +8,7 @@ type Props = {
 };
 
 export const getCategoryDetail = (id: any): Promise<TCategory> =>
-  beanoiRequest.get(`/categories/${id}`).then((res) => res.data);
+  request.get(`/categories/${id}`).then((res) => res.data);
 
 const useCategory = ({ id }: Props) => {
   const category = useQuery<TCategory, ErrorResponse>(["categories", id], () =>

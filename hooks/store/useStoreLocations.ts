@@ -1,14 +1,14 @@
-import { beanoiRequest } from "api/utils";
+import { request } from "api/utils";
 import { useQuery } from "react-query";
-import { TStoreLocation } from "types/location";
+import { TLocation } from "types/location";
 import { BaseResponse } from "types/request";
 
 type Props = {
   id: number | undefined | null;
 };
 const getLocationsOfStore = (id: number) =>
-  beanoiRequest
-    .get<BaseResponse<TStoreLocation>>(`/stores/${id}/locations`)
+  request
+    .get<BaseResponse<TLocation>>(`/stores/${id}/locations`)
     .then((res) => res.data);
 
 const useStoreLocations = ({ id }: Props) => {

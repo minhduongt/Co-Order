@@ -1,4 +1,4 @@
-import { beanoiRequest } from "api/utils";
+import { request } from "api/utils";
 import { useQuery } from "react-query";
 import { BaseResponse } from "types/request";
 import { TSupplier } from "types/supplier";
@@ -7,7 +7,7 @@ type Props = {
   id: number | undefined | null;
 };
 const getSuppliersOfStore = (id: number) =>
-  beanoiRequest
+  request
     .get<BaseResponse<TSupplier>>(`/stores/${id}/suppliers`)
     .then((res) => res.data);
 

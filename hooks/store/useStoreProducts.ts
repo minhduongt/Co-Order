@@ -1,4 +1,4 @@
-import { beanoiRequest } from "api/utils";
+import { request } from "api/utils";
 import { useQuery } from "react-query";
 import { TProduct } from "types/product";
 import { BaseResponse } from "types/request";
@@ -8,7 +8,7 @@ type Props = {
   params?: any;
 };
 const getSupplierProductOfStore = (storeId: number, params?: any) =>
-  beanoiRequest
+  request
     .get<BaseResponse<TProduct>>(`/stores/${storeId}/products`, {
       params,
     })

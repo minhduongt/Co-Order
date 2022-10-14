@@ -1,4 +1,4 @@
-import { beanoiRequest } from "api/utils";
+import { request } from "api/utils";
 import { useQuery } from "react-query";
 import { TProduct } from "types/product";
 import { BaseResponse } from "types/request";
@@ -14,7 +14,7 @@ const getSupplierProductOfStore = (
   supId: number,
   params?: any
 ) =>
-  beanoiRequest
+  request
     .get<BaseResponse<TProduct>>(
       `/stores/${storeId}/suppliers/${supId}/products`,
       {
