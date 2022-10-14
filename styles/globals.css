@@ -1,0 +1,41 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Inter';
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@font-face {
+  font-family: PoppinsVN;
+  font-weight: 400;
+  src: url("/public/fonts/PoppinsVN/PoppinsVN-400.woff2");
+}
+@font-face {
+  font-family: PoppinsVN;
+  font-weight: 500;
+  src: url("/public/fonts/PoppinVn/PoppinsVN-500.woff2");
+}
+@font-face {
+  font-family: PoppinsVN;
+  font-weight: 600;
+  src: url("/public/fonts/PoppinsVN/PoppinsVN-600-italic.woff2");
+}
+@font-face {
+  font-family: PoppinsVN;
+  font-weight: 600;
+  src: url("/public/fonts/PoppinsVN/PoppinsVN-600.woff2");
+}
+@font-face {
+  font-family: PoppinsVN;
+  font-weight: 700;
+  src: url("/public/fonts/PoppinsVN/PoppinsVN-700.woff2");
+}

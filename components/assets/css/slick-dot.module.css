@@ -1,0 +1,34 @@
+.dots_bar {
+  border-radius: 40px;  
+  width: 100%;
+  text-align: center;
+}
+
+.dots_bar li {
+  list-style: none;
+  cursor: pointer;
+  display: inline-block;
+  margin: 0 5px;
+  padding-top: 2rem;
+}
+
+.dots_bar li button {
+  border: none;
+  background: #FFFFFF;
+  color: transparent;
+  cursor: pointer;
+  display: block;
+  height: 7px;
+  width: 7px;
+  border-radius: 7.5px;
+}
+
+.dots_bar :global(li.slick-active) button {
+  background-color: #F5B340;
+}
+
+.dots_bar li button:hover,
+.dots_bar li button:focus {
+  background: #F5B340;
+  outline: 0;
+}
