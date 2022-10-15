@@ -15,7 +15,7 @@ export const mapCartModelToOrderRequest = (cartModel: Cart) => {
 
   const orderCart: OrderRequest = {
     endTime: "",
-    paymentMethod: "",
+    paymentMethod: "CASH",
     locationId: 1,
     menuId: 1,
     timeSlotId: 1,

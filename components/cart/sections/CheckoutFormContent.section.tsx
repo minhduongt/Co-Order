@@ -42,9 +42,11 @@ import useCartPrice from "hooks/cart/useCartPrice";
 import useCartContext from "hooks/useCartContext";
 import ChangeTimeModal from "../ChangeTimeModal";
 import useAreaContext from "hooks/useAreaContext";
+import useUserContext from "hooks/useUserContext";
 
 interface CheckoutFormContentProps {
-  setStep: Dispatch<SetStateAction<number>>;
+  // setStep: Dispatch<SetStateAction<number>>;
+  onClose: VoidFunction;
 }
 
 interface Suppliers {
@@ -57,12 +59,13 @@ interface CheckoutForm {
 }
 
 export default function CheckoutFormContent({
-  setStep,
+  onClose,
 }: CheckoutFormContentProps) {
   //hooks
   const toast = useToast();
   const cartContext = useCartContext();
   const areaContext = useAreaContext();
+  const { user: currentUser } = useUserContext();
   const currentCart = cartContext.cart;
   const { data: storeLocations } = useStoreLocations({ id: 150 });
   const { data: cartPrepare, error: prepareError } = useCartPrice(
@@ -140,16 +143,16 @@ export default function CheckoutFormContent({
           <Flex flexDirection={"column"} fontSize={"2xl"} gap={1}>
             <Flex justifyContent="space-between" fontSize={"xl"}>
               <Text fontWeight={"semibold"}>Họ và tên:</Text>
-              {/* <Text>{customer.name}</Text> */}
+              <Text>{currentUser?.name}</Text>
             </Flex>
 
             <Flex justifyContent="space-between" fontSize={"xl"}>
               <Text fontWeight={"semibold"}>Số điện thoại:</Text>
-              {/* <Text>{customer.phone}</Text> */}
+              <Text>{currentUser?.phoneNumber}</Text>
             </Flex>
             <Flex justifyContent="space-between" fontSize={"xl"}>
               <Text fontWeight={"semibold"}>Email:</Text>
-              {/* <Text>{customer.email}</Text> */}
+              <Text>{currentUser?.email}</Text>
             </Flex>
           </Flex>
 
@@ -181,9 +184,7 @@ export default function CheckoutFormContent({
             <Flex flexDirection={"column"} gap={1}>
               <Flex justifyContent="space-between" fontSize={"xl"}>
                 <Text>Tạm tính</Text>
-                <Text>
-                  {/* {cartPrepare.total_amount.toLocaleString()}  */}25000 đ
-                </Text>
+                <Text>{currentCart.total.toLocaleString()} đ</Text>
               </Flex>
               {/* {cartPrepare.other_amounts.map((other, index) => ( */}
               <Flex
@@ -191,8 +192,10 @@ export default function CheckoutFormContent({
                 justifyContent="space-between"
                 fontSize={"xl"}
               >
-                <Text>{/* {other.name} */}Phí giao</Text>
-                <Text>{/* {other.amount.toLocaleString()} */}10000 đ</Text>
+                <Text>Phí giao</Text>
+                <Text>
+                  {areaContext.selectedArea?.shippingFee.toLocaleString()} đ
+                </Text>
               </Flex>
               {/* ))} */}
               <Divider borderColor={"dark"} my={3} />
@@ -203,7 +206,10 @@ export default function CheckoutFormContent({
               >
                 <Text>Tổng cộng:</Text>
                 <Text>
-                  {/* {cartPrepare.final_amount.toLocaleString()} */}100000 đ
+                  {(
+                    currentCart.total + areaContext.selectedArea?.shippingFee!
+                  ).toLocaleString()}{" "}
+                  đ
                 </Text>
               </Flex>
             </Flex>
@@ -222,7 +228,7 @@ export default function CheckoutFormContent({
               //backgroundColor="light"
               //colorScheme={"dark"}
               fontSize="xl"
-              onClick={() => setStep(1)}
+              onClick={() => onClose()}
             >
               Quay lại
             </Button>

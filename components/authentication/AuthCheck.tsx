@@ -53,11 +53,16 @@ function AuthCheck({ children }: any) {
   }, [currentUser, accessToken, FbUser]);
 
   useEffect(() => {
+    const currentPath = router.pathname;
+
     // const getNewToken = async (idToken: string) => {
     //   const refreshToken = await refresh(idToken);
     // };
     // console.log("accessToken", accessToken);
-    if (accessToken) {
+    if (FbUser) {
+      // if (currentPath.includes("authentication")) {
+      //   router.push("/");
+      // }
       return children;
     } else {
       // if (refreshToken) {
@@ -75,11 +80,11 @@ function AuthCheck({ children }: any) {
       // }
       return <Authenticate />;
     }
-  }, [accessToken]);
+  }, [FbUser]);
 
-  if (accessToken) {
+  if (FbUser) {
     return children;
-  } else if (!accessToken && !loading) {
+  } else if (!FbUser && !loading) {
     return <Authenticate />;
   } else {
     return <Loading />;

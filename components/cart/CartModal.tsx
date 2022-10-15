@@ -40,7 +40,7 @@ export default function CartModal({ children }: CheckoutModalButtonProps) {
             onClose={onClose}
           />
         )} */}
-        {step == 1 && <CheckoutFormContent setStep={setStep} />}
+        {step == 1 && <CheckoutFormContent onClose={onClose} />}
       </Modal>
     </>
   );

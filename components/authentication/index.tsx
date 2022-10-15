@@ -33,6 +33,7 @@ import useAuthorize from "hooks/auth/useAuth";
 import useUserContext from "hooks/useUserContext";
 import useUser from "hooks/auth/useUser";
 import { userInfo } from "os";
+import useAuthContext from "hooks/useAuthContext";
 interface AuthenForm {
   phone: string;
   otp: string;
@@ -56,7 +57,7 @@ function Authenticate() {
   const { SetUser, SetAccessToken, SetRefreshToken, accessToken } =
     useUserContext();
   const { authorize } = useAuthorize();
-
+  const { user: FbUser, loading } = useAuthContext();
   const [confirm, setConfirm] = useState<firebase.auth.ConfirmationResult>();
   const authenForm = useForm<AuthenForm>({
     resolver:
@@ -85,11 +86,17 @@ function Authenticate() {
     }
   }, []);
 
+  useEffect(() => {
+    if (FbUser) {
+      router.replace("/");
+    }
+  }, [FbUser]);
+
   const LoginWithPhone = async (form: AuthenForm) => {
     // get captcha object
 
     if (typeof window !== "undefined") {
-      const appVerifier = window.recaptchaVerifier;
+      const appVerifier = window?.recaptchaVerifier;
       try {
         const phoneNumber = form.phone.replace("0", "+84");
         const confirm = await firebase
@@ -128,7 +135,6 @@ function Authenticate() {
             SetAccessToken(accessToken);
             SetRefreshToken(refreshToken);
             console.log("accessToken from be", res.data.data.accessToken);
-
             toast({
               title: "Đăng nhập thành công!",
               status: "success",
@@ -136,6 +142,7 @@ function Authenticate() {
               isClosable: false,
               duration: 2000,
             });
+            router.push("/");
             console.log("authorize", res);
           } else {
             toast({
