@@ -104,7 +104,25 @@ const MenuList = () => {
   //variables
   const { register, watch } = menuForm;
   const defautTabIndex = currentDate.getDay() - 1;
-  console.log("menu", menus);
+  const timeRange = watch("time-range") && watch("time-range");
+  const timeRangeArr = timeRange && timeRange.split("-");
+  let countDownDateTime =
+    timeRangeArr &&
+    new Date(currentDate.toISOString().substring(0, 11) + timeRangeArr[1]);
+  //Get arrived time range from order time range for displaying
+  // useEffect(() => {
+  //   if (timeRangeArr)
+  //     stores?.map((store) =>
+  //       store.time_slots.map((slot) => {
+  //         if (slot.from == timeRangeArr[0])
+  //           setArrivedTimeRange(
+  //             slot.arrive_time_range[0] + "-" + slot.arrive_time_range[1]
+  //           );
+  //       })
+  //     );
+  // }, [timeRangeArr]);
+
+  //Delete all item in cart when change time range
 
   return (
     <Box

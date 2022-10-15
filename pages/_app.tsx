@@ -2,6 +2,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { AreaContextProvider } from "contexts/AreaContext";
 import { AuthContextProvider } from "contexts/AuthContext";
 import { CartContextProvider } from "contexts/CartContext";
+import { UserContextProvider } from "contexts/UserContext";
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import "../components/assets/css/font.css";
@@ -11,15 +12,15 @@ const queryClient = new QueryClient();
 function MyApp({ Component, pageProps }: any) {
   return (
     <AuthContextProvider>
-      <ChakraProvider theme={theme}>
-        <QueryClientProvider client={queryClient}>
-          <AreaContextProvider>
+      <UserContextProvider>
+        <ChakraProvider theme={theme}>
+          <QueryClientProvider client={queryClient}>
             <CartContextProvider>
               <Component {...pageProps} />
             </CartContextProvider>
-          </AreaContextProvider>
-        </QueryClientProvider>
-      </ChakraProvider>
+          </QueryClientProvider>
+        </ChakraProvider>
+      </UserContextProvider>
     </AuthContextProvider>
   );
 }
