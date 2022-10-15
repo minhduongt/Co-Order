@@ -6,7 +6,7 @@ type Props = {
 };
 
 const useMenus = (areaId: number, { params }: Props = {}) => {
-  const menus = useQuery(["menus", { "area-id": areaId }], () => MenuApi.getMenus({ "area-id": areaId }));
+  const menus = useQuery(["menus", { "area-id": areaId, "active": true }], () => MenuApi.getMenus({ "area-id": areaId, "active": true }));
 
   return {
     ...menus,

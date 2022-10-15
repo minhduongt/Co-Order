@@ -17,6 +17,7 @@ import {
   AlertIcon,
   PinInput,
   PinInputField,
+  Spacer,
 } from "@chakra-ui/react";
 import { FormProvider, useForm } from "react-hook-form";
 import { getAuth, signInWithPhoneNumber } from "firebase/auth";
@@ -250,9 +251,11 @@ function Authenticate() {
                   <>
                     <FormLabel>Số điện thoại</FormLabel>
                     <Input
+                      sx={{ mt: 4 }}
                       placeholder="Ex: +84939456738"
                       {...register("phone")}
                     />
+                    {/* <Spacer></Spacer> */}
 
                     {errors.phone && (
                       <Alert
@@ -263,7 +266,7 @@ function Authenticate() {
                         <Text fontSize="md">{errors.phone.message}</Text>
                       </Alert>
                     )}
-                    <Stack spacing={10}>
+                    <Stack sx={{ my: 4 }} spacing={10}>
                       <Button
                         bg={"blue.400"}
                         color={"white"}
@@ -283,7 +286,7 @@ function Authenticate() {
                     {/* <Input {...register("otp")} /> */}
                     <PinInput onChange={(value) => setOtp(value)}>
                       {[...Array(6)].map((_, i) => (
-                        <PinInputField key={i} />
+                        <PinInputField sx={{ mx: 4 }} key={i} />
                       ))}
                     </PinInput>
                     {/* {errors.otp && (
@@ -295,7 +298,7 @@ function Authenticate() {
                         <Text fontSize="md">{errors.otp.message}</Text>
                       </Alert>
                     )} */}
-                    <Stack spacing={10}>
+                    <Stack sx={{ mt: 8 }} spacing={10}>
                       <Button
                         bg={"blue.400"}
                         color={"white"}
