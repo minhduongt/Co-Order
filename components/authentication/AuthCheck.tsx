@@ -7,10 +7,12 @@ import useUserContext from "hooks/useUserContext";
 import useRefresh from "hooks/auth/useRefresh";
 import { useToast } from "@chakra-ui/react";
 import useUser from "hooks/auth/useUser";
+import useAuthorize from "hooks/auth/useAuth";
 
 function AuthCheck({ children }: any) {
   const router = useRouter();
   const toast = useToast();
+  const { authorize } = useAuthorize();
   const { user: FbUser, loading } = useAuthContext();
   const {
     user: currentUser,
@@ -18,33 +20,39 @@ function AuthCheck({ children }: any) {
     SetAccessToken,
     accessToken,
     refreshToken,
+    SetRefreshToken,
   } = useUserContext();
   const { refresh } = useRefresh();
   const getUserInfo = useUser(accessToken!);
-  // console.log("refreshToken from context", refreshToken);
-  // console.log("accessToken from context", accessToken);
+  const authorizeUser = async () => {
+    const res = await authorize(await FbUser.getIdToken()!);
+    if (res.status === 200) {
+      const accessToken = res.data?.data?.accessToken;
+      const refreshToken = res.data?.data?.refreshToken;
+      SetAccessToken(accessToken);
+      SetRefreshToken(refreshToken);
+    }
+  };
   // console.log(FbUser);
-
   useEffect(() => {
-    if (getUserInfo) {
+    if (currentUser) {
+      console.log("currentUser", currentUser);
+    }
+  }, [currentUser]);
+  useEffect(() => {
+    if (accessToken) {
       SetUser(getUserInfo.data);
       console.log("userInfo from be", getUserInfo.data);
     }
-  }, [getUserInfo]);
+  }, [accessToken]);
 
   useEffect(() => {
-    if (FbUser) {
-      console.log("FbUser", FbUser);
+    if (!currentUser && FbUser && !accessToken) {
+      authorizeUser();
     }
-  }, [FbUser]);
-  // useEffect(() => {
-  //   console.log("refreshToken change", refreshToken);
-  // }, [refreshToken]);
+  }, [currentUser, accessToken, FbUser]);
 
   useEffect(() => {
-    if (FbUser) {
-      SetAccessToken(FbUser?.accessToken);
-    }
     // const getNewToken = async (idToken: string) => {
     //   const refreshToken = await refresh(idToken);
     // };
@@ -67,7 +75,7 @@ function AuthCheck({ children }: any) {
       // }
       return <Authenticate />;
     }
-  }, [accessToken, FbUser]);
+  }, [accessToken]);
 
   if (accessToken) {
     return children;
