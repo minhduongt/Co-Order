@@ -254,7 +254,7 @@ export default function CartDrawer({
                 </Flex>
                 {/*  Check out */}
                 <Flex paddingTop="1rem">
-                  <CartModal arrivedTimeRange={arrivedTimeRange}>
+                  <CartModal>
                     <Button
                       height={"3rem"}
                       variant="outline"
@@ -268,7 +268,7 @@ export default function CartDrawer({
                       Tạo phòng
                     </Button>
                   </CartModal>
-                  <CartModal arrivedTimeRange={arrivedTimeRange}>
+                  <CartModal>
                     <Button
                       height={"3rem"}
                       variant="outline"

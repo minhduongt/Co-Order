@@ -13,3 +13,12 @@ export type TMenu = {
   areaId: number;
   area: TArea;
 };
+
+export type TTimeSlot = {
+  id: number;
+  startTime: Date;
+  endTime: Date;
+  createdDate: Date;
+  active: boolean;
+  menuId: number;
+};

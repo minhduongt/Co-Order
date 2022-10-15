@@ -7,7 +7,7 @@ const theme = extendTheme({
       light: "#93e4fc",
       main: "#5450FF",
       dark: "#59b0ca",
-      darker: "#25855A",
+      darker: "#37368f",
     },
     secondary: {
       lighter: "#FEFFE3",

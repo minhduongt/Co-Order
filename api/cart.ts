@@ -10,7 +10,7 @@ const prepareOrder = (cartPrepare: OrderRequest) => {
 };
 
 const checkout = (cartOrder: OrderRequest) => {
-  return request.post<PostResponse<OrderResponse>>(`/orders`, cartOrder);
+  return request.post<PostResponse<OrderResponse>>(`/order`, cartOrder);
 };
 
 const cartApi = {

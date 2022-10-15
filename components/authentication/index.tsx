@@ -22,11 +22,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { getAuth, signInWithPhoneNumber } from "firebase/auth";
 import { useRouter } from "next/router";
 import useLocalStorage from "hooks/useLocalStorage";
-import {
-  signInWithGoogle,
-  signInWithPhone,
-  auth,
-} from "../../firebase/authentication";
+import { signInWithGoogle, auth } from "../../firebase/authentication";
 import { FcGoogle } from "react-icons/fc";
 import Firebase from "../../firebase/firebase";
 import firebase from "firebase/compat/app";
@@ -34,6 +30,8 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import useAuthorize from "hooks/auth/useAuth";
 import useUserContext from "hooks/useUserContext";
+import useUser from "hooks/auth/useUser";
+import { userInfo } from "os";
 interface AuthenForm {
   phone: string;
   otp: string;
@@ -54,14 +52,16 @@ function Authenticate() {
   const toast = useToast();
   const [step, setStep] = useState(1);
   const [otp, setOtp] = useState("");
-  const [accessToken, setAccessToken] = useState("");
+  const { SetUser, SetAccessToken, SetRefreshToken, accessToken } =
+    useUserContext();
   const { authorize } = useAuthorize();
+
   const [confirm, setConfirm] = useState<firebase.auth.ConfirmationResult>();
   const authenForm = useForm<AuthenForm>({
     resolver:
       step == 1 ? yupResolver(authenSchema1) : yupResolver(authenSchema2),
   });
-  const { SetUser, SetAccessToken, SetRefreshToken } = useUserContext();
+
   const {
     register,
     watch,
@@ -122,9 +122,11 @@ function Authenticate() {
         if (user) {
           const res = await authorize(await user.getIdToken()!);
           if (res.status === 200) {
-            setAccessToken(res.data.data.accessToken);
-            SetRefreshToken(res.data.data.refreshToken);
-            console.log("accessToken", res.data.data.accessToken);
+            const accessToken = res.data.data.accessToken;
+            const refreshToken = res.data.data.refreshToken;
+            SetAccessToken(accessToken);
+            SetRefreshToken(refreshToken);
+            console.log("accessToken from be", res.data.data.accessToken);
 
             toast({
               title: "Đăng nhập thành công!",
@@ -151,8 +153,9 @@ function Authenticate() {
         console.log(error);
         // User couldn't sign in (bad verification code?)
         // ...
+
         toast({
-          title: "Sai mã xác thực",
+          title: "Có lỗi xảy ra",
           status: "error",
           position: "top-right",
           isClosable: false,
@@ -170,10 +173,11 @@ function Authenticate() {
           try {
             const res = await authorize(await user.getIdToken()!);
             if (res.status === 200) {
-              setAccessToken(res.data.data.accessToken);
-              SetRefreshToken(res.data.data.refreshToken);
-              console.log("accessToken", res.data.data.accessToken);
-
+              const accessToken = res.data.data.accessToken;
+              const refreshToken = res.data.data.refreshToken;
+              SetAccessToken(accessToken);
+              SetRefreshToken(refreshToken);
+              console.log("accessToken from be", res.data.data.accessToken);
               toast({
                 title: "Đăng nhập thành công!",
                 status: "success",

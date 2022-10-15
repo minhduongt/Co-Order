@@ -6,26 +6,50 @@ import useAuthContext from "hooks/useAuthContext";
 import useUserContext from "hooks/useUserContext";
 import useRefresh from "hooks/auth/useRefresh";
 import { useToast } from "@chakra-ui/react";
+import useUser from "hooks/auth/useUser";
 
 function AuthCheck({ children }: any) {
   const router = useRouter();
   const toast = useToast();
   const { user: FbUser, loading } = useAuthContext();
-  const { user: currentUser, accessToken, refreshToken } = useUserContext();
+  const {
+    user: currentUser,
+    SetUser,
+    SetAccessToken,
+    accessToken,
+    refreshToken,
+  } = useUserContext();
   const { refresh } = useRefresh();
-  console.log("refreshToken", refreshToken);
-  console.log("accessToken", accessToken);
+  const getUserInfo = useUser(accessToken!);
+  // console.log("refreshToken from context", refreshToken);
+  // console.log("accessToken from context", accessToken);
   // console.log(FbUser);
-  useEffect(() => {
-    console.log("refreshToken", refreshToken);
-  }, [refreshToken]);
 
   useEffect(() => {
+    if (getUserInfo) {
+      SetUser(getUserInfo.data);
+      console.log("userInfo from be", getUserInfo.data);
+    }
+  }, [getUserInfo]);
+
+  useEffect(() => {
+    if (FbUser) {
+      console.log("FbUser", FbUser);
+    }
+  }, [FbUser]);
+  // useEffect(() => {
+  //   console.log("refreshToken change", refreshToken);
+  // }, [refreshToken]);
+
+  useEffect(() => {
+    if (FbUser) {
+      SetAccessToken(FbUser?.accessToken);
+    }
     // const getNewToken = async (idToken: string) => {
     //   const refreshToken = await refresh(idToken);
     // };
     // console.log("accessToken", accessToken);
-    if (FbUser) {
+    if (accessToken) {
       return children;
     } else {
       // if (refreshToken) {
@@ -43,11 +67,11 @@ function AuthCheck({ children }: any) {
       // }
       return <Authenticate />;
     }
-  }, [FbUser]);
+  }, [accessToken, FbUser]);
 
-  if (FbUser) {
+  if (accessToken) {
     return children;
-  } else if (!FbUser && !loading) {
+  } else if (!accessToken && !loading) {
     return <Authenticate />;
   } else {
     return <Loading />;

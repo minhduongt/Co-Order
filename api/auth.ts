@@ -1,5 +1,7 @@
 import { TAuth } from "types/auth";
 import { PostResponse } from "types/request";
+import { BaseReponse } from "types/response";
+import { TUser } from "types/user";
 import { request } from "./utils";
 
 const authorize = (accessToken: string) => {
@@ -15,9 +17,19 @@ const refresh = (refreshToken: string) => {
   return request.post<PostResponse<string>>(`/oauth2/token`, auth);
 };
 
+const getUserInfo = (accessToken: string) => {
+  const config = {
+    headers: {
+      authorization: "Bearer " + accessToken,
+    },
+  };
+  return request.get("/users", config).then((res) => res.data);
+};
+
 const authApi = {
   authorize,
   refresh,
+  getUserInfo,
 };
 
 export default authApi;

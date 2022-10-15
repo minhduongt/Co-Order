@@ -41,14 +41,10 @@ import { mapCartModelToOrderRequest } from "hooks/cart/helper";
 import useCartPrice from "hooks/cart/useCartPrice";
 import useCartContext from "hooks/useCartContext";
 import ChangeTimeModal from "../ChangeTimeModal";
+import useAreaContext from "hooks/useAreaContext";
 
 interface CheckoutFormContentProps {
-  arrivedTimeRange: string;
   setStep: Dispatch<SetStateAction<number>>;
-  customer:
-    | CustomerInfo & {
-        destination_location_id: number;
-      };
 }
 
 interface Suppliers {
@@ -61,61 +57,34 @@ interface CheckoutForm {
 }
 
 export default function CheckoutFormContent({
-  customer,
-  arrivedTimeRange,
   setStep,
 }: CheckoutFormContentProps) {
   //hooks
   const toast = useToast();
   const cartContext = useCartContext();
+  const areaContext = useAreaContext();
   const currentCart = cartContext.cart;
-  const customer_info: CustomerInfo = {
-    email: customer.email,
-    name: customer.name,
-    phone: customer.phone,
-  };
   const { data: storeLocations } = useStoreLocations({ id: 150 });
   const { data: cartPrepare, error: prepareError } = useCartPrice(
-    mapCartModelToOrderRequest(currentCart, customer_info)
+    mapCartModelToOrderRequest(currentCart)
   );
   const { checkOut, errorRes } = useCheckout(currentCart);
   const [checkoutResMsg, setCheckoutResMsg] =
     useState<PostResponse<OrderResponse>>();
   //states
-
+  const { selectedLocation } = areaContext;
   const [supplierList, setSupplierList] = useState<Suppliers[]>();
   const [isOpenNotify, setIsOpenNotify] = useState(false);
   //
-  const receivedDestination =
-    storeLocations &&
-    storeLocations[0].address +
-      " - " +
-      storeLocations[0].locations.find(
-        (loc) => loc.destination_location_id == customer.destination_location_id
-      )?.name;
-
   const { handleSubmit } = useForm<CheckoutForm>();
   const onCloseCheckoutNotify = () => {
     setIsOpenNotify(!isOpenNotify);
   };
 
-  useEffect(() => {
-    let newSupList: Suppliers[] = [];
-    currentCart.items.map((item) => {
-      const newSupplier = {
-        id: item.product.supplier_id,
-        name: item.product.supplier_name,
-      };
-      if (newSupList.findIndex((sup) => sup.id === newSupplier.id) < 0)
-        newSupList.push(newSupplier);
-    });
-    setSupplierList(newSupList);
-  }, [currentCart.items]);
-
   const onSubmit = (form: CheckoutForm) => {
     setIsOpenNotify(!isOpenNotify);
     setTimeout(async () => {
-      const checkoutRes = await checkOut(customer_info);
+      const checkoutRes = await checkOut();
       if (checkoutRes) {
         setCheckoutResMsg(checkoutRes);
       }
@@ -146,7 +115,7 @@ export default function CheckoutFormContent({
             <Flex alignItems={"center"}>
               <AlertIcon />
               <Text fontSize={"2xl"}>
-                {"Bạn sẽ nhận vào lúc " + arrivedTimeRange}
+                {/* {"Bạn sẽ nhận vào lúc " + arrivedTimeRange} */}
               </Text>
             </Flex>
             <ChangeTimeModal>
@@ -171,16 +140,16 @@ export default function CheckoutFormContent({
           <Flex flexDirection={"column"} fontSize={"2xl"} gap={1}>
             <Flex justifyContent="space-between" fontSize={"xl"}>
               <Text fontWeight={"semibold"}>Họ và tên:</Text>
-              <Text>{customer.name}</Text>
+              {/* <Text>{customer.name}</Text> */}
             </Flex>
 
             <Flex justifyContent="space-between" fontSize={"xl"}>
               <Text fontWeight={"semibold"}>Số điện thoại:</Text>
-              <Text>{customer.phone}</Text>
+              {/* <Text>{customer.phone}</Text> */}
             </Flex>
             <Flex justifyContent="space-between" fontSize={"xl"}>
               <Text fontWeight={"semibold"}>Email:</Text>
-              <Text>{customer.email}</Text>
+              {/* <Text>{customer.email}</Text> */}
             </Flex>
           </Flex>
 
@@ -188,7 +157,7 @@ export default function CheckoutFormContent({
             <Divider borderColor={"dark"} mt={3} />
             <FormLabel fontSize="2xl">Sản phẩm trong giỏ:</FormLabel>
             {currentCart.items.map((item) => (
-              <Box key={item.product.product_id}>
+              <Box key={item.product.id}>
                 <Grid
                   templateColumns="repeat(2, 1fr)"
                   width="100%"
@@ -196,7 +165,7 @@ export default function CheckoutFormContent({
                 >
                   <Flex gap={5}>
                     <Text fontSize={"lg"}>{item.quantity + " x "}</Text>
-                    <Text fontSize={"xl"}>{item.product.product_name}</Text>
+                    <Text fontSize={"xl"}>{item.product.product.name}</Text>
                   </Flex>
 
                   <Text textAlign={"right"} fontSize={"xl"}>
@@ -261,7 +230,7 @@ export default function CheckoutFormContent({
               onClose={onCloseCheckoutNotify}
               open={isOpenNotify}
               checkoutRes={checkoutResMsg}
-              receivedDestination={receivedDestination!}
+              receivedDestination={selectedLocation!}
               errorRes={errorRes}
             >
               <Button

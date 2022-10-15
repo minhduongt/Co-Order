@@ -1,4 +1,6 @@
+import { TMenu, TTimeSlot } from "./menu";
 import { TProduct, TProductInMenu } from "./product";
+import { TCustomer } from "./user";
 
 export interface Cart {
   items: CartItem[];
@@ -20,11 +22,10 @@ export interface ProductChild {
   description: string;
 }
 
-export interface ProductItem {
-  master_product: number;
+export interface ProductInMenuItem {
+  id: number;
   quantity: number;
   description: string;
-  product_childs?: ProductChild[];
 }
 
 export interface SupplierNote {
@@ -39,25 +40,37 @@ export interface CustomerInfo {
 }
 
 export interface OrderRequest {
-  destination_location_id: number;
-  payment: number;
-  vouchers: string[];
-  products_list: ProductItem[];
-  supplier_notes?: SupplierNote[];
-  customer_info: CustomerInfo;
+  notes: string;
+  endTime: string;
+  menuId: number;
+  locationId: number;
+  timeSlotId: number;
+  paymentMethod: string;
+  productInMenus: ProductInMenuItem[];
 }
 
 export interface OrderResponse {
-  other_amounts: OtherAmount[];
-  invoice_id: string;
-  order_id: number;
-  total_amount: number;
-  final_amount: number;
+  id: number;
+  orderCode: string;
+  type: string;
+  notes: string;
+  totalAmount: number;
+  finalAmount: number;
   discount: number;
-  receive_bean: number;
-  order_status: number;
-  check_in_date: Date;
-  message: Message;
+  endTime: Date;
+  status: string;
+  createdDate: Date;
+  active: boolean;
+  customerId: number;
+  menuId: number;
+  locationId: number;
+  shareLink: string;
+  timeSlotId: number;
+  customer: TCustomer;
+  location: Location;
+  menu: TMenu;
+  timeSlot: TTimeSlot;
+  orderDetails: OrderDetail[];
 }
 export interface OtherAmount {
   id: number;
@@ -73,3 +86,44 @@ export interface Message {
   content: string;
   action: string;
 }
+
+export interface Location {
+  id: number;
+  name: string;
+  address: string;
+  createdDate: Date;
+  active: boolean;
+  areaId: number;
+}
+
+export interface Location2 {
+  id: number;
+  name: string;
+  address: string;
+  createdDate: Date;
+  active: boolean;
+  areaId: number;
+}
+
+export interface Area {
+  id: number;
+  name: string;
+  shippingFee: number;
+  description: string;
+  createdDate: Date;
+  active: boolean;
+  locations: Location2[];
+}
+
+export type OrderDetail = {
+  id: number;
+  productInMenuId: number;
+  customerCode: string;
+  quantity: number;
+  notes: string;
+  unitPrice: number;
+  unitCost: number;
+  unitDiscount: number;
+  createdDate: Date;
+  active: boolean;
+};

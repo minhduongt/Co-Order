@@ -1,5 +1,6 @@
 import {
   Box,
+  Divider,
   Flex,
   FormControl,
   FormLabel,
@@ -191,6 +192,7 @@ const MenuList = () => {
             menus.map((menu: TMenu) => (
               <Box key={menu.id}>
                 <Tab
+                  sx={{ minW: "10rem" }}
                   onClick={() => {
                     setFilterMenu(menu);
                     setFilterCate(null);
@@ -201,6 +203,7 @@ const MenuList = () => {
               </Box>
             ))}
         </TabList>
+        <Divider sx={{ borderWidth: "3px", marginY: "1rem", opacity: 1 }} />
         <Flex>
           <CategoryCarousel setFilterCate={setFilterCate} />
         </Flex>

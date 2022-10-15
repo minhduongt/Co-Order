@@ -1,7 +1,7 @@
 import { request } from "api/utils";
 import { useQuery } from "react-query";
 import { TCategory } from "types/category";
-import { ErrorResponse } from "types/request";
+import { ErrorResponse } from "types/response";
 
 type Props = {
   id?: number | undefined | null;

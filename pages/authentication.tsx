@@ -7,7 +7,6 @@ import MainHeader from "components/nav";
 function AuthenticationPage() {
   return (
     <Box fontFamily="beanoi">
-      <MainHeader />
       <Authenticate />
     </Box>
   );

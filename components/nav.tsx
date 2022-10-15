@@ -147,6 +147,7 @@ const MainHeader = () => {
 
   const handleSignout = async () => {
     await logOut();
+    await router.push("/authentication");
     toast({
       title: `Đã dăng xuất`,
       status: "success",

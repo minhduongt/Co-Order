@@ -10,31 +10,14 @@ import OrderRoomContent from "./sections/OrderRoomContent.section";
 
 interface CheckoutModalButtonProps {
   children: any;
-  arrivedTimeRange: string;
 }
 
-interface CustomerForm {
-  destination_location_id: number;
-  email: string;
-  name: string;
-  phone: string;
-}
-
-export default function CartModal({
-  children,
-  arrivedTimeRange,
-}: CheckoutModalButtonProps) {
+export default function CartModal({ children }: CheckoutModalButtonProps) {
   //hooks
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   //states
   const [step, setStep] = useState(1);
-  const [customerInfo, setCustomerInfo] = useState<CustomerForm>({
-    destination_location_id: 23,
-    email: "",
-    name: "",
-    phone: "",
-  });
   //
 
   return (
@@ -50,20 +33,14 @@ export default function CartModal({
         motionPreset="slideInRight"
       >
         <ModalOverlay />
-        {step == 1 && (
+        {/* {step == 1 && (
           <OrderRoomContent
             setCustomerInfo={setCustomerInfo}
             setStep={setStep}
             onClose={onClose}
           />
-        )}
-        {step == 2 && (
-          <CheckoutFormContent
-            setStep={setStep}
-            arrivedTimeRange={arrivedTimeRange}
-            customer={customerInfo}
-          />
-        )}
+        )} */}
+        {step == 1 && <CheckoutFormContent setStep={setStep} />}
       </Modal>
     </>
   );

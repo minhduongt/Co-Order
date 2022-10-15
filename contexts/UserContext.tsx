@@ -42,7 +42,7 @@ function UserContextProvider({ children }: UserContextProviderProps) {
 
   function SetUser(user: TUser) {
     if (user != null) setUser(user);
-    else setAccessToken(null);
+    else setUser(null);
   }
   function SetAccessToken(accessToken: string) {
     if (accessToken != null) setAccessToken(accessToken);

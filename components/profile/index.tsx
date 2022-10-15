@@ -17,6 +17,7 @@ import {
   useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
+import useUserContext from "hooks/useUserContext";
 import React from "react";
 import { BsGithub, BsLinkedin, BsPerson, BsTwitter } from "react-icons/bs";
 import { MdEmail, MdOutlineEmail, MdOutlinePhone } from "react-icons/md";
@@ -38,7 +39,7 @@ const CONFETTI_DARK = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2
 
 export default function MyProfile() {
   const { hasCopied, onCopy } = useClipboard("example@example.com");
-
+  const { SetUser, user } = useUserContext();
   return (
     <Flex
       bg={useColorModeValue("gray.100", "gray.900")}
@@ -157,7 +158,7 @@ export default function MyProfile() {
                       <Input
                         type="text"
                         name="name"
-                        value="Người dùng Vô danh"
+                        value={user ? user.name : "Người dùng Vô danh"}
                       />
                     </InputGroup>
                   </FormControl>
@@ -173,7 +174,7 @@ export default function MyProfile() {
                         type="email"
                         name="email"
                         // placeholder="Your Email"
-                        value="unknownuser@gmail.com"
+                        value={user ? user.email : "unknownuser@gmail.com"}
                       />
                     </InputGroup>
                   </FormControl>
@@ -186,10 +187,10 @@ export default function MyProfile() {
                         <MdOutlinePhone />
                       </InputLeftElement>
                       <Input
-                        type="number"
+                        type="text"
                         name="phone"
                         // placeholder="Your Email"
-                        value="0123456789"
+                        value={user ? user.phoneNumber : ""}
                       />
                     </InputGroup>
                   </FormControl>

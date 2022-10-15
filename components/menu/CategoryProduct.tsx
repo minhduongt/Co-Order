@@ -39,26 +39,38 @@ function CategoryProduct({
         </Box>
       )}
       <Box>
-        <Flex mb="2rem" alignItems={"center"} gap={2}>
+        <Flex
+          mb="2rem"
+          alignItems={"center"}
+          gap={2}
+          paddingLeft={"0.5rem"}
+          fontSize={"4xl"}
+          fontWeight="semibold"
+        >
           <BiCategoryAlt size={"2rem"} color="#F5B340" />
-          <Text paddingLeft={"0.5rem"} fontSize={"4xl"} fontWeight="semibold">
-            Danh sách sản phẩm {filterCate ? filterCate.name : ""}
-          </Text>
-          <IconButton
-            bg="transparent"
-            aria-label="CancelFilter"
-            color={"error"}
-            _focus={{
-              bg: "transparent",
-              border: "none",
-            }}
-            _hover={{
-              bg: "transparent",
-              border: "none",
-            }}
-            icon={<MdOutlineCancel size={"2rem"} />}
-            onClick={() => setFilterCate(null)}
-          />
+
+          <Text>Danh sách sản phẩm </Text>
+          <Text color="primary.main">{filterCate ? filterCate.name : ""}</Text>
+
+          {filterCate ? (
+            <IconButton
+              bg="transparent"
+              aria-label="CancelFilter"
+              color={"error"}
+              _focus={{
+                bg: "transparent",
+                border: "none",
+              }}
+              _hover={{
+                bg: "transparent",
+                border: "none",
+              }}
+              icon={<MdOutlineCancel size={"2rem"} />}
+              onClick={() => setFilterCate(null)}
+            />
+          ) : (
+            <></>
+          )}
         </Flex>
         {products && products.length > 0 ? (
           <ProductList products={products} />

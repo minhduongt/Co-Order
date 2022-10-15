@@ -25,11 +25,12 @@ import ridingBean from "../../public/assets/image/beanriding.png";
 import { BiTime } from "react-icons/bi";
 import { useRouter } from "next/router";
 import { IoLocationOutline } from "react-icons/io5";
+import { TLocation } from "types/location";
 interface CheckoutModalNotifyProps {
   children: any;
   checkoutRes: PostResponse<OrderResponse> | undefined;
   errorRes?: ErrorResponse;
-  receivedDestination: string;
+  receivedDestination: TLocation;
   open: boolean;
   onClose: VoidFunction;
 }
@@ -69,7 +70,7 @@ export default function CheckoutNotifyModal({
               <ModalCloseButton />
               <ModalHeader fontSize="3xl">Oops!</ModalHeader>
               <ModalBody pb={6}>
-                <Image loading="lazy" alt="oops bean" src={oopsBean.src} />
+                {/* <Image loading="lazy" alt="oops bean" src={oopsBean.src} /> */}
                 <Alert status="error" justifyContent={"center"}>
                   <AlertIcon />
                   <Text fontSize="2xl">
@@ -92,7 +93,7 @@ export default function CheckoutNotifyModal({
                       <AlertIcon />
                       <Text fontWeight={"semibold"} color="secondary.main">
                         {/* {"Mã đơn của bạn là " + checkoutRes.data.invoice_id} */}
-                        {checkoutRes.data.invoice_id}
+                        {/* {checkoutRes.data.invoice_id} */}
                       </Text>
                     </Flex>
 
@@ -138,19 +139,22 @@ export default function CheckoutNotifyModal({
                         <Text>{"Tại:"}</Text>
                       </Flex>
 
-                      <Text fontWeight={"bold"}> {receivedDestination} </Text>
+                      <Text fontWeight={"bold"}>
+                        {" "}
+                        {receivedDestination.name}{" "}
+                      </Text>
                     </Flex>
                   </Box>
                 </Flex>
 
-                <Image
+                {/* <Image
                   loading="lazy"
                   alt="riding bean"
                   src={ridingBean.src}
                   w="50%"
                   h="50%"
                   mx="auto"
-                />
+                /> */}
               </ModalBody>
             </>
           ) : (

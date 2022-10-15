@@ -4,63 +4,38 @@ import {
   CustomerInfo,
   OrderRequest,
   ProductChild,
-  ProductItem,
+  ProductInMenuItem,
 } from "types/cart";
-import { Extra } from "types/product";
 
-export const mapCartModelToOrderRequest = (
-  cartModel: Cart,
-  customer_info?: CustomerInfo
-) => {
-  let products_list: ProductItem[] = [];
+export const mapCartModelToOrderRequest = (cartModel: Cart) => {
+  let products_list: ProductInMenuItem[] = [];
   cartModel.items.forEach((cartItem) => {
     products_list.push(...mapCartItemToProduct(cartItem));
   });
 
   const orderCart: OrderRequest = {
-    destination_location_id: 23,
-    payment: 1,
-    vouchers: [],
-    customer_info: customer_info
-      ? customer_info
-      : {
-          email: "duong.nt@reso.vn",
-          name: "test customer",
-          phone: "0764420250",
-        },
-    products_list,
+    endTime: "",
+    paymentMethod: "",
+    locationId: 1,
+    menuId: 1,
+    timeSlotId: 1,
+    productInMenus: [],
+    notes: "",
   };
 
   return orderCart;
 };
 
 export const mapCartItemToProduct = (
-  cartItem: CartItem,
-  parentQuantity: number = 1
-): ProductItem[] => {
-  let products_list: ProductItem[] = [];
-  let product_childs: ProductChild[] = [];
-  if (cartItem.product_extras) {
-    cartItem.product_extras.forEach((extra) => {
-      product_childs.push(mapExtraToProductChild(extra));
-    });
-  }
+  cartItem: CartItem
+): ProductInMenuItem[] => {
+  let products_list: ProductInMenuItem[] = [];
 
-  let parentItem: ProductItem = {
-    master_product: cartItem.product.product_in_menu_id,
-    quantity: cartItem.quantity * parentQuantity,
-    product_childs: product_childs,
+  let parentItem: ProductInMenuItem = {
+    id: cartItem.product.id,
+    quantity: cartItem.quantity,
     description: "",
   };
   products_list.push(parentItem);
   return products_list;
-};
-
-export const mapExtraToProductChild = (extra: Extra): ProductChild => {
-  let productChild: ProductChild = {
-    product_in_menu_id: extra.product_in_menu_id,
-    quantity: 1,
-    description: "",
-  };
-  return productChild;
 };
