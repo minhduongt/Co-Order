@@ -9,8 +9,6 @@ export type BaseReponse<T> = {
 
 export type ErrorResponse = {
   message: string;
-  error: {
-    code: number;
-    message: string;
-  };
+  errorCode: number;
+  statusCode: number;
 };

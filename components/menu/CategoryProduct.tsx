@@ -33,10 +33,10 @@ function CategoryProduct({
   return (
     <>
       {(productError || productLoading) && (
-        <Box px="1rem">
-          <Skeleton w={"35%"} h="4rem" my="1rem" />
+        <Flex px="1rem" flexDirection={"column"}>
+          <Skeleton w={"40%"} h="4rem" my="1rem" />
           <Skeleton w={"100%"} h="20rem" />
-        </Box>
+        </Flex>
       )}
       <Box>
         <Flex

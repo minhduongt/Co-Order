@@ -53,7 +53,7 @@ export default function CheckoutNotifyModal({
   };
   return (
     <>
-      <Box>{children}</Box>
+      {children}
 
       <Modal
         isOpen={open}

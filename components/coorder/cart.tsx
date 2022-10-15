@@ -1,13 +1,19 @@
 import { SmallCloseIcon } from "@chakra-ui/icons";
 import {
+  Alert,
+  AlertIcon,
+  Avatar,
   Box,
   Button,
+  Container,
+  Divider,
   Flex,
   Grid,
   Heading,
   IconButton,
   Image,
   Link,
+  Select,
   Text,
   useToast,
 } from "@chakra-ui/react";
@@ -17,10 +23,19 @@ import useDeleteCartItem from "hooks/cart/useDeleteCartItem";
 import useCartContext from "hooks/useCartContext";
 import NextLink from "next/link";
 import { useEffect, useState } from "react";
-import { FaFire } from "react-icons/fa";
-import { CartItem } from "types/cart";
+import { FaFire, FaShoppingCart } from "react-icons/fa";
+import { CartItem, OrderResponse } from "types/cart";
 import QuantityInput from "./QuantityInput";
 import NoImage from "../../public/assets/image/noimage.png";
+import useAreaContext from "hooks/useAreaContext";
+import { FormProvider, useForm } from "react-hook-form";
+import useUserContext from "hooks/useUserContext";
+import useCheckout from "hooks/cart/useCheckout";
+import useTimeSlots from "hooks/menu/useTimeSlotMenu";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { PostResponse } from "types/request";
+import CheckoutNotifyModal from "components/cart/CheckoutNotifyModal";
 
 const items = [...Array(5)].map((_) => {
   return {
@@ -30,15 +45,38 @@ const items = [...Array(5)].map((_) => {
     quantity: 5,
   };
 });
+const checkoutSchema = yup.object().shape({
+  name: yup.string().required("Hãy chọn giờ nhận hàng"),
+});
+interface CheckoutForm {
+  timeSlotId: string;
+}
 const Cart = () => {
   const toast = useToast();
   const cartContext = useCartContext();
-  const currentCart = cartContext.cart;
+  const areaContext = useAreaContext();
+  const { cart: currentCart, partyOrder, SetPartyOrder } = cartContext;
   const [totalCartItems, setTotalCartItems] = useState<number>(0);
   const totalCurrentCart = currentCart?.items.length;
-  // const { data: cartPrepareRes, error } = useCartPrice(
-  //   mapCartModelToOrderRequest(currentCart)
-  // );
+  const { user: currentUser, accessToken } = useUserContext();
+  const { selectedLocation } = areaContext;
+  const [checkoutResMsg, setCheckoutResMsg] =
+    useState<PostResponse<OrderResponse>>();
+  const { completePartyOrder, errorRes } = useCheckout(currentCart);
+  const [isOpenNotify, setIsOpenNotify] = useState(false);
+  //
+  const checkoutForm = useForm<CheckoutForm>({
+    resolver: yupResolver(checkoutSchema),
+  });
+  const {
+    handleSubmit,
+    register,
+    watch,
+    formState: { errors },
+  } = useForm<CheckoutForm>();
+  const onCloseCheckoutNotify = () => {
+    setIsOpenNotify(!isOpenNotify);
+  };
   useEffect(() => {
     setTotalCartItems(totalCurrentCart);
   }, [totalCurrentCart]);
@@ -66,10 +104,58 @@ const Cart = () => {
       });
     }
   };
+  const handleCompletePartyOrder = () => {
+    setTimeout(async () => {
+      const res = await completePartyOrder(partyOrder?.id!, accessToken!);
+      if (res) {
+        toast({
+          title: "Chốt đơn thành công",
+          status: "success",
+          position: "top",
+          isClosable: false,
+          duration: 2000,
+        });
+      }
+      if (errorRes) {
+        toast({
+          title: errorRes?.message,
+          status: "error",
+          position: "top",
+          isClosable: false,
+          duration: 2000,
+        });
+      }
+    }, 1000);
+  };
   return (
     <Box>
+      <Container maxW="7xl" minH={"30vh"} border="groove" borderRadius={"12px"}>
+        <Flex
+          justifyContent={"space-between"}
+          alignItems="center"
+          fontSize="xl"
+          m={3}
+        >
+          <Flex alignItems="center" gap={3}>
+            <Avatar
+              size={"lg"}
+              src={
+                "http://uxpanol.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png"
+              }
+            />
+            <Text>Unknown User</Text>
+          </Flex>
+
+          <Flex>Các món đang chọn</Flex>
+        </Flex>
+      </Container>
       <Flex justifyContent={"space-between"} paddingY="2rem">
-        <Heading fontSize={"3xl"}>Giỏ hàng của bạn</Heading>
+        <Heading fontSize={"3xl"}>
+          <Flex alignItems={"center"} gap={2}>
+            <FaShoppingCart color="#2689E0" />
+            <Text>Giỏ hàng của bạn</Text>
+          </Flex>
+        </Heading>
         <Flex alignItems={"center"} color="secondary.main">
           <FaFire size="1.2rem" />
           <NextLink passHref href="/">
@@ -79,86 +165,97 @@ const Cart = () => {
       </Flex>
       {totalCartItems > 0 ? (
         currentCart?.items?.map((item, index) => (
-          <Box key={index + item.product.id}>
+          <Box key={index + item.product.id} paddingY={"0.3rem"}>
             <Box
               key={index}
               width={"100%"}
               display={"flex"}
               // border="groove"
+              px="1.5rem"
               backgroundColor="light"
-              paddingY={"0.5rem"}
+              paddingY={"1rem"}
               borderStyle="solid"
-              borderWidth={"10px"}
+              borderWidth={"5px"}
+              borderRadius="12px"
             >
-              <NextLink passHref href={"#"}>
-                <Link _hover={{ textDecoration: "none" }}>
-                  <Box
-                    overflow="hidden"
-                    borderRadius={"1rem"}
-                    maxHeight={{
-                      xs: "5rem",
-                      sm: "6rem",
-                    }}
-                    minHeight={{
-                      xs: "5rem",
-                      sm: "6rem",
-                    }}
-                    minWidth={{
-                      xs: "7rem",
-                      sm: "9rem",
-                    }}
-                    maxWidth={{
-                      xs: "7rem",
-                      sm: "9rem",
-                    }}
-                    backgroundColor={"gray.200"}
-                  >
-                    <Image
-                      src={item.product.product.imageUrl}
-                      fallbackSrc={NoImage.src}
-                      alt={"image"}
-                      objectFit={"cover"}
-                      transform="scale(1.0)"
-                      transition="0.3s ease-in-out"
-                      _hover={{
-                        transform: "scale(1.05)",
-                      }}
-                    />
-                  </Box>
-                </Link>
-              </NextLink>
+              {/* <NextLink passHref href={"#"}>
+                <Link _hover={{ textDecoration: "none" }}> */}
+              <Box
+                overflow="hidden"
+                borderRadius={"1rem"}
+                maxHeight={{
+                  xs: "5rem",
+                  sm: "6rem",
+                }}
+                minHeight={{
+                  xs: "5rem",
+                  sm: "6rem",
+                }}
+                minWidth={{
+                  xs: "7rem",
+                  sm: "9rem",
+                }}
+                maxWidth={{
+                  xs: "7rem",
+                  sm: "9rem",
+                }}
+                backgroundColor={"gray.200"}
+              >
+                <Image
+                  src={item.product.product.imageUrl}
+                  fallbackSrc={NoImage.src}
+                  alt={"image"}
+                  objectFit={"cover"}
+                  transform="scale(1.0)"
+                  transition="0.3s ease-in-out"
+                  _hover={{
+                    transform: "scale(1.05)",
+                  }}
+                />
+              </Box>
+              {/* </Link>
+              </NextLink> */}
 
               <Grid
-                templateColumns="repeat(4, 1fr)"
+                templateColumns="repeat(2, 1fr)"
                 gap={6}
                 width="100%"
                 paddingX={"1rem"}
                 paddingY={"0.5rem"}
                 alignItems="center"
               >
-                <Text
-                  color="primary.darker"
-                  fontSize="2xl"
-                  alignSelf={"flex-start"}
-                >
-                  {item.product.product.name}
-                </Text>
+                <Flex flexDirection={"column"}>
+                  <Text
+                    color="primary.darker"
+                    fontSize="2xl"
+                    alignSelf={"flex-start"}
+                  >
+                    {item.product.product.name}
+                  </Text>
+                  <Text
+                    color="primary.darker"
+                    fontSize="xl"
+                    alignSelf={"flex-start"}
+                  >
+                    x {item.quantity}
+                  </Text>
+                </Flex>
 
-                <Text fontSize="xl">
-                  {item.product.price?.toLocaleString()}đ
+                <Text fontSize="xl" fontWeight={"600"}>
+                  {(item.product?.price * item.quantity).toLocaleString()} đ
                 </Text>
                 <Box minWidth={"10rem"}>
-                  <QuantityInput quantity={item.quantity} />
+                  {/* <QuantityInput quantity={item.quantity} /> */}
                 </Box>
 
-                <IconButton
-                  onClick={() => handleDeleteCartItem(item)}
-                  justifySelf={"flex-end"}
-                  width={"1rem"}
-                  colorScheme="red"
-                  aria-label="remove-item"
-                  icon={<SmallCloseIcon />}
-                />
+                {/* <IconButton
+                    onClick={() => handleDeleteCartItem(item)}
+                    justifySelf={"flex-end"}
+                    width={"1rem"}
+                    colorScheme="red"
+                    aria-label="remove-item"
+                    icon={<SmallCloseIcon />}
+                  /> */}
               </Grid>
               {/*  Check out */}
             </Box>
@@ -219,14 +316,89 @@ const Cart = () => {
                   </Box> */}
               <Flex
                 justifyContent="space-between"
+                fontSize={"xl"}
+                // fontWeight="bold"
+              >
+                <Text>{"Tạm tính:"}</Text>
+                <Text>{currentCart?.total.toLocaleString()} đ</Text>
+              </Flex>
+              <Flex
+                justifyContent="space-between"
+                fontSize={"xl"}
+                // fontWeight="bold"
+              >
+                <Text>{"Phí giao hàng:"}</Text>
+                <Text>
+                  {areaContext?.selectedArea?.shippingFee.toLocaleString()} đ
+                </Text>
+              </Flex>
+              <Divider my={1} />
+              <Flex
+                justifyContent="space-between"
                 fontSize={"2xl"}
                 fontWeight="bold"
               >
                 <Text>{"Tổng cộng:"}</Text>
-                <Text>{currentCart?.total.toLocaleString()} đ</Text>
+                <Text>
+                  {(
+                    currentCart?.total + areaContext?.selectedArea?.shippingFee!
+                  ).toLocaleString()}{" "}
+                  đ
+                </Text>
               </Flex>
-              <Flex width="100%" justifyContent={"flex-end"} pt={10}>
-                <Button width={"50%"}>Chốt đơn</Button>
+              <Flex
+                width="100%"
+                justifyContent={"space-between"}
+                alignItems="center"
+                pt={10}
+                fontSize="xl"
+              >
+                {/* <Flex
+                    width="40%"
+                    justifyContent={"space-between"}
+                    alignItems="center"
+                  >
+                    <Text minW={{ lg: "12rem" }}>Bạn sẽ nhận vào lúc:</Text>
+                    <Select
+                      // placeholder="Chọn giờ giao"
+                      {...register("timeSlotId")}
+                      sx={{ fontSize: "xl", borderColor: "primary.main" }}
+                    >
+                      {timeSlots?.map((slot) => (
+                        <option key={slot.id} value={slot.id}>
+                          {slot.startTime.toString().slice(11, 19) +
+                            " - " +
+                            slot.endTime.toString().slice(11, 19)}
+                        </option>
+                      ))}
+                      {errors.timeSlotId && (
+                        <Alert status="error">
+                          <AlertIcon />
+                          <Text fontSize="xl">{errors.timeSlotId.message}</Text>
+                        </Alert>
+                      )}
+                    </Select>
+                  </Flex> */}
+                <Flex w="40%">
+                  <CheckoutNotifyModal
+                    onClose={onCloseCheckoutNotify}
+                    open={isOpenNotify}
+                    checkoutRes={checkoutResMsg}
+                    receivedDestination={selectedLocation!}
+                    errorRes={errorRes}
+                  >
+                    <Button
+                      backgroundColor="primary.main"
+                      colorScheme={"primary.main"}
+                      fontSize="xl"
+                      type="submit"
+                      w={"100%"}
+                      onClick={handleCompletePartyOrder}
+                    >
+                      Chốt đơn nhóm
+                    </Button>
+                  </CheckoutNotifyModal>
+                </Flex>
               </Flex>
             </Flex>
             {/*  Check out */}

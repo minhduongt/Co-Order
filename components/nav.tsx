@@ -44,6 +44,10 @@ import useAreaContext from "hooks/useAreaContext";
 import { FormProvider } from "react-hook-form";
 import { useForm } from "react-hook-form";
 
+type MainHeaderProps = {
+  isCartPage?: boolean;
+};
+
 const Links = [
   { name: "Trang chủ", href: "/" },
   // { name: "Đơn chung", href: "/coorder" },
@@ -101,7 +105,7 @@ const weekday = [
 
 const currentDate = new Date();
 
-const MainHeader = () => {
+const MainHeader = ({ isCartPage }: MainHeaderProps) => {
   //hooks
   const toast = useToast();
   const { user, loading } = useAuthContext();
@@ -243,10 +247,14 @@ const MainHeader = () => {
               />
               <Button colorScheme="teal">Tìm</Button>
             </FormProvider>
-            <CartDrawer
-              isCartDisable={isCartDisable}
-              arrivedTimeRange={arrivedTimeRange}
-            />
+            {!isCartPage ? (
+              <CartDrawer
+                isCartDisable={isCartDisable}
+                arrivedTimeRange={arrivedTimeRange}
+              />
+            ) : (
+              <></>
+            )}
             {user ? (
               <Menu>
                 <MenuButton

@@ -82,9 +82,10 @@ export interface OtherAmount {
   unit: string;
 }
 
-export interface Message {
-  content: string;
-  action: string;
+export interface OrderCompleteResponse {
+  success: boolean;
+  message: string;
+  errorCode: number;
 }
 
 export interface Location {

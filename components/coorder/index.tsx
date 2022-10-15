@@ -34,10 +34,13 @@ const items = [...Array(5)].map((_) => {
 
 const MyCoOrder = () => {
   const toast = useToast();
+
+  const cartContext = useCartContext();
+  const { cart: currentCart, partyOrder } = cartContext;
+  const [totalCartItems, setTotalCartItems] = useState<number>(0);
+  const totalCurrentCart = currentCart?.items.length;
   const copy = async () => {
-    await navigator.clipboard.writeText(
-      "https://co-order.com/order/25AB6S?userId=12"
-    );
+    await navigator.clipboard.writeText(partyOrder?.shareLink!);
     toast({
       title: "Đã sao lưu vào bộ nhớ tạm",
       status: "success",
@@ -45,40 +48,6 @@ const MyCoOrder = () => {
       isClosable: false,
       duration: 2000,
     });
-  };
-  const cartContext = useCartContext();
-  const currentCart = cartContext.cart;
-  const [totalCartItems, setTotalCartItems] = useState<number>(0);
-  const totalCurrentCart = currentCart?.items.length;
-  const { data: cartPrepareRes, error } = useCartPrice(
-    mapCartModelToOrderRequest(currentCart)
-  );
-  useEffect(() => {
-    setTotalCartItems(totalCurrentCart);
-  }, [totalCurrentCart]);
-
-  const deleteItem = useDeleteCartItem;
-
-  const handleDeleteCartItem = async (cartItem: CartItem) => {
-    try {
-      const newCart = deleteItem(cartItem, currentCart);
-      await cartContext.SetNewCart(newCart);
-      toast({
-        title: `Đã xóa ${cartItem.product.product_name} khỏi giỏ hàng`,
-        status: "warning",
-        position: "top-right",
-        isClosable: false,
-        duration: 1000,
-      });
-    } catch (error) {
-      toast({
-        title: `Có lỗi xảy ra`,
-        status: "error",
-        position: "top-right",
-        isClosable: false,
-        duration: 1000,
-      });
-    }
   };
   // const { cart } = useCart();
   // const { mutate: deleteCartItem } = useDeleteItem();
@@ -96,23 +65,24 @@ const MyCoOrder = () => {
       <Container maxWidth="6xl" paddingRight={"1rem"}>
         <Flex flexDirection={"column"}>
           <Flex fontSize={"xl"}>
-            <Text>Mã phòng của đơn: {"25AB6S"}</Text>
+            <Text>Mã đơn: {partyOrder?.orderCode}</Text>
+          </Flex>
+          <Flex fontSize={"xl"}>
+            <Text>
+              Trạng thái:{" "}
+              {partyOrder?.status == "WAITING" ? "Đang chờ" : "Hoàn thành"}
+            </Text>
+          </Flex>
+          <Flex fontSize={"xl"}>
+            <Text>Điểm giao: {partyOrder?.location.name}</Text>
           </Flex>
           <Flex gap={3} fontSize={"xl"} p={4} alignItems="center">
-            <Text px={3}>Đường dẫn vào phòng:</Text>{" "}
+            <Text px={3}>Mã phòng: </Text>
             <Box>
-              <NextLink
-                passHref
-                href={"https://co-order.com/order/25AB6S?userId=12"}
-              >
-                <Tag>
-                  {" "}
-                  <Link> {"co-order.com/order/25AB6S?userId=12"}</Link>
-                </Tag>
-              </NextLink>
+              <Tag>{partyOrder?.shareLink}</Tag>
             </Box>
             <Button onClick={copy} px={3}>
-              Copy link
+              Copy code
             </Button>
           </Flex>
         </Flex>

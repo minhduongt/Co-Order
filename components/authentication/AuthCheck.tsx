@@ -34,11 +34,11 @@ function AuthCheck({ children }: any) {
     }
   };
   // console.log(FbUser);
-  useEffect(() => {
-    if (currentUser) {
-      console.log("currentUser", currentUser);
-    }
-  }, [currentUser]);
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     console.log("currentUser", currentUser);
+  //   }
+  // }, [currentUser]);
   useEffect(() => {
     if (accessToken) {
       SetUser(getUserInfo.data);

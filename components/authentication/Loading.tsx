@@ -1,6 +1,6 @@
-import { Flex, Spinner, Text } from "@chakra-ui/react";
+import { Flex, Image, Spinner, Text } from "@chakra-ui/react";
 import React from "react";
-
+import logo from "../../public/assets/image/logofinal.png";
 function Loading() {
   return (
     <Flex
@@ -17,7 +17,15 @@ function Loading() {
         color="blue.500"
         size="xl"
       />
-      <Text fontSize={"2xl"}>Cooperative Order</Text>
+      <Flex alignItems={"center"} gap={5}>
+        {" "}
+        <Image
+          alt="logo"
+          sx={{ width: "50px", marginLeft: "20px" }}
+          src={logo.src}
+        ></Image>
+        <Text fontSize={"2xl"}>Cooperative Order</Text>
+      </Flex>
     </Flex>
   );
 }

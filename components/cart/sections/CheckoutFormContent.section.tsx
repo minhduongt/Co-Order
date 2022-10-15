@@ -16,7 +16,6 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  ModalOverlay,
   Select,
   Skeleton,
   SkeletonText,
@@ -25,28 +24,19 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { AiOutlineLike } from "react-icons/ai";
-import useStoreLocations from "hooks/store/useStoreLocations";
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { CustomerInfo, OrderResponse } from "types/cart";
+import React, { Dispatch, useState } from "react";
+import { OrderResponse } from "types/cart";
 import { FormProvider, useForm } from "react-hook-form";
 import CheckoutNotifyModal from "../CheckoutNotifyModal";
 import useCheckout from "hooks/cart/useCheckout";
 import { PostResponse } from "types/request";
-import { mapCartModelToOrderRequest } from "hooks/cart/helper";
-import useCartPrice from "hooks/cart/useCartPrice";
 import useCartContext from "hooks/useCartContext";
-import ChangeTimeModal from "../ChangeTimeModal";
 import useAreaContext from "hooks/useAreaContext";
 import useUserContext from "hooks/useUserContext";
 import useTimeSlots from "hooks/menu/useTimeSlotMenu";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/router";
 interface CheckoutFormContentProps {
   // setStep: Dispatch<SetStateAction<number>>;
   onClose: VoidFunction;
@@ -67,15 +57,16 @@ export default function CheckoutFormContent({
 }: CheckoutFormContentProps) {
   //hooks
   const toast = useToast();
+  const router = useRouter();
   const cartContext = useCartContext();
   const areaContext = useAreaContext();
   const { user: currentUser, accessToken } = useUserContext();
-  const currentCart = cartContext.cart;
+  const { cart: currentCart, SetPartyOrder } = cartContext;
   const menuId = areaContext.selectedMenu?.id;
   const locationId = areaContext.selectedLocation?.id;
   console.log("areaContext", areaContext);
 
-  const { checkOut, errorRes } = useCheckout(currentCart);
+  const { checkOut, errorRes, createPartyOrder } = useCheckout(currentCart);
   const { data: timeSlots } = useTimeSlots(menuId!);
   const [checkoutResMsg, setCheckoutResMsg] =
     useState<PostResponse<OrderResponse>>();
@@ -97,8 +88,6 @@ export default function CheckoutFormContent({
     setIsOpenNotify(!isOpenNotify);
   };
   const onSubmit = (form: CheckoutForm) => {
-    console.log("form", form);
-
     setIsOpenNotify(!isOpenNotify);
     setTimeout(async () => {
       const checkoutRes = await checkOut(
@@ -112,7 +101,31 @@ export default function CheckoutFormContent({
       }
       if (errorRes) {
         toast({
-          title: errorRes.error?.code,
+          title: errorRes?.message,
+          status: "error",
+          position: "bottom",
+          isClosable: false,
+          duration: 2000,
+        });
+      }
+    }, 1000);
+  };
+  const createParty = (form: CheckoutForm) => {
+    setIsOpenNotify(!isOpenNotify);
+    setTimeout(async () => {
+      const checkoutRes = await createPartyOrder(
+        form.timeSlotId,
+        menuId!,
+        locationId!,
+        accessToken!
+      );
+      if (checkoutRes?.data) {
+        await SetPartyOrder(checkoutRes?.data);
+        router.push("/coorder");
+      }
+      if (errorRes) {
+        toast({
+          title: errorRes?.message,
           status: "error",
           position: "bottom",
           isClosable: false,
@@ -143,6 +156,7 @@ export default function CheckoutFormContent({
                 <Select
                   // placeholder="Chọn giờ giao"
                   {...register("timeSlotId")}
+                  defaultValue={timeSlots ? timeSlots[0]?.id : ""}
                   sx={{ fontSize: "xl", borderColor: "primary.main" }}
                 >
                   {timeSlots?.map((slot) => (
@@ -158,8 +172,6 @@ export default function CheckoutFormContent({
                       <Text fontSize="xl">{errors.timeSlotId.message}</Text>
                     </Alert>
                   )}
-                  {/* <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option> */}
                 </Select>
               </Flex>
 
@@ -273,6 +285,15 @@ export default function CheckoutFormContent({
                 onClick={() => onClose()}
               >
                 Quay lại
+              </Button>
+              <Button
+                backgroundColor="primary.main"
+                colorScheme={"primary.main"}
+                fontSize="xl"
+                type="submit"
+                onClick={handleSubmit(createParty)}
+              >
+                Tạo phòng
               </Button>
               <CheckoutNotifyModal
                 onClose={onCloseCheckoutNotify}

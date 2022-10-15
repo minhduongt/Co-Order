@@ -204,7 +204,7 @@ export default function MyProfile() {
                     }}
                     isFullWidth
                   >
-                    Send Message
+                    Cập nhật
                   </Button>
                 </VStack>
               </Box>

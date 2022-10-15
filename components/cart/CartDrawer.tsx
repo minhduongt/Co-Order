@@ -32,6 +32,7 @@ import CartModal from "./CartModal";
 import { TRoom } from "types/room";
 import RoomModal from "./RoomModal";
 import useAreaContext from "hooks/useAreaContext";
+import { useRouter } from "next/router";
 
 interface CartDrawerProps {
   arrivedTimeRange: string;
@@ -44,9 +45,10 @@ export default function CartDrawer({
 }: CartDrawerProps) {
   const [isDesktop] = useMediaQuery("(min-width: 1440px)");
   const toast = useToast();
+  const router = useRouter();
   const cartContext = useCartContext();
   const areaContext = useAreaContext();
-  const { cart: currentCart, room: currentRoom } = cartContext;
+  const { cart: currentCart } = cartContext;
   const [totalCartItems, setTotalCartItems] = useState<number>(0);
   const totalCurrentCart = currentCart?.items.length;
   useEffect(() => {
@@ -64,26 +66,6 @@ export default function CartDrawer({
         status: "warning",
         position: "top-right",
         isClosable: true,
-        duration: 1000,
-      });
-    } catch (error) {
-      toast({
-        title: `Có lỗi xảy ra`,
-        status: "error",
-        position: "top-right",
-        isClosable: false,
-        duration: 1000,
-      });
-    }
-  };
-  const handleExitRoom = async () => {
-    try {
-      await cartContext.SetNewRoom(null);
-      toast({
-        title: `Đã thoát khỏi phòng ${currentRoom?.name}`,
-        status: "success",
-        position: "top-right",
-        isClosable: false,
         duration: 1000,
       });
     } catch (error) {
@@ -254,6 +236,21 @@ export default function CartDrawer({
                 </Flex>
                 {/*  Check out */}
                 <Flex paddingTop="1rem">
+                  {/* <Button
+                    height={"3rem"}
+                    variant="outline"
+                    color={"light"}
+                    backgroundColor="primary.main"
+                    colorScheme={"primary.main"}
+                    onClick={() => {
+                      cartContext.onClose();
+                      router.push("/coorder");
+                    }}
+                    fontSize="2xl"
+                    w="95%"
+                  >
+                    Tạo phòng
+                  </Button> */}
                   <CartModal>
                     <Button
                       height={"3rem"}
@@ -265,21 +262,7 @@ export default function CartDrawer({
                       fontSize="2xl"
                       w="100%"
                     >
-                      Tạo phòng
-                    </Button>
-                  </CartModal>
-                  <CartModal>
-                    <Button
-                      height={"3rem"}
-                      variant="outline"
-                      color={"light"}
-                      backgroundColor="primary.main"
-                      colorScheme={"primary.main"}
-                      onClick={cartContext.onOpen}
-                      fontSize="2xl"
-                      w="100%"
-                    >
-                      Đặt ngay!
+                      Tiếp tục
                     </Button>
                   </CartModal>
                 </Flex>
