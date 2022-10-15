@@ -8,21 +8,23 @@ type Props = {
     accessToken: string | null;
     params?: any;
 };
-const getOrderHistories = (accessToken: string) => {
+const getOrderHistories = (accessToken: string, params: any) => {
     const config = {
         headers: {
             authorization: "Bearer " + accessToken,
         },
+        params: params,
     };
     return request
-        .get<BaseResponse<TOrder>>(`/order/me`, config)
+        .get<BaseResponse<TOrder>>(`/order/me`, config
+        )
         .then((res) => res.data);
 
 }
 
 const useOrderHistories = ({ accessToken, params }: Props) => {
     const orders = useQuery(["order", accessToken, params], () =>
-        getOrderHistories(accessToken!)
+        getOrderHistories(accessToken!, params)
     );
     return {
         ...orders,
