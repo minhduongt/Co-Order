@@ -31,6 +31,7 @@ import ProductInCart from "components/sections/cart/ProductInCart";
 import CartModal from "./CartModal";
 import { TRoom } from "types/room";
 import RoomModal from "./RoomModal";
+import useAreaContext from "hooks/useAreaContext";
 
 interface CartDrawerProps {
   arrivedTimeRange: string;
@@ -44,12 +45,10 @@ export default function CartDrawer({
   const [isDesktop] = useMediaQuery("(min-width: 1440px)");
   const toast = useToast();
   const cartContext = useCartContext();
+  const areaContext = useAreaContext();
   const { cart: currentCart, room: currentRoom } = cartContext;
   const [totalCartItems, setTotalCartItems] = useState<number>(0);
   const totalCurrentCart = currentCart?.items.length;
-  const { data: cartPrepareRes, error } = useCartPrice(
-    mapCartModelToOrderRequest(currentCart)
-  );
   useEffect(() => {
     setTotalCartItems(totalCurrentCart);
   }, [totalCurrentCart]);
@@ -223,25 +222,20 @@ export default function CartDrawer({
                   justifyContent={"space-between"}
                   flexDirection="column"
                 >
-                  {/* <Box>
+                  <Box>
                     <Flex justifyContent="space-between" fontSize={"xl"}>
                       <Text>{"Tạm tính:"}</Text>
-                      <Text>
-                        {cartPrepareRes.total_amount.toLocaleString()} đ
-                      </Text>
+                      <Text>{currentCart.total.toLocaleString()} đ</Text>
                     </Flex>
 
-                    {cartPrepareRes.other_amounts.map((other, index) => (
-                      <Flex
-                        key={index}
-                        justifyContent="space-between"
-                        fontSize={"xl"}
-                      >
-                        <Text>{other.name}</Text>
-                        <Text> {other.amount.toLocaleString()} đ</Text>
-                      </Flex>
-                    ))}
-                  </Box> */}
+                    <Flex justifyContent="space-between" fontSize={"xl"}>
+                      <Text>Phí giao hàng</Text>
+                      <Text>
+                        {areaContext.selectedArea?.shippingFee.toLocaleString()}{" "}
+                        đ
+                      </Text>
+                    </Flex>
+                  </Box>
                   <Divider />
                   <Flex
                     justifyContent="space-between"
@@ -249,7 +243,13 @@ export default function CartDrawer({
                     fontWeight="bold"
                   >
                     <Text>{"Tổng cộng:"}</Text>
-                    <Text>{currentCart?.total.toLocaleString()} đ</Text>
+                    <Text>
+                      {(
+                        currentCart?.total +
+                        areaContext.selectedArea?.shippingFee!
+                      ).toLocaleString()}{" "}
+                      đ
+                    </Text>
                   </Flex>
                 </Flex>
                 {/*  Check out */}

@@ -7,21 +7,27 @@ import {
   ProductInMenuItem,
 } from "types/cart";
 
-export const mapCartModelToOrderRequest = (cartModel: Cart) => {
-  let products_list: ProductInMenuItem[] = [];
+export const mapCartModelToOrderRequest = (
+  cartModel: Cart,
+  timeSlotId: string,
+  menuId: number,
+  locationId: number
+) => {
+  let productInMenus: ProductInMenuItem[] = [];
   cartModel.items.forEach((cartItem) => {
-    products_list.push(...mapCartItemToProduct(cartItem));
+    productInMenus.push(...mapCartItemToProduct(cartItem));
   });
 
   const orderCart: OrderRequest = {
-    endTime: "",
+    endTime: null,
     paymentMethod: "CASH",
-    locationId: 1,
-    menuId: 1,
-    timeSlotId: 1,
-    productInMenus: [],
+    locationId: locationId,
+    menuId: menuId,
+    timeSlotId: Number.parseInt(timeSlotId),
+    productInMenus: productInMenus,
     notes: "",
   };
+  console.log();
 
   return orderCart;
 };
@@ -29,13 +35,13 @@ export const mapCartModelToOrderRequest = (cartModel: Cart) => {
 export const mapCartItemToProduct = (
   cartItem: CartItem
 ): ProductInMenuItem[] => {
-  let products_list: ProductInMenuItem[] = [];
+  let productInMenus: ProductInMenuItem[] = [];
 
   let parentItem: ProductInMenuItem = {
     id: cartItem.product.id,
     quantity: cartItem.quantity,
     description: "",
   };
-  products_list.push(parentItem);
-  return products_list;
+  productInMenus.push(parentItem);
+  return productInMenus;
 };

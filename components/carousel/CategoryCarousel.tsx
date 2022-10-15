@@ -161,7 +161,7 @@ export default function CategoryCarousel({
                 key={cate.id}
                 w={{ xs: "6rem", lg: "12rem" }}
                 h={{ xs: "6rem", lg: "12rem" }}
-                border={"solid"}
+                border={"inset"}
                 borderColor="primary.main"
                 borderRadius={"15px"}
                 _hover={{
@@ -176,6 +176,7 @@ export default function CategoryCarousel({
                     w={{ xs: "3rem", xl: "8rem" }}
                     h={{ xs: "3rem", xl: "8rem" }}
                     borderRadius={"32px"}
+                    // borderStyle=""
                     src={cate.imageUrl}
                     fallbackSrc={NoImage.src}
                     alt={`Picture of ${cate.name}`}

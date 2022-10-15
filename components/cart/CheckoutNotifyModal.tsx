@@ -58,7 +58,7 @@ export default function CheckoutNotifyModal({
       <Modal
         isOpen={open}
         onClose={onClose}
-        size={"md"}
+        size={"lg"}
         closeOnOverlayClick={false}
         motionPreset="slideInBottom"
       >
@@ -89,15 +89,22 @@ export default function CheckoutNotifyModal({
               <ModalBody pb={6}>
                 <Flex flexDirection={"column"} fontSize="2xl">
                   <Alert status="success" justifyContent={"space-between"}>
-                    <Flex alignItems={"center"}>
-                      <AlertIcon />
-                      <Text fontWeight={"semibold"} color="secondary.main">
-                        {/* {"Mã đơn của bạn là " + checkoutRes.data.invoice_id} */}
-                        {/* {checkoutRes.data.invoice_id} */}
+                    <Flex alignItems={"center"} gap={3}>
+                      <Flex alignItems={"center"}>
+                        <AlertIcon />
+                        <Text textAlign={"left"}>{"Mã đơn của bạn là: "}</Text>
+                      </Flex>
+
+                      <Text
+                        textAlign={"right"}
+                        fontWeight={"semibold"}
+                        color="secondary.main"
+                      >
+                        {checkoutRes?.data.orderCode}
                       </Text>
                     </Flex>
 
-                    <Button
+                    {/* <Button
                       fontSize={"xl"}
                       bgColor="secondary.main"
                       color="light"
@@ -108,10 +115,10 @@ export default function CheckoutNotifyModal({
                       }
                     >
                       Liên hệ hỗ trợ
-                    </Button>
+                    </Button> */}
                   </Alert>
                   <Text py="1rem" fontWeight={"bold"}>
-                    {"Bạn sẽ nhận đơn của mình:"}
+                    Bạn vui lòng nhận đơn:
                   </Text>
                   <Box border="solid" p={2} borderColor="secondary.main">
                     <Flex
@@ -120,13 +127,13 @@ export default function CheckoutNotifyModal({
                       py="1rem"
                       justifyContent="space-between"
                     >
-                      <Flex gap={2}>
+                      <Flex gap={2} alignItems="center">
                         <BiTime size={"2.2rem"} color="green" />
-                        <Text>{"Vào lúc:"}</Text>
+                        <Text minW="6rem">Vào lúc:</Text>
                       </Flex>
 
-                      <Text fontWeight={"bold"}>
-                        {checkoutRes.message.substring(33)}
+                      <Text fontWeight={"bold"} textAlign="right">
+                        {checkoutRes.data.endTime.toString().slice(11, 19)}
                       </Text>
                     </Flex>
                     <Flex
@@ -136,12 +143,11 @@ export default function CheckoutNotifyModal({
                     >
                       <Flex gap={2}>
                         <IoLocationOutline size={"2.2rem"} color="green" />
-                        <Text>{"Tại:"}</Text>
+                        <Text>Tại:</Text>
                       </Flex>
 
                       <Text fontWeight={"bold"}>
-                        {" "}
-                        {receivedDestination.name}{" "}
+                        {checkoutRes?.data.location.name}
                       </Text>
                     </Flex>
                   </Box>

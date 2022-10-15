@@ -36,9 +36,9 @@ const Cart = () => {
   const currentCart = cartContext.cart;
   const [totalCartItems, setTotalCartItems] = useState<number>(0);
   const totalCurrentCart = currentCart?.items.length;
-  const { data: cartPrepareRes, error } = useCartPrice(
-    mapCartModelToOrderRequest(currentCart)
-  );
+  // const { data: cartPrepareRes, error } = useCartPrice(
+  //   mapCartModelToOrderRequest(currentCart)
+  // );
   useEffect(() => {
     setTotalCartItems(totalCurrentCart);
   }, [totalCurrentCart]);
@@ -223,7 +223,7 @@ const Cart = () => {
                 fontWeight="bold"
               >
                 <Text>{"Tổng cộng:"}</Text>
-                <Text>{cartPrepareRes?.final_amount.toLocaleString()} đ</Text>
+                <Text>{currentCart?.total.toLocaleString()} đ</Text>
               </Flex>
               <Flex width="100%" justifyContent={"flex-end"} pt={10}>
                 <Button width={"50%"}>Chốt đơn</Button>

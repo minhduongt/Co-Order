@@ -41,7 +41,7 @@ export interface CustomerInfo {
 
 export interface OrderRequest {
   notes: string;
-  endTime: string;
+  endTime: string | null;
   menuId: number;
   locationId: number;
   timeSlotId: number;

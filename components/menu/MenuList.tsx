@@ -96,6 +96,7 @@ const MenuList = () => {
   const { data: areas, isLoading: areaLoading } = useAreas();
   const {
     selectedArea,
+    SetSelectedMenu,
     SetSelectedArea,
     selectedLocation,
     SetSelectedLocation,
@@ -131,7 +132,10 @@ const MenuList = () => {
   //Delete all item in cart when change time range
 
   useEffect(() => {
-    if (filterMenu == null && menus) setFilterMenu(menus[0]);
+    if (filterMenu == null && menus) {
+      setFilterMenu(menus[0]);
+      SetSelectedMenu(menus[0]);
+    }
   }, [filterMenu, menus]);
 
   return (
@@ -192,6 +196,7 @@ const MenuList = () => {
                 <Tab
                   sx={{ minW: "10rem" }}
                   onClick={() => {
+                    SetSelectedMenu(menu);
                     setFilterMenu(menu);
                     setFilterCate(null);
                   }}

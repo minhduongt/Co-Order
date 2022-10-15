@@ -9,8 +9,13 @@ const prepareOrder = (cartPrepare: OrderRequest) => {
   );
 };
 
-const checkout = (cartOrder: OrderRequest) => {
-  return request.post<PostResponse<OrderResponse>>(`/order`, cartOrder);
+const checkout = (cartOrder: OrderRequest, accessToken: string) => {
+  const config = {
+    headers: {
+      authorization: "Bearer " + accessToken,
+    },
+  };
+  return request.post<PostResponse<OrderResponse>>(`/order`, cartOrder, config);
 };
 
 const cartApi = {

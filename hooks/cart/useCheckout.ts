@@ -9,21 +9,23 @@ import { mapCartModelToOrderRequest } from "./helper";
 const useCheckout = (currentCart: Cart) => {
   const [errorRes, setErrorRes] = useState<ErrorResponse>();
   const checkOut = useCallback(
-    async (supplier_notes?: SupplierNote[] | undefined) => {
+    async (
+      timeSlotId: string,
+      menuId: number,
+      locationId: number,
+      accessToken: string
+    ) => {
       try {
-        const orderCart = mapCartModelToOrderRequest(currentCart);
+        const orderCart = mapCartModelToOrderRequest(
+          currentCart,
+          timeSlotId,
+          menuId,
+          locationId
+        );
         if (!orderCart) throw Error("Không có sản phẩm trong giỏ hàng");
-        const data: OrderRequest = {
-          notes: "",
-          endTime: "",
-          locationId: 1,
-          menuId: 1,
-          timeSlotId: 1,
-          paymentMethod: "cash",
-          productInMenus: orderCart.productInMenus,
-        };
+        console.log("orderCart", orderCart);
 
-        const res = await cartApi.checkout(data);
+        const res = await cartApi.checkout(orderCart, accessToken);
         console.log(res);
 
         return res.data;
