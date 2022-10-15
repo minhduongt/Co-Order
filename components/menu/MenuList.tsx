@@ -23,7 +23,7 @@ import CategoryCarousel from "components/carousel/CategoryCarousel";
 import useStores from "hooks/store/useStores";
 import { FormProvider, useForm } from "react-hook-form";
 import TextCarousel from "components/carousel/TextCarousel";
-import useStoreSuppliers from "hooks/store/useStoreSuppliers";
+import useAreaSuppliers from "hooks/store/useStoreSuppliers";
 import MenuFooter from "./MenuFooter";
 import CollectionProducts from "./CollectionProducts";
 import Countdown from "react-countdown";
@@ -133,7 +133,7 @@ const MenuList = () => {
 
   useEffect(() => {
     if (filterMenu == null && menus) setFilterMenu(menus[0]);
-  }, [menus]);
+  }, [filterMenu, menus]);
 
   return (
     <Box
@@ -201,21 +201,16 @@ const MenuList = () => {
               </Box>
             ))}
         </TabList>
-        <Flex>
-          <CategoryCarousel setFilterCate={setFilterCate} />
-        </Flex>
-
-        <Box px="1rem" pt="5rem">
-          <CategoryProduct
-            filterMenu={filterMenu}
-            setFilterCate={setFilterCate}
-            filterCate={filterCate}
-          />
-        </Box>
+        <CategoryCarousel setFilterCate={setFilterCate} />
+        <CategoryProduct
+          filterMenu={filterMenu}
+          setFilterCate={setFilterCate}
+          filterCate={filterCate}
+        />
       </Tabs>
-
-      {/* <CollectionProducts />
-      <SupplierProducts /> */}
+      {/* 
+      <CollectionProducts /> */}
+      {/* <SupplierProducts /> */}
     </Box>
   );
 };

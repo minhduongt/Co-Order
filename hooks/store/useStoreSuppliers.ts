@@ -4,16 +4,24 @@ import { BaseResponse } from "types/request";
 import { TSupplier } from "types/supplier";
 
 type Props = {
-  id: number | undefined | null;
+  areaId: number | null;
+
 };
-const getSuppliersOfStore = (id: number) =>
+const getSuppliersOfArea = (id: number) =>
   request
-    .get<BaseResponse<TSupplier>>(`/stores/${id}/suppliers`)
+    .get<BaseResponse<TSupplier>>(`suppliers`,
+      {
+        params: {
+          areaId: id,
+          isActive: true,
+        }
+
+      })
     .then((res) => res.data);
 
-const useStoreSuppliers = ({ id }: Props) => {
-  const suppliers = useQuery(["stores", id, "suppliers"], () =>
-    getSuppliersOfStore(id!)
+const useAreaSuppliers = ({ areaId }: Props) => {
+  const suppliers = useQuery(["stores", areaId, "suppliers"], () =>
+    getSuppliersOfArea(areaId!)
   );
   return {
     ...suppliers,
@@ -22,4 +30,4 @@ const useStoreSuppliers = ({ id }: Props) => {
   };
 };
 
-export default useStoreSuppliers;
+export default useAreaSuppliers;

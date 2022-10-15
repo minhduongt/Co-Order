@@ -16,9 +16,10 @@ import {
   Icon,
   Flex,
   Divider,
+  HStack,
 } from "@chakra-ui/react";
 import { FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
-import logo from "../public/assets/image/logox2.png";
+import logo from "../public/assets/image/logofinal.png";
 
 const Logo = () => <Image alt="logo" src={logo.src} />;
 
@@ -77,19 +78,6 @@ const FootLink: any = () => {
 export default function MainFooter() {
   return (
     <Box bg={"white"} color={useColorModeValue("gray.700", "gray.200")}>
-      <Flex
-        alignItems={"center"}
-        flexDirection="column"
-        pt="20vh"
-        borderBottom={"groove"}
-        borderBottomColor="primary.main"
-        borderBottomWidth={"10px"}
-      >
-        <Text fontSize={"xl"} textAlign="center">
-          {/* Bạn đã xem hết rồi <br /> */}
-        </Text>
-        {/* <Divider borderColor={"primary.main"} borderWidth={2} /> */}
-      </Flex>
       <Container as={Stack} maxW={"6xl"} py={10}>
         <SimpleGrid
           templateColumns={{
@@ -97,33 +85,6 @@ export default function MainFooter() {
           }}
           spacing={"2rem"}
         >
-          <Stack>
-            <Box display={{ xs: "flex", md: "block" }} alignItems="center">
-              {/* <Logo /> */}
-              <Heading
-                pl={{ xs: "1rem", md: "0.5rem" }}
-                color={"secondary.main"}
-                fontFamily="Inter"
-                fontSize={{
-                  xs: "1rem",
-                  md: "2.5rem",
-                  lg: "2rem",
-                }}
-              >
-                Cooperative Order
-              </Heading>
-            </Box>
-          </Stack>
-
-          <Stack
-            align={"flex-start"}
-            justifyContent="center"
-            mt={{ md: "3rem" }}
-            display={{ xs: "none", md: "flex" }}
-          >
-            <FootLink />
-          </Stack>
-
           <Stack
             mt={{ md: "3rem" }}
             color="secondary.main"

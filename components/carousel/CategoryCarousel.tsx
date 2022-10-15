@@ -187,7 +187,7 @@ export default function CategoryCarousel({
                     lineHeight="tight"
                     textAlign={"center"}
                     wordBreak={"break-all"}
-                    color="primary.darker"
+                    color="primary.main"
                   >
                     {cate.name}
                   </Text>
