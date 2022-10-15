@@ -33,6 +33,7 @@ import firebase from "firebase/compat/app";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import useAuthorize from "hooks/auth/useAuth";
+import useUserContext from "hooks/useUserContext";
 interface AuthenForm {
   phone: string;
   otp: string;
@@ -60,16 +61,13 @@ function Authenticate() {
     resolver:
       step == 1 ? yupResolver(authenSchema1) : yupResolver(authenSchema2),
   });
+  const { SetUser, SetAccessToken, SetRefreshToken } = useUserContext();
   const {
     register,
     watch,
     handleSubmit,
     formState: { errors },
   } = authenForm;
-
-  useEffect(() => {
-    console.log("accessToken", accessToken);
-  }, [accessToken]);
 
   useEffect(() => {
     // init captcha object
@@ -123,16 +121,30 @@ function Authenticate() {
         const user = result.user;
         if (user) {
           const res = await authorize(await user.getIdToken()!);
-          console.log(res);
+          if (res.status === 200) {
+            setAccessToken(res.data.data.accessToken);
+            SetRefreshToken(res.data.data.refreshToken);
+            console.log("accessToken", res.data.data.accessToken);
+
+            toast({
+              title: "Đăng nhập thành công!",
+              status: "success",
+              position: "top-right",
+              isClosable: false,
+              duration: 2000,
+            });
+            console.log("authorize", res);
+          } else {
+            toast({
+              title: "Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!!",
+              status: "error",
+              position: "top-right",
+              isClosable: false,
+              duration: 2000,
+            });
+          }
+          console.log(result);
         }
-        console.log(result);
-        toast({
-          title: "Đăng nhập thành công!",
-          status: "success",
-          position: "top-right",
-          isClosable: false,
-          duration: 2000,
-        });
         // ...
       })
       .catch(function (error) {
@@ -151,19 +163,49 @@ function Authenticate() {
 
   const LoginWithGoogle = () => {
     signInWithGoogle()
-      .then(() => {
-        toast({
-          title: "Đăng nhập thành công!",
-          status: "success",
-          position: "top-right",
-          isClosable: false,
-          duration: 2000,
-        }),
-          router.push("/");
+      .then(async (result) => {
+        console.log(result);
+        const user = result.user;
+        if (user) {
+          try {
+            const res = await authorize(await user.getIdToken()!);
+            if (res.status === 200) {
+              setAccessToken(res.data.data.accessToken);
+              SetRefreshToken(res.data.data.refreshToken);
+              console.log("accessToken", res.data.data.accessToken);
+
+              toast({
+                title: "Đăng nhập thành công!",
+                status: "success",
+                position: "top-right",
+                isClosable: false,
+                duration: 2000,
+              });
+              console.log("authorize", res);
+              router.push("/");
+            } else {
+              toast({
+                title: "Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!!",
+                status: "error",
+                position: "top-right",
+                isClosable: false,
+                duration: 2000,
+              });
+            }
+          } catch (error) {
+            toast({
+              title: "Có lỗi xảy ra!",
+              status: "error",
+              position: "top-right",
+              isClosable: false,
+              duration: 2000,
+            });
+            console.log("error", error);
+          }
+        }
       })
       .catch((error) => {
         console.log(error);
-
         toast({
           title: "Đăng nhập thất bại",
           status: "error",

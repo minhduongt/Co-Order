@@ -1,3 +1,6 @@
-export type Auth = {
-  idToken: string;
+export type TAuth = {
+  accessToken: string;
+  accessTokenExpiryTime: string;
+  refreshToken: string;
+  refreshTokenExpiryTime: string;
 };

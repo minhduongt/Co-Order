@@ -115,11 +115,6 @@ const MenuList = () => {
   // }, [timeRangeArr]);
 
   //Delete all item in cart when change time range
-  useEffect(() => {
-    if (timeRange) cartContext.SetNewCart(null);
-    console.log();
-  }, [timeRange]);
-  console.log("menu", menu);
 
   return (
     <Box
