@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { BsGithub, BsLinkedin, BsPerson, BsTwitter } from "react-icons/bs";
-import { MdEmail, MdOutlineEmail } from "react-icons/md";
+import { MdEmail, MdOutlineEmail, MdOutlinePhone } from "react-icons/md";
 
 const confetti = {
   light: {
@@ -63,14 +63,14 @@ export default function MyProfile() {
                 md: "5xl",
               }}
             >
-              Get in Touch
+              Hồ sơ
             </Heading>
 
             <Stack
               spacing={{ base: 4, md: 8, lg: 20 }}
               direction={{ base: "column", md: "row" }}
             >
-              <Stack
+              {/* <Stack
                 align="center"
                 justify="space-around"
                 direction={{ base: "row", md: "column" }}
@@ -137,7 +137,7 @@ export default function MyProfile() {
                     isRound
                   />
                 </Link>
-              </Stack>
+              </Stack> */}
 
               <Box
                 bg={useColorModeValue("white", "gray.700")}
@@ -148,13 +148,17 @@ export default function MyProfile() {
               >
                 <VStack spacing={5}>
                   <FormControl isRequired>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>Họ và tên</FormLabel>
 
                     <InputGroup>
                       <InputLeftElement>
                         <BsPerson />
                       </InputLeftElement>
-                      <Input type="text" name="name" placeholder="Your Name" />
+                      <Input
+                        type="text"
+                        name="name"
+                        value="Người dùng Vô danh"
+                      />
                     </InputGroup>
                   </FormControl>
 
@@ -168,20 +172,26 @@ export default function MyProfile() {
                       <Input
                         type="email"
                         name="email"
-                        placeholder="Your Email"
+                        // placeholder="Your Email"
+                        value="unknownuser@gmail.com"
                       />
                     </InputGroup>
                   </FormControl>
 
                   <FormControl isRequired>
-                    <FormLabel>Message</FormLabel>
+                    <FormLabel>Số điện thoại</FormLabel>
 
-                    <Textarea
-                      name="message"
-                      placeholder="Your Message"
-                      rows={6}
-                      resize="none"
-                    />
+                    <InputGroup>
+                      <InputLeftElement>
+                        <MdOutlinePhone />
+                      </InputLeftElement>
+                      <Input
+                        type="number"
+                        name="phone"
+                        // placeholder="Your Email"
+                        value="0123456789"
+                      />
+                    </InputGroup>
                   </FormControl>
 
                   <Button

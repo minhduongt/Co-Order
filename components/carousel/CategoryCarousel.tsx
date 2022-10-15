@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Flex,
+  Grid,
   IconButton,
   Image,
   Skeleton,
@@ -82,14 +83,9 @@ export default function CategoryCarousel({
   const left = useBreakpointValue({ base: "50%", xs: "1%", md: "1%" });
 
   return (
-    <Box
-      height="15rem"
-      position="relative"
-      w={"100vw"}
-      pt={{ xs: "3rem", xl: "5rem" }}
-    >
+    <Box w={"100vw"} pt={{ xs: "3rem", xl: "5rem" }} mx={{ xs: 0, lg: "7rem" }}>
       {/* CSS files for react-slick */}
-
+      {/* 
       <link
         rel="stylesheet"
         type="text/css"
@@ -143,64 +139,68 @@ export default function CategoryCarousel({
         // visibility="hidden"
       >
         <BsArrowRight size="2.5vw" />
-      </IconButton>
-
-      <Box maxWidth={"100vw"} px={{ lg: "2.5rem", xl: "0.5rem" }}>
-        <Slider {...settings} ref={(slider) => setSlider(slider)}>
-          {categories?.map((cate) => (
-            <Box
+      </IconButton> */}
+      <Grid
+        templateColumns={{
+          xs: "repeat(3, 1fr)",
+          md: "repeat(5, 1fr)",
+        }}
+        gap={{ md: 5, xl: 10 }}
+        width="100%"
+        paddingY={"0.5rem"}
+        alignItems="center"
+        mx={{ xs: 2, lg: 5 }}
+      >
+        {/* <Slider {...settings} ref={(slider) => setSlider(slider)}> */}
+        {categories?.map((cate) => (
+          <Flex key={cate.id} textAlign={"center"}>
+            <Button
+              bg={"primary.transparent"}
               key={cate.id}
-              textAlign={"center"}
-              maxW={{ lg: "10rem", xl: "12rem" }}
+              w={{ xs: "6rem", lg: "12rem" }}
+              h={{ xs: "6rem", lg: "12rem" }}
+              border={"solid"}
+              borderColor="primary.main"
+              borderRadius={"15px"}
+              _hover={{
+                // transform: "translateY(-2px)",
+                boxShadow: "lg",
+                bg: "primary.light",
+              }}
+              onClick={() => setFilterCate(cate.id)}
             >
-              <Button
-                bg={"primary.transparent"}
-                key={cate.id}
-                w={{ xs: "10rem", xl: "12rem" }}
-                h={{ xs: "10rem", xl: "12rem" }}
-                border={"solid"}
-                borderColor="primary.main"
-                borderRadius={"15px"}
-                _hover={{
-                  // transform: "translateY(-2px)",
-                  boxShadow: "lg",
-                  bg: "primary.light",
-                }}
-                onClick={() => setFilterCate(cate.id)}
-              >
-                <Flex flexDirection={"column"} alignItems={"center"}>
-                  <Image
-                    w={{ xs: "6rem", xl: "8rem" }}
-                    h={{ xs: "6rem", xl: "8rem" }}
-                    borderRadius={"100%"}
-                    src={cate.imageUrl}
-                    fallbackSrc={NoImage.src}
-                    alt={`Picture of ${cate.name}`}
-                  />
-
-                  <Text
-                    pt={"15px"}
-                    fontSize="xl"
-                    fontWeight="semibold"
-                    lineHeight="tight"
-                    textAlign={"center"}
-                    wordBreak={"break-all"}
-                    color="primary.darker"
-                  >
-                    {cate.name}
-                  </Text>
-                </Flex>
-              </Button>
-            </Box>
-          ))}
-        </Slider>
-        <Skeleton
-          isLoaded={!isLoading || isError}
-          w={"100%"}
-          h="10rem"
-          py="5rem"
-        />
-      </Box>
+              <Flex flexDirection={"column"} alignItems={"center"}>
+                <Image
+                  w={{ xs: "3rem", xl: "8rem" }}
+                  h={{ xs: "3rem", xl: "8rem" }}
+                  borderRadius={"100%"}
+                  src={cate.imageUrl}
+                  fallbackSrc={NoImage.src}
+                  alt={`Picture of ${cate.name}`}
+                />
+                <Text
+                  pt={"15px"}
+                  fontSize="xl"
+                  fontWeight="semibold"
+                  lineHeight="tight"
+                  textAlign={"center"}
+                  wordBreak={"break-all"}
+                  color="primary.darker"
+                >
+                  {cate.name}
+                </Text>
+              </Flex>
+            </Button>
+          </Flex>
+        ))}
+        {/* </Slider> */}
+      </Grid>
+      <Skeleton
+        isLoaded={!isLoading || isError}
+        w={"100%"}
+        h="10rem"
+        py="5rem"
+      />
     </Box>
   );
 }

@@ -214,7 +214,9 @@ const MenuList = () => {
                 ))}
             </TabPanels>
           </Tabs>
-          <CategoryCarousel setFilterCate={setFilterCate} />
+          <Flex>
+            <CategoryCarousel setFilterCate={setFilterCate} />
+          </Flex>
         </FormControl>
       </FormProvider>
       <Box px="1rem" pt="5rem">

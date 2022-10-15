@@ -30,7 +30,7 @@ import beanEmpty from "../../public/assets/image/empty.png";
 import ProductInCart from "components/sections/cart/ProductInCart";
 import CartModal from "./CartModal";
 import { TRoom } from "types/room";
-import CreateRoomModal from "./CreateRoomModal";
+import RoomModal from "./RoomModal";
 
 interface CartDrawerProps {
   arrivedTimeRange: string;
@@ -77,57 +77,6 @@ export default function CartDrawer({
       });
     }
   };
-
-  const handleCreateRoom = async (room: TRoom) => {
-    try {
-      await cartContext.SetNewRoom(newRoom);
-      toast({
-        title: `Đã vào phòng ${room.name}`,
-        status: "success",
-        position: "top-right",
-        isClosable: false,
-        duration: 1000,
-      });
-    } catch (error) {
-      toast({
-        title: `Có lỗi xảy ra`,
-        status: "error",
-        position: "top-right",
-        isClosable: false,
-        duration: 1000,
-      });
-    }
-  };
-
-  const newRoom = {
-    id: "abcd-1234",
-    name: "Hội người lười chảy thây",
-  };
-
-  const handleJoinRoom = async (room: TRoom) => {
-    try {
-      const newRoom = {
-        id: "abcd-1234",
-        name: "Hội những người lười chảy thây",
-      };
-      await cartContext.SetNewRoom(newRoom);
-      toast({
-        title: `Đã vào phòng ${room.name}`,
-        status: "success",
-        position: "top-right",
-        isClosable: false,
-        duration: 1000,
-      });
-    } catch (error) {
-      toast({
-        title: `Có lỗi xảy ra`,
-        status: "error",
-        position: "top-right",
-        isClosable: false,
-        duration: 1000,
-      });
-    }
-  };
   const handleExitRoom = async () => {
     try {
       await cartContext.SetNewRoom(null);
@@ -159,7 +108,7 @@ export default function CartDrawer({
           colorScheme="dark"
           aria-label="Giỏ hàng"
           minW={{ xs: "1.5rem", xl: "5.5rem" }}
-          height={{ xs: "1.5rem", xl: "2.5rem" }}
+          minH={{ xs: "1.5rem", xl: "2.5rem" }}
           leftIcon={
             <FaShoppingBasket
               size={isDesktop ? "2rem" : "1.5rem"}
@@ -204,16 +153,17 @@ export default function CartDrawer({
               </Flex>
             ) : (
               <Box color="secondary.main" fontSize={"xl"}>
-                <Flex></Flex>
                 <Text>Muốn đặt đơn cùng bạn bè hoặc nhiều người?</Text> Chọn
-                <CreateRoomModal>
-                  <Button>Tạo phòng</Button>
-                </CreateRoomModal>{" "}
-                hoặc{" "}
-                <Button onClick={() => handleJoinRoom(newRoom)}>
-                  Vào phòng
-                </Button>{" "}
-                ngay!
+                <Flex alignItems={"center"} gap="2">
+                  <RoomModal isCreate>
+                    <Button>Tạo phòng</Button>
+                  </RoomModal>
+                  hoặc
+                  <RoomModal>
+                    <Button>Vào phòng</Button>
+                  </RoomModal>
+                  ngay!
+                </Flex>
               </Box>
             )}
           </DrawerHeader>
