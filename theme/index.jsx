@@ -5,7 +5,7 @@ const theme = extendTheme({
       transparent: "#52D6FF80",
       lighter: "#C7F6D5",
       light: "#93e4fc",
-      main: "#52D6FF",
+      main: "#5450FF",
       dark: "#59b0ca",
       darker: "#25855A",
     },

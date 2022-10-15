@@ -1,4 +1,5 @@
 import { ChakraProvider } from "@chakra-ui/react";
+import { AreaContextProvider } from "contexts/AreaContext";
 import { AuthContextProvider } from "contexts/AuthContext";
 import { CartContextProvider } from "contexts/CartContext";
 import { useEffect } from "react";
@@ -12,9 +13,11 @@ function MyApp({ Component, pageProps }: any) {
     <AuthContextProvider>
       <ChakraProvider theme={theme}>
         <QueryClientProvider client={queryClient}>
-          <CartContextProvider>
-            <Component {...pageProps} />
-          </CartContextProvider>
+          <AreaContextProvider>
+            <CartContextProvider>
+              <Component {...pageProps} />
+            </CartContextProvider>
+          </AreaContextProvider>
         </QueryClientProvider>
       </ChakraProvider>
     </AuthContextProvider>

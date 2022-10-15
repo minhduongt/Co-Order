@@ -16,7 +16,7 @@ import {
 //images and icons
 //components
 import CartDrawer from "../cart/CartDrawer";
-import StoreProducts from "./StoreProducts";
+import CategoryProduct from "./StoreProducts";
 import MenuOffline from "./MenuOffline";
 import CategoryCarousel from "components/carousel/CategoryCarousel";
 //hooks
@@ -35,6 +35,10 @@ import useCartContext from "hooks/useCartContext";
 import MenuHeader from "./MenuHeader";
 import { FaShippingFast } from "react-icons/fa";
 import useMenus from "hooks/menu/useMenus";
+import useAreas from "hooks/area/useAreas";
+import { TArea } from "types/area";
+import { TMenu } from "types/menu";
+import useAreaContext from "hooks/useAreaContext";
 
 interface filterCate {
   category_id: number;
@@ -82,44 +86,25 @@ const currentDate = new Date();
 
 const MenuList = () => {
   //hooks
-  const [filterCate, setFilterCate] = useState<filterCate>();
+  const [filterCate, setFilterCate] = useState<number | null>(null);
+  const [filterMenu, setFilterMenu] = useState<number | null>(null);
   const cartContext = useCartContext();
   const menuForm = useForm({});
   //apis
-  const { data: menu, isLoading: menuLoading } = useMenus();
+  const { data: areas, isLoading: areaLoading } = useAreas();
+  const { selectedArea, SetSelectedArea } = useAreaContext();
+  const { data: menus, isLoading: menuLoading } = useMenus(
+    selectedArea?.id ?? 1
+  );
+
   const { data: suppliers, isLoading: supLoading } = useStoreSuppliers({
     id: 150,
   });
-  //states
-  const [isCartDisable, setIsCartDisable] = useState(false);
-  const [arrivedTimeRange, setArrivedTimeRange] = useState("");
+
   //variables
   const { register, watch } = menuForm;
   const defautTabIndex = currentDate.getDay() - 1;
-  const timeRange = watch("time-range") && watch("time-range");
-  const timeRangeArr = timeRange && timeRange.split("-");
-  let countDownDateTime =
-    timeRangeArr &&
-    new Date(currentDate.toISOString().substring(0, 11) + timeRangeArr[1]);
-  //Get arrived time range from order time range for displaying
-  // useEffect(() => {
-  //   if (timeRangeArr)
-  //     stores?.map((store) =>
-  //       store.time_slots.map((slot) => {
-  //         if (slot.from == timeRangeArr[0])
-  //           setArrivedTimeRange(
-  //             slot.arrive_time_range[0] + "-" + slot.arrive_time_range[1]
-  //           );
-  //       })
-  //     );
-  // }, [timeRangeArr]);
-
-  //Delete all item in cart when change time range
-  useEffect(() => {
-    if (timeRange) cartContext.SetNewCart(null);
-    console.log();
-  }, [timeRange]);
-  console.log("menu", menu);
+  console.log("menu", menus);
 
   return (
     <Box
@@ -136,7 +121,7 @@ const MenuList = () => {
       // borderRightColor="primary.main"
     >
       <ScrollToTop smooth color="primary.main" width={"3rem"} />
-      {/* <Tabs defaultIndex={defautTabIndex >= 0 ? defautTabIndex : 0}>
+      <Tabs defaultIndex={defautTabIndex >= 0 ? defautTabIndex : 0}>
         <TabPanels>
           {weekday.map((day) =>
             day.value == currentDate.getDay() ? (
@@ -148,8 +133,30 @@ const MenuList = () => {
             )
           )}
         </TabPanels>
-      </Tabs> */}
-      {/* <FormProvider {...menuForm}>
+        <TabPanels>
+          {weekday.map((day) =>
+            day.value == currentDate.getDay() ? (
+              <TabPanel key={day.value} padding={"0"}></TabPanel>
+            ) : (
+              <TabPanel>
+                <MenuOffline />
+              </TabPanel>
+            )
+          )}
+        </TabPanels>
+        <TabPanels>
+          {weekday.map((day) =>
+            day.value == currentDate.getDay() ? (
+              <TabPanel key={day.value} padding={"0"}></TabPanel>
+            ) : (
+              <TabPanel>
+                <MenuOffline />
+              </TabPanel>
+            )
+          )}
+        </TabPanels>
+      </Tabs>
+      <FormProvider {...menuForm}>
         <FormControl>
           <Flex
             pl={{ xs: "1rem", md: "3.2rem", xl: "7vw" }}
@@ -158,84 +165,48 @@ const MenuList = () => {
             maxW="100vw"
             flexDirection={{ xs: "column", md: "row" }}
           >
-            <Box>
-              <FormLabel
-                fontWeight={"semibold"}
-                fontSize={"2xl"}
-                display={"flex"}
-                gap={2}
-              >
-                <FaShippingFast size={"2.5rem"} color="#38A169" />
-                Giờ giao hàng:
-              </FormLabel>
-              {stores ? (
-                stores.map((store) => (
-                  <Box key={store.id}>
-                    <Select
-                      borderColor="dark"
-                      focusBorderColor="primary.main"
-                      size={"lg"}
-                      w={{ xs: "90vw", md: "40vw", xl: "30vw" }}
-                      height={{ xs: "4rem", xl: "5rem" }}
-                      fontSize="xl"
-                      {...register("time-range")}
-                    >
-                      {store.time_slots.map((slot, index) => (
-                        // slot.available == true &&
-                        <option key={index} value={slot.from + "-" + slot.to}>
-                          {slot.arrive_time_range[0] +
-                            " - " +
-                            slot.arrive_time_range[1]}
-                        </option>
-                      ))}
-                    </Select>
-                    {!timeRangeArr && (
-                      <Text fontSize={"xl"} color="error">
-                        Hiện không có khung giờ nào hoạt động
-                      </Text>
-                    )}
-                    <Flex fontSize={"xl"} py="1rem" gap={2}>
-                      {timeRangeArr && (
-                        <Countdown
-                          daysInHours={true}
-                          date={countDownDateTime}
-                          renderer={renderer}
-                        />
-                      )}
-                    </Flex>
-                  </Box>
-                ))
-              ) : (
-                <Skeleton w={"30vw"} h="4rem" />
-              )}
-            </Box>
+            <Flex
+              fontWeight={"semibold"}
+              fontSize={"2xl"}
+              display={"flex"}
+              alignContent="center"
+            >
+              <FaShippingFast size={"2.5rem"} color="#38A169" />
+              Danh sách thực đơn
+            </Flex>
           </Flex>
+          <Tabs variant="enclosed">
+            <TabList>
+              {menus &&
+                menus.map((menu: TMenu) => (
+                  <Box key={menu.id}>
+                    <Tab sx={{ width: 200 }}>{menu.name}</Tab>
+                  </Box>
+                ))}
+            </TabList>
+            <TabPanels>
+              {menus &&
+                menus.map((menu: TMenu) => (
+                  <Box key={menu.id}>
+                    <TabPanel>
+                      {menu.name}
+                      <CategoryCarousel setFilterCate={setFilterCate} />
+                    </TabPanel>
+                  </Box>
+                ))}
+            </TabPanels>
+          </Tabs>
           <CategoryCarousel setFilterCate={setFilterCate} />
         </FormControl>
-      </FormProvider> */}
-      {/* <Box px="1rem" pt="5rem">
-        {!filterCate ? (
-          <>
-            <CollectionProducts time_slot={timeRangeArr} />
-            {timeRangeArr &&
-              suppliers?.map((sup) => (
-                <SupplierProducts
-                  key={sup.id}
-                  time_slot={timeRangeArr}
-                  supplier={sup}
-                />
-              ))}
-          </>
-        ) : (
-          <StoreProducts
-            setFilterCate={setFilterCate}
-            time_slot={timeRangeArr}
-            filterCate={filterCate}
-          />
-        )}
-      </Box> */}
-      <CollectionProducts />
-      <SupplierProducts />
+      </FormProvider>
+      <Box px="1rem" pt="5rem">
+        <CategoryProduct
+          setFilterCate={setFilterCate}
+          filterCate={filterCate}
+        />
+      </Box>
+      {/* <CollectionProducts />
+      <SupplierProducts /> */}
     </Box>
   );
 };

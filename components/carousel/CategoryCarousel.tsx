@@ -20,12 +20,8 @@ import useCategories from "hooks/category/useCategories";
 import Slider from "react-slick";
 import NoImage from "../../public/assets/image/noimage.png";
 
-interface filterCate {
-  category_id: number;
-  category_name: string;
-}
 interface CategoryCarouselProps {
-  setFilterCate: Dispatch<SetStateAction<filterCate | undefined>>;
+  setFilterCate: Dispatch<SetStateAction<number | null>>;
 }
 
 export default function CategoryCarousel({
@@ -33,20 +29,14 @@ export default function CategoryCarousel({
 }: CategoryCarouselProps) {
   // const [isDesktop] = useMediaQuery("(min-width: 1024px)");
   const { data: categories, isLoading, isError } = useCategories();
+  console.log("categories", categories);
 
-  const displayCategories = categories?.filter(
-    (cate) => cate.show_on_home == true
-  );
-
-  //Slick
   const settings = {
     arrows: false,
     infinite: false,
     autoplay: false,
     speed: 500,
     dots: false,
-    // slidesToShow: 2,
-    // slidesToScroll: 2,
     responsive: [
       {
         breakpoint: 700,
@@ -157,7 +147,7 @@ export default function CategoryCarousel({
 
       <Box maxWidth={"100vw"} px={{ lg: "2.5rem", xl: "0.5rem" }}>
         <Slider {...settings} ref={(slider) => setSlider(slider)}>
-          {displayCategories?.map((cate) => (
+          {categories?.map((cate) => (
             <Box
               key={cate.id}
               textAlign={"center"}
@@ -176,21 +166,16 @@ export default function CategoryCarousel({
                   boxShadow: "lg",
                   bg: "primary.light",
                 }}
-                onClick={() =>
-                  setFilterCate({
-                    category_id: cate.id,
-                    category_name: cate.category_name,
-                  })
-                }
+                onClick={() => setFilterCate(cate.id)}
               >
                 <Flex flexDirection={"column"} alignItems={"center"}>
                   <Image
                     w={{ xs: "6rem", xl: "8rem" }}
                     h={{ xs: "6rem", xl: "8rem" }}
                     borderRadius={"100%"}
-                    src={cate.pic_url}
+                    src={cate.imageUrl}
                     fallbackSrc={NoImage.src}
-                    alt={`Picture of ${cate.category_name}`}
+                    alt={`Picture of ${cate.name}`}
                   />
 
                   <Text
@@ -202,7 +187,7 @@ export default function CategoryCarousel({
                     wordBreak={"break-all"}
                     color="primary.darker"
                   >
-                    {cate.category_name}
+                    {cate.name}
                   </Text>
                 </Flex>
               </Button>

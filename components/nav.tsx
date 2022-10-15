@@ -1,6 +1,3 @@
-//images and icons
-//components
-
 //hooks
 import { useEffect, useState } from "react";
 import { ReactNode } from "react";
@@ -22,6 +19,7 @@ import {
   Stack,
   Text,
   Select,
+  Image,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { HamburgerIcon, CloseIcon, AddIcon } from "@chakra-ui/icons";
@@ -30,6 +28,10 @@ import { useRouter } from "next/router";
 import useAuthContext from "hooks/useAuthContext";
 import { logOut } from "../firebase/authentication";
 import useAreas from "hooks/area/useAreas";
+
+import logo from "../public/assets/image/logofinal.png";
+import useLocalStorage from "hooks/useLocalStorage";
+import useAreaContext from "hooks/useAreaContext";
 
 const Links = [
   { name: "Trang chủ", href: "/" },
@@ -91,10 +93,12 @@ const currentDate = new Date();
 const MainHeader = () => {
   //hooks
   const { user, loading } = useAuthContext();
+  const { selectedArea, SetSelectedArea } = useAreaContext();
   const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
   //apis
   const { data: areas } = useAreas();
+  SetSelectedArea(areas?.[0]);
   //states
   const [isCartDisable, setIsCartDisable] = useState(false);
   const [arrivedTimeRange, setArrivedTimeRange] = useState("");
@@ -131,7 +135,11 @@ const MainHeader = () => {
             onClick={isOpen ? onClose : onOpen}
           />
           <HStack spacing={8} alignItems={"center"}>
-            <Box>Logo</Box>
+            <Image
+              alt="logo"
+              sx={{ width: "50px", marginLeft: "20px" }}
+              src={logo.src}
+            ></Image>
             <HStack
               as={"nav"}
               spacing={4}
@@ -144,7 +152,7 @@ const MainHeader = () => {
             <Select
               borderColor="dark"
               focusBorderColor="primary.main"
-              size={"lg"}
+              size={"md"}
               w={{ xs: "90vw", md: "40vw", xl: "30vw" }}
               fontSize="xl"
             >
