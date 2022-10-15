@@ -87,7 +87,7 @@ const currentDate = new Date();
 const MenuList = () => {
   //hooks
   const [filterCate, setFilterCate] = useState<number | null>(null);
-  const [filterMenu, setFilterMenu] = useState<number | null>(null);
+
   const cartContext = useCartContext();
   const menuForm = useForm({});
   //apis
@@ -96,10 +96,13 @@ const MenuList = () => {
   const { data: menus, isLoading: menuLoading } = useMenus(
     selectedArea?.id ?? 1
   );
+  const [filterMenu, setFilterMenu] = useState<number | null>(
+    menus ? menus[0].id : 1
+  );
 
-  const { data: suppliers, isLoading: supLoading } = useStoreSuppliers({
-    id: 150,
-  });
+  // const { data: suppliers, isLoading: supLoading } = useStoreSuppliers({
+  //   id: 150,
+  // });
 
   //variables
   const { register, watch } = menuForm;
@@ -130,7 +133,6 @@ const MenuList = () => {
       w={"100%"}
       justifyContent="center"
       zIndex={2}
-      py="2rem"
       // borderLeft="groove"
       // borderLeftWidth={"10px"}
       // borderLeftColor="primary.main"
@@ -139,7 +141,7 @@ const MenuList = () => {
       // borderRightColor="primary.main"
     >
       <ScrollToTop smooth color="primary.main" width={"3rem"} />
-      <Tabs defaultIndex={defautTabIndex >= 0 ? defautTabIndex : 0}>
+      {/* <Tabs defaultIndex={defautTabIndex >= 0 ? defautTabIndex : 0}>
         <TabPanels>
           {weekday.map((day) =>
             day.value == currentDate.getDay() ? (
@@ -173,58 +175,46 @@ const MenuList = () => {
             )
           )}
         </TabPanels>
+      </Tabs> */}
+
+      <Flex
+        pl={{ xs: "1rem", xl: "7vw" }}
+        justifyContent={"start"}
+        alignItems="center"
+        maxW="100vw"
+        flexDirection={{ xs: "column", md: "row" }}
+        fontWeight={"semibold"}
+        fontSize={"2xl"}
+        display={"flex"}
+      >
+        <FaShippingFast size={"2.5rem"} color="#38A169" />
+        Danh sách thực đơn
+      </Flex>
+      <Tabs size="md" isFitted variant="enclosed">
+        <TabList>
+          {menus &&
+            menus.map((menu: TMenu) => (
+              <Box key={menu.id}>
+                <Tab
+                  onClick={() => {
+                    setFilterMenu(menu.id);
+                    setFilterCate(null);
+                  }}
+                >
+                  {menu.name}
+                </Tab>
+              </Box>
+            ))}
+        </TabList>
+        <CategoryCarousel setFilterCate={setFilterCate} />
+        <Box px="1rem" pt="5rem">
+          <CategoryProduct
+            filterMenu={filterMenu}
+            setFilterCate={setFilterCate}
+            filterCate={filterCate}
+          />
+        </Box>
       </Tabs>
-      <FormProvider {...menuForm}>
-        <FormControl>
-          <Flex
-            pl={{ xs: "1rem", md: "3.2rem", xl: "7vw" }}
-            justifyContent={"space-between"}
-            alignItems="center"
-            maxW="100vw"
-            flexDirection={{ xs: "column", md: "row" }}
-          >
-            <Flex
-              fontWeight={"semibold"}
-              fontSize={"2xl"}
-              display={"flex"}
-              alignContent="center"
-            >
-              <FaShippingFast size={"2.5rem"} color="#38A169" />
-              Danh sách thực đơn
-            </Flex>
-          </Flex>
-          <Tabs variant="enclosed">
-            <TabList>
-              {menus &&
-                menus.map((menu: TMenu) => (
-                  <Box key={menu.id}>
-                    <Tab sx={{ width: 200 }}>{menu.name}</Tab>
-                  </Box>
-                ))}
-            </TabList>
-            <TabPanels>
-              {menus &&
-                menus.map((menu: TMenu) => (
-                  <Box key={menu.id}>
-                    <TabPanel>
-                      {menu.name}
-                      <CategoryCarousel setFilterCate={setFilterCate} />
-                    </TabPanel>
-                  </Box>
-                ))}
-            </TabPanels>
-          </Tabs>
-          <Flex>
-            <CategoryCarousel setFilterCate={setFilterCate} />
-          </Flex>
-        </FormControl>
-      </FormProvider>
-      <Box px="1rem" pt="5rem">
-        <CategoryProduct
-          setFilterCate={setFilterCate}
-          filterCate={filterCate}
-        />
-      </Box>
       {/* <CollectionProducts />
       <SupplierProducts /> */}
     </Box>

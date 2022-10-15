@@ -29,14 +29,12 @@ const boxMotion = {
 };
 
 interface ProductCardProps {
-  product: any;
+  product: TProduct;
   // TProduct;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const isMaster = product.product_type_id == 6 ? true : false;
-  const ButtonWrapper =
-    product.product_type_id == 6 ? ProductDetailModal : AddToCartWrapper;
+  const ButtonWrapper = AddToCartWrapper;
 
   return (
     <Center py={10}>
@@ -69,8 +67,8 @@ export default function ProductCard({ product }: ProductCardProps) {
               width={"14.5rem"}
               height={"14.5rem"}
               borderRadius="20%"
-              src={product.pic_url}
-              alt={product.product_name}
+              src={product.imageUrl}
+              alt={product.name}
               objectFit="cover"
               pos={"relative"}
               bottom="90px"
@@ -85,7 +83,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               noOfLines={2}
               //isTruncated
             >
-              {product.product_name}
+              {product.name}
             </Text>
           </Box>
         </ProductDetailModal>
@@ -104,13 +102,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               fontSize={"2xl"}
               fontWeight="bold"
             >
-              {isMaster
-                ? (product.min_price
-                    ? product.min_price
-                    : product.price
-                  ).toLocaleString()
-                : product.price.toLocaleString()}
-              {" đ"}
+              10000 đ
             </Text>
             <ButtonWrapper product={product}>
               <IconButton
