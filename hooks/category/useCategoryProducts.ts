@@ -14,11 +14,23 @@ const getProductsOfCategory = (menuId: number, categoryId: number, params?: any)
             params,
         })
         .then((res) => res.data);
+const getProductsOfMenu = (menuId: number, params?: any) =>
+    request
+        .get<BaseResponse<TProduct>>(`/menus/${menuId}/products`, {
+            params,
+        })
+        .then((res) => res.data);
 
 const useCategoryProducts = ({ menuId, categoryId, params }: Props) => {
-    const products = useQuery(["menu", menuId, categoryId, "products", params], () =>
-        getProductsOfCategory(menuId!, categoryId!, params)
-    );
+
+    const products = useQuery(["menu", menuId, "category", categoryId, "products", params], () => {
+        if (categoryId == null) {
+            return getProductsOfMenu(menuId!, params)
+        } else {
+            return getProductsOfCategory(menuId!, categoryId!, params)
+        }
+
+    });
     return {
         ...products,
         data: products.data?.data,

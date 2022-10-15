@@ -9,13 +9,14 @@ import useCategoryProducts from "hooks/category/useCategoryProducts";
 
 interface StoreProductsProps {
   filterCate: number | null;
+  filterMenu: number | null;
 
   setFilterCate: Dispatch<SetStateAction<number | null>>;
 }
 
 function CategoryProduct({
   filterCate,
-
+  filterMenu,
   setFilterCate,
 }: StoreProductsProps) {
   const {
@@ -23,9 +24,10 @@ function CategoryProduct({
     isLoading: productLoading,
     isError: productError,
   } = useCategoryProducts({
-    menuId: 1,
+    menuId: filterMenu,
     categoryId: filterCate,
   });
+  console.log("products", products);
 
   return (
     <>
@@ -36,7 +38,7 @@ function CategoryProduct({
         </Box>
       )}
       <Box>
-        <Flex pt="2rem" pb="4rem" alignItems={"center"} gap={2}>
+        <Flex mb="2rem" alignItems={"center"} gap={2}>
           <BiCategoryAlt size={"2rem"} color="#F5B340" />
           <Text paddingLeft={"0.5rem"} fontSize={"4xl"} fontWeight="semibold">
             Danh sách sản phẩm

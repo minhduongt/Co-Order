@@ -154,7 +154,7 @@ export default function CategoryCarousel({
               maxW={{ lg: "10rem", xl: "12rem" }}
             >
               <Button
-                bg={"primary.transparent"}
+                bg={"white"}
                 key={cate.id}
                 w={{ xs: "10rem", xl: "12rem" }}
                 h={{ xs: "10rem", xl: "12rem" }}
@@ -170,9 +170,9 @@ export default function CategoryCarousel({
               >
                 <Flex flexDirection={"column"} alignItems={"center"}>
                   <Image
-                    w={{ xs: "6rem", xl: "8rem" }}
-                    h={{ xs: "6rem", xl: "8rem" }}
-                    borderRadius={"100%"}
+                    w={{ xs: "8rem", xl: "8rem" }}
+                    h={{ xs: "8rem", xl: "8rem" }}
+                    // borderRadius={"100%"}
                     src={cate.imageUrl}
                     fallbackSrc={NoImage.src}
                     alt={`Picture of ${cate.name}`}

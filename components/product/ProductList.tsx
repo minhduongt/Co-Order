@@ -8,17 +8,6 @@ interface ProductListProps {
 }
 
 export default function ProductList({ products, from }: ProductListProps) {
-  const proList = [...Array(12)].map((_, i) => {
-    return {
-      product_id: i,
-      product_name: "test sp " + i,
-      pic_url: "",
-      price: 20000,
-      product_type_id: 2,
-      product_in_menu_id: i + 1,
-    };
-  });
-
   return (
     <Grid
       templateColumns={{
@@ -31,7 +20,7 @@ export default function ProductList({ products, from }: ProductListProps) {
       paddingY={"0.5rem"}
       alignItems="center"
     >
-      {proList.map((pro, index) => (
+      {products?.map((pro, index) => (
         <Box key={index}>
           <ProductCard product={pro} />
         </Box>
