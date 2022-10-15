@@ -7,12 +7,15 @@ import { TArea } from "types/area";
 import { Cart } from "types/cart";
 import { TRoom } from "types/room";
 import { TMenu } from "types/menu";
+import { TLocation } from "types/location";
 
 export type initialStateProps = {
   selectedArea: TArea | null;
+  selectedLocation: TLocation | null;
   selectedMenu: TMenu | null;
   room: TRoom | null;
   SetSelectedArea: Function;
+  SetSelectedLocation: Function;
   SetSelectedMenu: Function;
   SetNewRoom: Function;
   isOpen: boolean;
@@ -22,9 +25,11 @@ export type initialStateProps = {
 
 const initialState: initialStateProps = {
   selectedArea: null,
+  selectedLocation: null,
   selectedMenu: null,
   room: null,
   SetSelectedArea: () => {},
+  SetSelectedLocation: () => {},
   SetSelectedMenu: () => {},
   SetNewRoom: () => {},
   isOpen: false,
@@ -44,6 +49,9 @@ function AreaContextProvider({ children }: AreaContextProviderProps) {
   const [selectedArea, setSelectedArea] = useState<TArea | null>(
     initialState.selectedArea
   );
+  const [selectedLocation, setSelectedLocation] = useState<TLocation | null>(
+    initialState.selectedLocation
+  );
   const [selectedMenu, setSelectedMenu] = useState<TMenu | null>(
     initialState.selectedMenu
   );
@@ -51,6 +59,10 @@ function AreaContextProvider({ children }: AreaContextProviderProps) {
   function SetSelectedArea(newArea: TArea) {
     if (newArea != null) setSelectedArea(newArea);
     else setSelectedArea(null);
+  }
+  function SetSelectedLocation(newLocation: TLocation) {
+    if (newLocation != null) setSelectedLocation(newLocation);
+    else setSelectedLocation(null);
   }
   function SetSelectedMenu(newMenu: TMenu) {
     if (newMenu != null) setSelectedMenu(newMenu);
@@ -69,10 +81,12 @@ function AreaContextProvider({ children }: AreaContextProviderProps) {
     <AreaContext.Provider
       value={{
         selectedArea,
+        selectedLocation,
         selectedMenu,
         room,
         isOpen,
         SetSelectedArea,
+        SetSelectedLocation,
         SetSelectedMenu,
         SetNewRoom,
         onClose,
