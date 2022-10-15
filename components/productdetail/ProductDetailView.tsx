@@ -56,8 +56,8 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
       <Flex>
         <Image
           rounded={"md"}
-          alt={product.product.name}
-          src={product.product.imageUrl}
+          alt={product.product?.name}
+          src={product.product?.imageUrl}
           objectFit={"cover"}
           align={"center"}
           w={"100%"}
@@ -68,7 +68,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
       <Stack spacing={{ base: 6, md: 10 }} justifyContent="space-between">
         <Flex flexDirection={"column"} gap={10}>
           <Heading lineHeight={1.1} fontWeight={"semibold"} fontSize={"3xl"}>
-            {product?.product.name}
+            {product.product?.name}
           </Heading>
           <Text color={"secondary.main"} fontWeight={"bold"} fontSize={"3xl"}>
             {product.price?.toLocaleString()}

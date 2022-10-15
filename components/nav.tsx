@@ -42,7 +42,7 @@ import useAreaContext from "hooks/useAreaContext";
 
 const Links = [
   { name: "Trang chủ", href: "/" },
-  { name: "Đơn chung", href: "/coorder" },
+  // { name: "Đơn chung", href: "/coorder" },
 ];
 
 const NavLink: any = () => {
@@ -165,7 +165,13 @@ const MainHeader = () => {
         position={"fixed"}
         zIndex={99}
       >
-        <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
+        <Flex
+          h={16}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+          minWidth={"100vw"}
+          px="3em"
+        >
           <IconButton
             size={"md"}
             icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}

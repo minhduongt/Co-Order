@@ -213,14 +213,7 @@ const MenuList = () => {
           />
         </Box>
       </Tabs>
-      <CategoryCarousel setFilterCate={setFilterCate} />
-      <Box px="1rem" pt="5rem">
-        <CategoryProduct
-          filterMenu={filterMenu}
-          setFilterCate={setFilterCate}
-          filterCate={filterCate}
-        />
-      </Box>
+
       {/* <CollectionProducts />
       <SupplierProducts /> */}
     </Box>
