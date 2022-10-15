@@ -111,7 +111,6 @@ export default function MainFooter() {
                 }}
               >
                 Cooperative Order
-                <br /> Phối hợp đơn hàng!
               </Heading>
             </Box>
           </Stack>

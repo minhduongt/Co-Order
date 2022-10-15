@@ -20,9 +20,15 @@ import {
   Text,
   Select,
   Image,
+  MenuGroup,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
-import { HamburgerIcon, CloseIcon, AddIcon } from "@chakra-ui/icons";
+import {
+  HamburgerIcon,
+  CloseIcon,
+  AddIcon,
+  ChevronDownIcon,
+} from "@chakra-ui/icons";
 import CartDrawer from "./cart/CartDrawer";
 import { useRouter } from "next/router";
 import useAuthContext from "hooks/useAuthContext";
@@ -93,12 +99,25 @@ const currentDate = new Date();
 const MainHeader = () => {
   //hooks
   const { user, loading } = useAuthContext();
-  const { selectedArea, SetSelectedArea } = useAreaContext();
+  const {
+    selectedArea,
+    SetSelectedArea,
+    selectedLocation,
+    SetSelectedLocation,
+  } = useAreaContext();
+
   const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
   //apis
   const { data: areas } = useAreas();
-  SetSelectedArea(areas?.[0]);
+  useEffect(() => {
+    if (!selectedArea) {
+      SetSelectedArea(areas?.[0]);
+      SetSelectedLocation(areas?.[0].locations[0]);
+    }
+  }, [selectedArea, areas, SetSelectedArea, SetSelectedLocation]);
+
+  console.log("selectedArea", selectedArea);
   //states
   const [isCartDisable, setIsCartDisable] = useState(false);
   const [arrivedTimeRange, setArrivedTimeRange] = useState("");
@@ -125,7 +144,7 @@ const MainHeader = () => {
   // };
   return (
     <>
-      <Box bg={useColorModeValue("gray.100", "gray.900")} px={4} mb="2rem">
+      <Box bg={useColorModeValue("gray.100", "gray.900")} px={4} mb="1rem">
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
           <IconButton
             size={"md"}
@@ -149,19 +168,57 @@ const MainHeader = () => {
             </HStack>
           </HStack>
           <Flex>
-            <Select
-              borderColor="dark"
-              focusBorderColor="primary.main"
-              size={"md"}
-              w={{ xs: "90vw", md: "40vw", xl: "30vw" }}
-              fontSize="xl"
-            >
-              {areas?.map((area) => (
-                <option key={area.id} value={area.id}>
-                  {area.name}
-                </option>
-              ))}
-            </Select>
+            <Menu>
+              <MenuButton
+                isActive={isOpen}
+                as={Button}
+                rightIcon={<ChevronDownIcon />}
+              >
+                Giao tại: {selectedLocation?.name} - {selectedArea?.name}
+              </MenuButton>
+              <MenuList>
+                {areas?.map((area, idx) => (
+                  <>
+                    <MenuGroup key={area.id} title={area.name}>
+                      {area.locations.map((location) => (
+                        <MenuItem
+                          key={location.id}
+                          onClick={() => {
+                            SetSelectedArea(area);
+                            SetSelectedLocation(location);
+                          }}
+                        >
+                          {location.name}
+                        </MenuItem>
+                      ))}
+                    </MenuGroup>
+                    {idx !== areas.length - 1 && <MenuDivider />}
+                  </>
+                ))}
+              </MenuList>
+            </Menu>
+            {/* <Menu>
+              <MenuButton
+                isActive={isOpen}
+                as={Button}
+                rightIcon={<ChevronDownIcon />}
+              >
+                Điểm giao: {selectedArea?.name}
+              </MenuButton>
+              <MenuList>
+                {selectedArea?.locations.map((location) => (
+                  <MenuItem
+                    key={location.id}
+                    onClick={() => {
+                      // SetSelectedArea(area);
+                      console.log("selectedlocation", location);
+                    }}
+                  >
+                    {location.name}
+                  </MenuItem>
+                ))}
+              </MenuList>
+            </Menu> */}
           </Flex>
           <Flex alignItems={"center"}>
             <CartDrawer

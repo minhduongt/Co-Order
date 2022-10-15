@@ -1,5 +1,5 @@
 import React from "react";
-import { Box } from "@chakra-ui/react";
+import { Box, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
 import MenuList from "../components/menu/MenuList";
@@ -12,7 +12,54 @@ function OrderHistoryPage() {
     <Box fontFamily="coorder">
       <AuthCheck>
         <MainHeader />
-        order history
+        <Tabs size="lg" align="center" variant="enclosed">
+          <TabList>
+            <Tab>Đơn hàng của tôi</Tab>
+            <Tab>Đơn hàng nhóm</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel>
+              <Tabs size="lg" align="center" variant="solid-rounded">
+                <TabList>
+                  <Tab>Đang thực hiện</Tab>
+                  <Tab>Hoàn Thành</Tab>
+                  <Tab>Đã hủy</Tab>
+                </TabList>
+                <TabPanels>
+                  <TabPanel>
+                    <p>one!</p>
+                  </TabPanel>
+                  <TabPanel>
+                    <p>two!</p>
+                  </TabPanel>
+                  <TabPanel>
+                    <p>three!</p>
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
+            </TabPanel>
+            <TabPanel>
+              <Tabs size="lg" align="center" variant="solid-rounded">
+                <TabList>
+                  <Tab>Đang thực hiện</Tab>
+                  <Tab>Hoàn Thành</Tab>
+                  <Tab>Đã hủy</Tab>
+                </TabList>
+                <TabPanels>
+                  <TabPanel>
+                    <p>one!</p>
+                  </TabPanel>
+                  <TabPanel>
+                    <p>two!</p>
+                  </TabPanel>
+                  <TabPanel>
+                    <p>three!</p>
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
         <MainFooter />
       </AuthCheck>
     </Box>

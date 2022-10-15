@@ -13,13 +13,15 @@ function MyApp({ Component, pageProps }: any) {
   return (
     <AuthContextProvider>
       <UserContextProvider>
-        <ChakraProvider theme={theme}>
-          <QueryClientProvider client={queryClient}>
-            <CartContextProvider>
-              <Component {...pageProps} />
-            </CartContextProvider>
-          </QueryClientProvider>
-        </ChakraProvider>
+        <AreaContextProvider>
+          <ChakraProvider theme={theme}>
+            <QueryClientProvider client={queryClient}>
+              <CartContextProvider>
+                <Component {...pageProps} />
+              </CartContextProvider>
+            </QueryClientProvider>
+          </ChakraProvider>
+        </AreaContextProvider>
       </UserContextProvider>
     </AuthContextProvider>
   );

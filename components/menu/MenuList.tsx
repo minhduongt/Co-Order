@@ -92,12 +92,17 @@ const MenuList = () => {
   const menuForm = useForm({});
   //apis
   const { data: areas, isLoading: areaLoading } = useAreas();
-  const { selectedArea, SetSelectedArea } = useAreaContext();
+  const {
+    selectedArea,
+    SetSelectedArea,
+    selectedLocation,
+    SetSelectedLocation,
+  } = useAreaContext();
   const { data: menus, isLoading: menuLoading } = useMenus(
     selectedArea?.id ?? 1
   );
   const [filterMenu, setFilterMenu] = useState<number | null>(
-    menus ? menus[0].id : 1
+    menus && menus.length !== 0 ? menus[0]?.id : null
   );
 
   // const { data: suppliers, isLoading: supLoading } = useStoreSuppliers({
@@ -129,10 +134,10 @@ const MenuList = () => {
 
   return (
     <Box
+      p={4}
       overflow={"clip"}
       w={"100%"}
       justifyContent="center"
-      zIndex={2}
       // borderLeft="groove"
       // borderLeftWidth={"10px"}
       // borderLeftColor="primary.main"
@@ -177,44 +182,30 @@ const MenuList = () => {
         </TabPanels>
       </Tabs> */}
 
-      <Flex
-        pl={{ xs: "1rem", xl: "7vw" }}
-        justifyContent={"start"}
-        alignItems="center"
-        maxW="100vw"
-        flexDirection={{ xs: "column", md: "row" }}
-        fontWeight={"semibold"}
-        fontSize={"2xl"}
-        display={"flex"}
-      >
-        <FaShippingFast size={"2.5rem"} color="#38A169" />
-        Danh sách thực đơn
-      </Flex>
-      <Tabs size="md" isFitted variant="enclosed">
+      <Tabs size="lg" align="center" variant="solid-rounded">
         <TabList>
           {menus &&
             menus.map((menu: TMenu) => (
-              <Box key={menu.id}>
-                <Tab
-                  onClick={() => {
-                    setFilterMenu(menu.id);
-                    setFilterCate(null);
-                  }}
-                >
-                  {menu.name}
-                </Tab>
-              </Box>
+              <Tab
+                key={menu.id}
+                onClick={() => {
+                  setFilterMenu(menu.id);
+                  setFilterCate(null);
+                }}
+              >
+                {menu.name}
+              </Tab>
             ))}
         </TabList>
-        <CategoryCarousel setFilterCate={setFilterCate} />
-        <Box px="1rem" pt="5rem">
-          <CategoryProduct
-            filterMenu={filterMenu}
-            setFilterCate={setFilterCate}
-            filterCate={filterCate}
-          />
-        </Box>
       </Tabs>
+      <CategoryCarousel setFilterCate={setFilterCate} />
+      <Box px="1rem" pt="5rem">
+        <CategoryProduct
+          filterMenu={filterMenu}
+          setFilterCate={setFilterCate}
+          filterCate={filterCate}
+        />
+      </Box>
       {/* <CollectionProducts />
       <SupplierProducts /> */}
     </Box>
