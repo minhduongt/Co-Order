@@ -1,29 +1,34 @@
 import { request } from "api/utils";
 import { useQuery } from "react-query";
+import { TOrder } from "types/order";
 import { TProduct } from "types/product";
 import { BaseResponse } from "types/request";
 
 type Props = {
-    menuId: number | null;
-
+    accessToken: string | null;
     params?: any;
 };
-const getProductsOfMenu = (menuId: number, params?: any) =>
-    request
-        .get<BaseResponse<TProduct>>(`/menus/${menuId}/products`, {
-            params,
-        })
+const getOrderHistories = (accessToken: string) => {
+    const config = {
+        headers: {
+            authorization: "Bearer " + accessToken,
+        },
+    };
+    return request
+        .get<BaseResponse<TOrder>>(`/order/me`, config)
         .then((res) => res.data);
 
-const useMenuProducts = ({ menuId, params }: Props) => {
-    const products = useQuery(["menu", menuId, "products", params], () =>
-        getProductsOfMenu(menuId!, params)
+}
+
+const useOrderHistories = ({ accessToken, params }: Props) => {
+    const orders = useQuery(["order", accessToken, params], () =>
+        getOrderHistories(accessToken!)
     );
     return {
-        ...products,
-        data: products.data?.data,
-        metadata: products.data?.metadata,
+        ...orders,
+        data: orders.data?.data,
+        metadata: orders.data?.metadata,
     };
 };
 
-export default useMenuProducts;
+export default useOrderHistories;

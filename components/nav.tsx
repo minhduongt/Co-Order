@@ -22,6 +22,8 @@ import {
   Image,
   useToast,
   MenuGroup,
+  Input,
+  FormControl,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import {
@@ -39,6 +41,8 @@ import useAreas from "hooks/area/useAreas";
 import logo from "../public/assets/image/logofinal.png";
 import useLocalStorage from "hooks/useLocalStorage";
 import useAreaContext from "hooks/useAreaContext";
+import { FormProvider } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 const Links = [
   { name: "Trang chủ", href: "/" },
@@ -125,6 +129,7 @@ const MainHeader = () => {
   const [arrivedTimeRange, setArrivedTimeRange] = useState("");
   //variables
   const defautTabIndex = currentDate.getDay() - 1;
+  const findRoomForm = useForm();
 
   // const useScrollingUp = () => {
   //   let prevScroll = window.pageYOffset;
@@ -144,6 +149,7 @@ const MainHeader = () => {
   //   }, []);
   //   return scrollingUp;
   // };
+  const { handleSubmit } = findRoomForm;
 
   const handleSignout = async () => {
     await logOut();
@@ -226,7 +232,17 @@ const MainHeader = () => {
               </MenuList>
             </Menu>
           </Flex>
-          <Flex alignItems={"center"}>
+          <Flex gap={2} alignItems={"center"}>
+            <FormProvider {...findRoomForm}>
+              <Input
+                type="code"
+                w="10rem"
+                variant="outlined"
+                colorScheme="teal"
+                placeholder="Nhập mã phòng"
+              />
+              <Button colorScheme="teal">Tìm</Button>
+            </FormProvider>
             <CartDrawer
               isCartDisable={isCartDisable}
               arrivedTimeRange={arrivedTimeRange}
