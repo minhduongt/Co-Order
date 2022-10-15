@@ -185,13 +185,14 @@ const MainHeader = () => {
               alt="logo"
               sx={{ width: "50px", marginLeft: "20px" }}
               src={logo.src}
+              onClick={() => router.push("/")}
             ></Image>
             <HStack
               as={"nav"}
               spacing={4}
               display={{ base: "none", md: "flex" }}
             >
-              <NavLink />
+              {/* <NavLink /> */}
             </HStack>
           </HStack>
           <Flex>
@@ -224,28 +225,6 @@ const MainHeader = () => {
                 ))}
               </MenuList>
             </Menu>
-            {/* <Menu>
-              <MenuButton
-                isActive={isOpen}
-                as={Button}
-                rightIcon={<ChevronDownIcon />}
-              >
-                Điểm giao: {selectedArea?.name}
-              </MenuButton>
-              <MenuList>
-                {selectedArea?.locations.map((location) => (
-                  <MenuItem
-                    key={location.id}
-                    onClick={() => {
-                      // SetSelectedArea(area);
-                      console.log("selectedlocation", location);
-                    }}
-                  >
-                    {location.name}
-                  </MenuItem>
-                ))}
-              </MenuList>
-            </Menu> */}
           </Flex>
           <Flex alignItems={"center"}>
             <CartDrawer

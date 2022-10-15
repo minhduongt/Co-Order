@@ -105,10 +105,8 @@ const MenuList = () => {
   );
   const [filterMenu, setFilterMenu] = useState<TMenu | null>(null);
 
-  // const { data: suppliers, isLoading: supLoading } = useStoreSuppliers({
-  //   id: 150,
-  // });
-
+  const sortMenus = menus?.sort((a, b) => a.displayOrder - b.displayOrder);
+  console.log("sortMenus", sortMenus);
   //variables
   const { register, watch } = menuForm;
   const defautTabIndex = currentDate.getDay() - 1;
@@ -186,7 +184,7 @@ const MenuList = () => {
         </TabPanels>
       </Tabs> */}
 
-      <Tabs size="lg" align="center" variant="solid-rounded">
+      <Tabs colorScheme="teal" size="lg" align="center" variant="solid-rounded">
         <TabList>
           {menus &&
             menus.map((menu: TMenu) => (
