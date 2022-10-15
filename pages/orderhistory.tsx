@@ -6,8 +6,14 @@ import MenuList from "../components/menu/MenuList";
 import MainHeader from "components/nav";
 import MainFooter from "components/foot";
 import AuthCheck from "components/authentication/AuthCheck";
+import useOrderHistories from "hooks/order/useOrderHistory";
+import useUserContext from "hooks/useUserContext";
 
-function OrderHistoryPage() {
+const OrderHistoryPage = () => {
+  const { accessToken } = useUserContext();
+  const { data: order, isLoading: orderLoading } = useOrderHistories({
+    accessToken,
+  });
   return (
     <Box fontFamily="coorder">
       <AuthCheck>
@@ -64,6 +70,6 @@ function OrderHistoryPage() {
       </AuthCheck>
     </Box>
   );
-}
+};
 
 export default OrderHistoryPage;
