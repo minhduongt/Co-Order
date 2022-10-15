@@ -4,7 +4,7 @@ import { Cart, CartItem } from "types/cart";
 const useDeleteCartItem = ({ product }: CartItem, currentCart: Cart) => {
   const cartItems = currentCart?.items ?? [];
   const deleteIndex = cartItems.findIndex(
-    (item) => item.product.product_id === product.product_id
+    (item) => item.product.id === product.id
   );
 
   if (deleteIndex > -1) {

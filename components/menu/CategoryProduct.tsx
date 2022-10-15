@@ -6,12 +6,13 @@ import useStoreProducts from "hooks/store/useStoreProducts";
 import { Dispatch, SetStateAction } from "react";
 import sorryBean from "../../public/assets/image/beansorry.png";
 import useCategoryProducts from "hooks/category/useCategoryProducts";
+import { TCategory } from "types/category";
+import { TMenu } from "types/menu";
 
 interface StoreProductsProps {
-  filterCate: number | null;
-  filterMenu: number | null;
-
-  setFilterCate: Dispatch<SetStateAction<number | null>>;
+  filterCate: TCategory | null;
+  filterMenu: TMenu | null;
+  setFilterCate: Dispatch<SetStateAction<TCategory | null>>;
 }
 
 function CategoryProduct({
@@ -24,8 +25,8 @@ function CategoryProduct({
     isLoading: productLoading,
     isError: productError,
   } = useCategoryProducts({
-    menuId: filterMenu,
-    categoryId: filterCate,
+    menuId: filterMenu ? filterMenu?.id : null,
+    categoryId: filterCate ? filterCate.id : null,
   });
   console.log("products", products);
 
@@ -41,7 +42,7 @@ function CategoryProduct({
         <Flex mb="2rem" alignItems={"center"} gap={2}>
           <BiCategoryAlt size={"2rem"} color="#F5B340" />
           <Text paddingLeft={"0.5rem"} fontSize={"4xl"} fontWeight="semibold">
-            Danh sách sản phẩm
+            Danh sách sản phẩm {filterCate ? filterCate.name : ""}
           </Text>
           <IconButton
             bg="transparent"
@@ -63,15 +64,15 @@ function CategoryProduct({
           <ProductList products={products} />
         ) : (
           <Box>
-            <Image
+            {/* <Image
               loading="lazy"
               alt={"bean sorry"}
               src={sorryBean.src}
               width="110px"
               mx="auto"
-            />{" "}
+            />{" "} */}
             <Text fontSize={"2xl"} textAlign="center">
-              Không có món cho danh mục này
+              Danh mục {filterCate?.name} hiện không có sản phẩm vào lúc này 😓
             </Text>
           </Box>
         )}

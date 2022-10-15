@@ -1,5 +1,6 @@
 import { TArea } from "./area";
 import { TCategory } from "./category";
+import { TMenu } from "./menu";
 
 export type TProduct = {
   id: number;
@@ -16,7 +17,6 @@ export type TProduct = {
   supplier: Supplier;
 };
 
-
 export interface Supplier {
   id: number;
   name: string;
@@ -29,4 +29,19 @@ export interface Supplier {
   active: boolean;
   areaId: number;
   area: TArea;
+}
+export interface TProductInMenu {
+  id: number;
+  displayOrder: number;
+  cost: number;
+  price: number;
+  discount: number;
+  updatedDate: Date;
+  createdDate: Date;
+  isDiscount: boolean;
+  active: boolean;
+  menuId: number;
+  productId: number;
+  menu: TMenu;
+  product: TProduct;
 }

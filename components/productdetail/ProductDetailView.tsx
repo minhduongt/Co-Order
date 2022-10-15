@@ -14,50 +14,50 @@ import {
   Checkbox,
   CheckboxGroup,
 } from "@chakra-ui/react";
-import { Extra, TProduct } from "../../types/product";
+import { TProduct, TProductInMenu } from "../../types/product";
 import AddToCartWrapper from "components/cart/AddToCartWrapper";
 import NoImage from "../../public/assets/image/noimage.png";
 
 interface ProductDetailViewProps {
-  product: TProduct;
+  product: TProductInMenu;
 }
 
 export default function ProductDetailView({ product }: ProductDetailViewProps) {
-  const proExtras = product.extras;
-  const proAttrs = product.attributes?.size;
+  // const proExtras = product.extras;
+  // const proAttrs = product.attributes?.size;
   //states
-  const [sizeValue, setSizeValue] = useState<string>(
-    proAttrs ? proAttrs.split(",")[0] : "M"
-  );
-  const [extraList, setExtraList] = useState<Extra[]>([]);
+  // const [sizeValue, setSizeValue] = useState<string>(
+  //   proAttrs ? proAttrs.split(",")[0] : "M"
+  // );
+  // const [extraList, setExtraList] = useState<Extra[]>([]);
   //
   //
-  const handleCheckExtra = (newExtra: Extra) => {
-    const checkExtraIndex = extraList.findIndex(
-      (ex) => ex.product_id === newExtra.product_id
-    );
+  // const handleCheckExtra = (newExtra: Extra) => {
+  //   const checkExtraIndex = extraList.findIndex(
+  //     (ex) => ex.product_id === newExtra.product_id
+  //   );
 
-    if (checkExtraIndex > -1) {
-      setExtraList(
-        extraList.filter((ex) => ex.product_id != newExtra.product_id)
-      );
-    } else {
-      setExtraList([...extraList, newExtra]);
-    }
-  };
+  //   if (checkExtraIndex > -1) {
+  //     setExtraList(
+  //       extraList.filter((ex) => ex.product_id != newExtra.product_id)
+  //     );
+  //   } else {
+  //     setExtraList([...extraList, newExtra]);
+  //   }
+  // };
 
-  const isMaster = product.product_type_id == 6 ? true : false;
-  const childItem =
-    isMaster &&
-    product.child_products?.find((pro) => pro.attributes.size == sizeValue);
+  // const isMaster = product.product_type_id == 6 ? true : false;
+  // const childItem =
+  //   isMaster &&
+  //   product.child_products?.find((pro) => pro.attributes.size == sizeValue);
 
   return (
     <SimpleGrid columns={2} spacing={10} py={10}>
       <Flex>
         <Image
           rounded={"md"}
-          alt={product.product_name_en}
-          src={product?.pic_url}
+          alt={product.product.name}
+          src={product.product.imageUrl}
           objectFit={"cover"}
           align={"center"}
           w={"100%"}
@@ -68,18 +68,16 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
       <Stack spacing={{ base: 6, md: 10 }} justifyContent="space-between">
         <Flex flexDirection={"column"} gap={10}>
           <Heading lineHeight={1.1} fontWeight={"semibold"} fontSize={"3xl"}>
-            {product?.product_name}
+            {product?.product.name}
           </Heading>
           <Text color={"secondary.main"} fontWeight={"bold"} fontSize={"3xl"}>
-            {isMaster
-              ? (childItem ? childItem.price : product.price).toLocaleString()
-              : product.price.toLocaleString()}
+            {product.price?.toLocaleString()}
             {" đ"}
           </Text>
 
           <Stack spacing={{ base: 4, sm: 6 }} direction={"column"}>
             <VStack spacing={{ base: 4, sm: 6 }}></VStack>
-            {product.description && (
+            {/* {product.description && (
               <Box>
                 <Text fontSize={"xl"} fontWeight={"semibold"} mb={"4"}>
                   Mô tả:
@@ -88,10 +86,10 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                   {product.description}
                 </Text>
               </Box>
-            )}
+            )} */}
 
             {/* Select extra if any */}
-            {proExtras && (
+            {/* {proExtras && (
               <CheckboxGroup colorScheme="green" size={"lg"}>
                 {proExtras.map((ex) => (
                   <Flex key={ex.product_id} justifyContent={"space-between"}>
@@ -106,12 +104,12 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                   </Flex>
                 ))}
               </CheckboxGroup>
-            )}
+            )} */}
           </Stack>
 
           {/* Select size if any */}
 
-          {product.product_type_id == 6 && (
+          {/* {product.product_type_id == 6 && (
             <Flex direction={"column"} gap={3}>
               <Text fontSize={"xl"} fontWeight="semibold">
                 Chọn size:
@@ -134,11 +132,11 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                 </Stack>
               </RadioGroup>
             </Flex>
-          )}
+          )} */}
         </Flex>
         <AddToCartWrapper
-          extraList={extraList}
-          size={sizeValue!}
+          // extraList={extraList}
+          // size={sizeValue!}
           product={product}
         >
           <Button

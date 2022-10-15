@@ -61,10 +61,10 @@ export default function CartDrawer({
       const newCart = deleteItem(cartItem, currentCart);
       await cartContext.SetNewCart(newCart);
       toast({
-        title: `Đã xóa ${cartItem.product.product_name} khỏi giỏ hàng`,
+        title: `Đã xóa ${cartItem.product.product.name} khỏi giỏ hàng`,
         status: "warning",
         position: "top-right",
-        isClosable: false,
+        isClosable: true,
         duration: 1000,
       });
     } catch (error) {
@@ -140,13 +140,13 @@ export default function CartDrawer({
       >
         <DrawerOverlay background={"transparent"} />
 
-        <DrawerContent fontFamily="beanoi">
+        <DrawerContent fontFamily="coorder">
           <DrawerHeader>
             <Flex fontSize={"3xl"} gap={2}>
               {/* <Image alt="beanoi" src={logoBean.src} w="2.5rem" h="2.5rem" /> */}
               <Text>Giỏ hàng</Text>
             </Flex>
-            {currentRoom != null ? (
+            {/* {currentRoom != null ? (
               <Flex flexDirection={"column"} gap={2}>
                 <Text>Phòng hiện tại của bạn: {currentRoom.name} </Text>
                 <Button onClick={() => handleExitRoom()}>Thoát Phòng</Button>
@@ -165,7 +165,7 @@ export default function CartDrawer({
                   ngay!
                 </Flex>
               </Box>
-            )}
+            )} */}
           </DrawerHeader>
           <DrawerCloseButton />
           <DrawerBody
@@ -176,7 +176,7 @@ export default function CartDrawer({
             <Divider />
             {totalCartItems > 0 ? (
               currentCart?.items?.map((item, index) => (
-                <Box key={index + item.product.product_id}>
+                <Box key={index + item.product.id}>
                   <ProductInCart
                     item={item}
                     deleteCartItem={handleDeleteCartItem}
@@ -249,13 +249,25 @@ export default function CartDrawer({
                     fontWeight="bold"
                   >
                     <Text>{"Tổng cộng:"}</Text>
-                    <Text>
-                      {cartPrepareRes?.final_amount.toLocaleString()} đ
-                    </Text>
+                    <Text>{currentCart?.total.toLocaleString()} đ</Text>
                   </Flex>
                 </Flex>
                 {/*  Check out */}
                 <Flex paddingTop="1rem">
+                  <CartModal arrivedTimeRange={arrivedTimeRange}>
+                    <Button
+                      height={"3rem"}
+                      variant="outline"
+                      color={"light"}
+                      backgroundColor="primary.main"
+                      colorScheme={"primary.main"}
+                      onClick={cartContext.onOpen}
+                      fontSize="2xl"
+                      w="100%"
+                    >
+                      Tạo phòng
+                    </Button>
+                  </CartModal>
                   <CartModal arrivedTimeRange={arrivedTimeRange}>
                     <Button
                       height={"3rem"}

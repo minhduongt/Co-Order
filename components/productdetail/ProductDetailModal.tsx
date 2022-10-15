@@ -10,11 +10,11 @@ import {
   useDisclosure,
   Box,
 } from "@chakra-ui/react";
-import { TProduct } from "../../types/product";
+import { TProduct, TProductInMenu } from "../../types/product";
 import ProductDetailView from "./ProductDetailView";
 
 interface ProductDetailModalProps {
-  product: TProduct;
+  product: TProductInMenu;
   children: any;
 }
 

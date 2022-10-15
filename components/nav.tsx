@@ -20,6 +20,7 @@ import {
   Text,
   Select,
   Image,
+  useToast,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { HamburgerIcon, CloseIcon, AddIcon } from "@chakra-ui/icons";
@@ -92,6 +93,7 @@ const currentDate = new Date();
 
 const MainHeader = () => {
   //hooks
+  const toast = useToast();
   const { user, loading } = useAuthContext();
   const { selectedArea, SetSelectedArea } = useAreaContext();
   const router = useRouter();
@@ -123,9 +125,27 @@ const MainHeader = () => {
   //   }, []);
   //   return scrollingUp;
   // };
+
+  const handleSignout = async () => {
+    await logOut();
+    toast({
+      title: `Đã dăng xuất`,
+      status: "success",
+      position: "top-right",
+      isClosable: true,
+      duration: 1000,
+    });
+  };
   return (
-    <>
-      <Box bg={useColorModeValue("gray.100", "gray.900")} px={4} mb="2rem">
+    <Box pb="5rem">
+      <Box
+        bg={useColorModeValue("gray.100", "gray.900")}
+        px={4}
+        mb="2rem"
+        w={"100%"}
+        position={"fixed"}
+        zIndex={99}
+      >
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
           <IconButton
             size={"md"}
@@ -192,7 +212,7 @@ const MainHeader = () => {
                     Lịch sử đơn hàng
                   </MenuItem>
                   <MenuDivider />
-                  <MenuItem onClick={() => logOut()}>Đăng xuất</MenuItem>
+                  <MenuItem onClick={() => handleSignout()}>Đăng xuất</MenuItem>
                 </MenuList>
               </Menu>
             ) : (
@@ -213,7 +233,7 @@ const MainHeader = () => {
           </Box>
         ) : null}
       </Box>
-    </>
+    </Box>
     // <Tabs>
     //   <TabList
     //     justifyContent={"space-between"}

@@ -16,7 +16,7 @@ import {
 //images and icons
 //components
 import CartDrawer from "../cart/CartDrawer";
-import CategoryProduct from "./StoreProducts";
+import CategoryProduct from "./CategoryProduct";
 import MenuOffline from "./MenuOffline";
 import CategoryCarousel from "components/carousel/CategoryCarousel";
 //hooks
@@ -39,6 +39,7 @@ import useAreas from "hooks/area/useAreas";
 import { TArea } from "types/area";
 import { TMenu } from "types/menu";
 import useAreaContext from "hooks/useAreaContext";
+import { TCategory } from "types/category";
 
 interface filterCate {
   category_id: number;
@@ -86,7 +87,7 @@ const currentDate = new Date();
 
 const MenuList = () => {
   //hooks
-  const [filterCate, setFilterCate] = useState<number | null>(null);
+  const [filterCate, setFilterCate] = useState<TCategory | null>(null);
 
   const cartContext = useCartContext();
   const menuForm = useForm({});
@@ -96,9 +97,7 @@ const MenuList = () => {
   const { data: menus, isLoading: menuLoading } = useMenus(
     selectedArea?.id ?? 1
   );
-  const [filterMenu, setFilterMenu] = useState<number | null>(
-    menus ? menus[0].id : 1
-  );
+  const [filterMenu, setFilterMenu] = useState<TMenu | null>(null);
 
   // const { data: suppliers, isLoading: supLoading } = useStoreSuppliers({
   //   id: 150,
@@ -126,6 +125,10 @@ const MenuList = () => {
   // }, [timeRangeArr]);
 
   //Delete all item in cart when change time range
+
+  useEffect(() => {
+    if (filterMenu == null && menus) setFilterMenu(menus[0]);
+  }, [menus]);
 
   return (
     <Box
@@ -197,7 +200,7 @@ const MenuList = () => {
               <Box key={menu.id}>
                 <Tab
                   onClick={() => {
-                    setFilterMenu(menu.id);
+                    setFilterMenu(menu);
                     setFilterCate(null);
                   }}
                 >
@@ -206,7 +209,10 @@ const MenuList = () => {
               </Box>
             ))}
         </TabList>
-        <CategoryCarousel setFilterCate={setFilterCate} />
+        <Flex>
+          <CategoryCarousel setFilterCate={setFilterCate} />
+        </Flex>
+
         <Box px="1rem" pt="5rem">
           <CategoryProduct
             filterMenu={filterMenu}

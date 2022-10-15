@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import ProductDetailModal from "components/productdetail/ProductDetailModal";
 import { motion } from "framer-motion";
-import { TProduct } from "types/product";
+import { TProduct, TProductInMenu } from "types/product";
 import AddToCartWrapper from "../cart/AddToCartWrapper";
 import NoImage from "../../public/assets/image/noimage.png";
 import { BsFillCartPlusFill } from "react-icons/bs";
@@ -29,7 +29,7 @@ const boxMotion = {
 };
 
 interface ProductCardProps {
-  product: TProduct;
+  product: TProductInMenu;
   // TProduct;
 }
 
@@ -67,8 +67,8 @@ export default function ProductCard({ product }: ProductCardProps) {
               width={"14.5rem"}
               height={"14.5rem"}
               borderRadius="20%"
-              src={product.imageUrl}
-              alt={product.name}
+              src={product.product?.imageUrl}
+              alt={product.product?.name}
               objectFit="cover"
               pos={"relative"}
               bottom="90px"
@@ -83,7 +83,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               noOfLines={2}
               //isTruncated
             >
-              {product.name}
+              {product.product?.name}
             </Text>
           </Box>
         </ProductDetailModal>
@@ -102,7 +102,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               fontSize={"2xl"}
               fontWeight="bold"
             >
-              10000 đ
+              {product.price?.toLocaleString()} đ
             </Text>
             <ButtonWrapper product={product}>
               <IconButton

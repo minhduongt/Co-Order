@@ -1,9 +1,9 @@
 import { Box, Grid } from "@chakra-ui/react";
-import { TProduct } from "types/product";
+import { TProduct, TProductInMenu } from "types/product";
 import ProductCard from "./ProductCard";
 
 interface ProductListProps {
-  products?: TProduct[];
+  products?: TProductInMenu[];
   from?: any;
 }
 

@@ -31,8 +31,8 @@ export default function ProductInCart({
           backgroundColor={"gray.200"}
         >
           <Image
-            src={item.product.pic_url}
-            alt={item.product.product_name}
+            src={item.product.product.imageUrl}
+            alt={item.product.product.name}
             objectFit={"cover"}
             transform="scale(1.0)"
             transition="0.3s ease-in-out"
@@ -50,9 +50,9 @@ export default function ProductInCart({
             </Text>
             <Flex flexDirection={"column"}>
               <Text w="11rem" fontWeight={"semibold"} noOfLines={2}>
-                {item.product.product_name}
+                {item.product.product.name}
               </Text>
-              {item.product_extras &&
+              {/* {item.product_extras &&
                 item.product_extras.map((ex) => (
                   <Flex key={ex.product_id} alignItems={"center"} w="10rem">
                     <Text pr="0.5rem">{"+"}</Text>
@@ -60,12 +60,12 @@ export default function ProductInCart({
                       {ex.product_name}
                     </Text>
                   </Flex>
-                ))}
+                ))} */}
             </Flex>
           </Flex>
           <Flex alignItems="center" justifyContent="flex-end">
             <Text minW="7rem" color="secondary.main" fontSize={"2xl"}>
-              {item.product.price.toLocaleString()} đ
+              {item.total?.toLocaleString()} đ
             </Text>
 
             <IconButton

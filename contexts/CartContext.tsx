@@ -54,7 +54,10 @@ function CartContextProvider({ children }: CartContextProviderProps) {
     if (newCart != null)
       setCart({
         items: newCart.items,
-        total: 0,
+        total:
+          newCart.items.length > 0
+            ? newCart.items.reduce((total, item) => total + item.total, 0)
+            : 0,
         totalItem: newCart.items?.length,
       });
     else

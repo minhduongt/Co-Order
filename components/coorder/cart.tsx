@@ -50,7 +50,7 @@ const Cart = () => {
       const newCart = deleteItem(cartItem, currentCart);
       await cartContext.SetNewCart(newCart);
       toast({
-        title: `Đã xóa ${cartItem.product.product_name} khỏi giỏ hàng`,
+        title: `Đã xóa ${cartItem.product.product.name} khỏi giỏ hàng`,
         status: "warning",
         position: "top-right",
         isClosable: false,
@@ -79,7 +79,7 @@ const Cart = () => {
       </Flex>
       {totalCartItems > 0 ? (
         currentCart?.items?.map((item, index) => (
-          <Box key={index + item.product.product_id}>
+          <Box key={index + item.product.id}>
             <Box
               key={index}
               width={"100%"}
@@ -114,7 +114,7 @@ const Cart = () => {
                     backgroundColor={"gray.200"}
                   >
                     <Image
-                      src={item.product.pic_url}
+                      src={item.product.product.imageUrl}
                       fallbackSrc={NoImage.src}
                       alt={"image"}
                       objectFit={"cover"}
@@ -141,11 +141,11 @@ const Cart = () => {
                   fontSize="2xl"
                   alignSelf={"flex-start"}
                 >
-                  {item.product.product_name}
+                  {item.product.product.name}
                 </Text>
 
                 <Text fontSize="xl">
-                  {item.product.price.toLocaleString()}đ
+                  {item.product.price?.toLocaleString()}đ
                 </Text>
                 <Box minWidth={"10rem"}>
                   <QuantityInput quantity={item.quantity} />

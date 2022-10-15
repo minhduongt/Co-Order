@@ -3,20 +3,16 @@ import useAddCartItem from "hooks/cart/useAddCartItem";
 import useCartContext from "hooks/useCartContext";
 import { useState } from "react";
 import { Cart, CartItem } from "types/cart";
-import { Extra, TProduct } from "types/product";
+import { TProduct, TProductInMenu } from "types/product";
 
 interface AddToCartWrapperProps {
-  product: TProduct;
+  product: TProductInMenu;
   quantity?: number;
-  size?: string;
-  extraList?: Extra[];
   children: any;
 }
 export default function AddToCartWrapper({
   product,
   quantity,
-  size,
-  extraList,
   children,
 }: AddToCartWrapperProps) {
   const toast = useToast();
@@ -27,19 +23,20 @@ export default function AddToCartWrapper({
   const handleAddCartItem = async () => {
     const cartItem: CartItem = {
       quantity: quantity ?? 1,
+      total: product.price * (quantity ?? 1),
       description: "",
       product: product,
     };
 
     try {
-      const newCart = addItem(cartItem, currentCart, size, extraList);
+      const newCart = addItem(cartItem, currentCart);
       await cartContext.SetNewCart(newCart);
       //}
       toast({
         title: `Đã thêm vào giỏ hàng`,
         status: "success",
         position: "top-right",
-        isClosable: false,
+        isClosable: true,
         duration: 1000,
       });
     } catch (error) {

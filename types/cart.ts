@@ -1,4 +1,4 @@
-import { Extra, TProduct } from "./product";
+import { TProduct, TProductInMenu } from "./product";
 
 export interface Cart {
   items: CartItem[];
@@ -7,10 +7,11 @@ export interface Cart {
 }
 
 export type CartItem = {
-  product: TProduct;
+  product: TProductInMenu;
   quantity: number;
+  total: number;
   description: string;
-  product_extras?: Extra[];
+  // product_extras?: Extra[];
 };
 
 export interface ProductChild {
