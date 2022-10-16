@@ -380,14 +380,12 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
                 </Button>
               </FormProvider>
             )}
-            {!partyOrder ? (
-              <CartDrawer
-                isCartDisable={isCartDisable}
-                arrivedTimeRange={arrivedTimeRange}
-              />
-            ) : (
-              <></>
-            )}
+
+            <CartDrawer
+              isCartDisable={isCartDisable}
+              arrivedTimeRange={arrivedTimeRange}
+            />
+
             {user ? (
               <Menu>
                 <MenuButton

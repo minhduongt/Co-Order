@@ -55,7 +55,12 @@ const Cart = () => {
   const toast = useToast();
   const cartContext = useCartContext();
   const areaContext = useAreaContext();
-  const { cart: currentCart, partyOrder, SetPartyOrder } = cartContext;
+  const {
+    cart: currentCart,
+    partyOrder,
+    SetPartyOrder,
+    SetNewCart,
+  } = cartContext;
   const [totalCartItems, setTotalCartItems] = useState<number>(0);
   const totalCurrentCart = currentCart?.items.length;
   const { user: currentUser, accessToken } = useUserContext();
@@ -115,6 +120,8 @@ const Cart = () => {
           isClosable: false,
           duration: 2000,
         });
+        SetPartyOrder(null);
+        SetNewCart(null);
       }
       if (errorRes) {
         toast({
