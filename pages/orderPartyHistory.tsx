@@ -2,24 +2,13 @@ import React from "react";
 import {
   Badge,
   Box,
-  Button,
-  Container,
   Flex,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  Tag,
   Text,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
@@ -31,29 +20,18 @@ import useOrderHistories from "hooks/order/useOrderHistory";
 import useUserContext from "hooks/useUserContext";
 import { getOrderStatus, OrderStatusEnum, OrderTypeEnum } from "types/constant";
 import useOrderPartyHistories from "hooks/order/userOrderPartyHistory";
-import { TOrder } from "types/order";
-import Cart from "components/cart";
-import orderApi from "api/order";
 
-const OrderHistoryPage = () => {
+const OrderPartyHistoryPage = () => {
   const { accessToken } = useUserContext();
-  const [orderStatus, setOrderStatus] = useState<OrderStatusEnum | null>(
-    OrderStatusEnum.WAITING
-  );
-  const [selectedOrder, setSelectedOrder] = useState<TOrder | null>(null);
-  const { data: orders, isLoading: orderLoading } = useOrderHistories({
-    accessToken,
-    params: {
-      status: orderStatus,
-    },
-  });
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  function onCompleteOrder(orderId: number) {
-    orderApi.completeOrder(orderId).then((res) => {
-      console.log(res);
+  const [orderStatus, setOrderStatus] = useState<OrderStatusEnum | null>(null);
+  const { data: partyOrders, isLoading: partyOrderLoading } =
+    useOrderPartyHistories({
+      accessToken,
+      params: {
+        status: orderStatus,
+      },
     });
-  }
-
+  console.log("orders", partyOrders);
   return (
     <Box fontFamily="coorder">
       <AuthCheck>
@@ -77,12 +55,8 @@ const OrderHistoryPage = () => {
             </Tab>
           </TabList>
           <Box w="100%" p={4}>
-            {orders?.map((order) => (
+            {partyOrders?.map((order) => (
               <Box
-                onClick={() => {
-                  setSelectedOrder(order);
-                  onOpen();
-                }}
                 p={4}
                 mt={4}
                 gap={2}
@@ -126,54 +100,10 @@ const OrderHistoryPage = () => {
           </Box>
         </Tabs>
 
-        <Modal
-          size="full               "
-          closeOnOverlayClick={false}
-          isOpen={isOpen}
-          onClose={onClose}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Chi tiết đơn hàng</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody pb={6}>
-              <Container maxWidth="6xl" paddingRight={"1rem"}>
-                <Flex flexDirection={"column"}>
-                  <Flex fontSize={"xl"}>
-                    <Text>Mã đơn: {selectedOrder?.orderCode}</Text>
-                  </Flex>
-                  <Flex fontSize={"xl"}>
-                    <Text>
-                      Trạng thái:{" "}
-                      {selectedOrder?.status == "WAITING"
-                        ? "Đang chờ"
-                        : "Hoàn thành"}
-                    </Text>
-                  </Flex>
-                  <Flex fontSize={"xl"}>
-                    <Text>Điểm giao: {selectedOrder?.location.name}</Text>
-                  </Flex>
-                </Flex>
-                {/* <Cart /> */}
-              </Container>
-            </ModalBody>
-
-            <ModalFooter>
-              <Button
-                onClick={() => onCompleteOrder(selectedOrder!.id)}
-                colorScheme="blue"
-                mr={3}
-              >
-                Hoàn thành
-              </Button>
-              <Button onClick={onClose}>Cancel</Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
         <MainFooter />
       </AuthCheck>
     </Box>
   );
 };
 
-export default OrderHistoryPage;
+export default OrderPartyHistoryPage;
