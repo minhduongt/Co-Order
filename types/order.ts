@@ -1,5 +1,6 @@
 import { TLocation } from "./location";
 import { TMenu } from "./menu";
+import { TProduct, TProductInMenu } from "./product";
 import { TTimeSlot } from "./timeslot";
 import { TCustomer } from "./user";
 
@@ -66,6 +67,7 @@ export type TOrderDetail = {
   notes: string;
   unitPrice: number;
   unitCost: number;
+  productInMenu: TProductInMenu;
   unitDiscount?: any;
   createdDate: Date;
   active: boolean;

@@ -1,9 +1,9 @@
-import React from "react";
 import {
   Badge,
   Box,
   Button,
   Container,
+  Divider,
   Flex,
   Modal,
   ModalBody,
@@ -14,29 +14,25 @@ import {
   ModalOverlay,
   Tab,
   TabList,
-  TabPanel,
-  TabPanels,
   Tabs,
-  Tag,
   Text,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
-import { useEffect, useState, useCallback } from "react";
-import MenuList from "../components/menu/MenuList";
-import MainHeader from "components/nav";
-import MainFooter from "components/foot";
+import orderApi from "api/order";
 import AuthCheck from "components/authentication/AuthCheck";
+import MainFooter from "components/foot";
+import MainHeader from "components/nav";
+import ProductCard from "components/product/ProductCard";
 import useOrderHistories from "hooks/order/useOrderHistory";
 import useUserContext from "hooks/useUserContext";
-import { getOrderStatus, OrderStatusEnum, OrderTypeEnum } from "types/constant";
-import useOrderPartyHistories from "hooks/order/userOrderPartyHistory";
+import { useState } from "react";
+import { getOrderStatus, OrderStatusEnum } from "types/constant";
 import { TOrder } from "types/order";
-import Cart from "components/cart";
-import orderApi from "api/order";
 
 const OrderHistoryPage = () => {
   const { accessToken } = useUserContext();
+  const toast = useToast();
   const [orderStatus, setOrderStatus] = useState<OrderStatusEnum | null>(
     OrderStatusEnum.WAITING
   );
@@ -51,6 +47,14 @@ const OrderHistoryPage = () => {
   function onCompleteOrder(orderId: number) {
     orderApi.completeOrder(orderId).then((res) => {
       console.log(res);
+      onClose();
+      toast({
+        title: `Cập nhật thành công`,
+        status: "success",
+        position: "top-right",
+        isClosable: true,
+        duration: 1000,
+      });
     });
   }
 
@@ -127,7 +131,7 @@ const OrderHistoryPage = () => {
         </Tabs>
 
         <Modal
-          size="full               "
+          size="xl"
           closeOnOverlayClick={false}
           isOpen={isOpen}
           onClose={onClose}
@@ -145,27 +149,54 @@ const OrderHistoryPage = () => {
                   <Flex fontSize={"xl"}>
                     <Text>
                       Trạng thái:{" "}
-                      {selectedOrder?.status == "WAITING"
-                        ? "Đang chờ"
-                        : "Hoàn thành"}
+                      {selectedOrder?.status == OrderStatusEnum.WAITING
+                        ? "Đang xử lý"
+                        : selectedOrder?.status == OrderStatusEnum.FINISHED
+                        ? "Hoàn thành"
+                        : "Đã hủy"}
                     </Text>
                   </Flex>
                   <Flex fontSize={"xl"}>
                     <Text>Điểm giao: {selectedOrder?.location.name}</Text>
                   </Flex>
                 </Flex>
-                {/* <Cart /> */}
+
+                <Text mt={4} fontSize={"xl"}>
+                  {" "}
+                  Sản phẩm
+                </Text>
+                <Divider />
+                {selectedOrder?.orderDetails.map((item, index) => (
+                  <Box w="100%" key={index}>
+                    <Flex w="100%" flexDir="row">
+                      <Text textAlign="left" w="60%" fontSize={"lg"}>
+                        {item.productInMenu.product.name}
+                      </Text>
+                      <Text w="10%" fontSize={"lg"}>
+                        {" "}
+                        X {item.quantity}
+                      </Text>
+                      <Text textAlign="right" w="30%" fontSize={"lg"}>
+                        {item.unitPrice} đ
+                      </Text>
+                    </Flex>
+                    <Divider />
+                  </Box>
+                ))}
               </Container>
             </ModalBody>
 
             <ModalFooter>
-              <Button
-                onClick={() => onCompleteOrder(selectedOrder!.id)}
-                colorScheme="blue"
-                mr={3}
-              >
-                Hoàn thành
-              </Button>
+              {selectedOrder?.status == OrderStatusEnum.WAITING && (
+                <Button
+                  onClick={() => onCompleteOrder(selectedOrder!.id)}
+                  colorScheme="blue"
+                  mr={3}
+                >
+                  Hoàn thành đơn
+                </Button>
+              )}
+
               <Button onClick={onClose}>Cancel</Button>
             </ModalFooter>
           </ModalContent>
