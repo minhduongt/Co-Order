@@ -6,6 +6,14 @@ export type BaseResponse<T> = {
     total: number;
   };
 };
+export type SecondResponse<T> = {
+  data: T;
+  status: {
+    errorCode: number;
+    message: string;
+    success: boolean;
+  };
+};
 
 export type PostResponse<T> = {
   data: T;

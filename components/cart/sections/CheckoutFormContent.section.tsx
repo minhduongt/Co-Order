@@ -61,12 +61,12 @@ export default function CheckoutFormContent({
   const cartContext = useCartContext();
   const areaContext = useAreaContext();
   const { user: currentUser, accessToken } = useUserContext();
-  const { cart: currentCart, SetPartyOrder } = cartContext;
+  const { cart: currentCart, SetPartyOrder, partyOrder } = cartContext;
   const menuId = areaContext.selectedMenu?.id;
   const locationId = areaContext.selectedLocation?.id;
-  console.log("areaContext", areaContext);
 
-  const { checkOut, errorRes, createPartyOrder } = useCheckout(currentCart);
+  const { checkOut, errorRes, createPartyOrder, joinPartyOrder } =
+    useCheckout(currentCart);
   const { data: timeSlots } = useTimeSlots(menuId!);
   const [checkoutResMsg, setCheckoutResMsg] =
     useState<PostResponse<OrderResponse>>();
@@ -90,23 +90,43 @@ export default function CheckoutFormContent({
   const onSubmit = (form: CheckoutForm) => {
     setIsOpenNotify(!isOpenNotify);
     setTimeout(async () => {
-      const checkoutRes = await checkOut(
-        form.timeSlotId,
-        menuId!,
-        locationId!,
-        accessToken!
-      );
-      if (checkoutRes) {
-        setCheckoutResMsg(checkoutRes);
-      }
-      if (errorRes) {
-        toast({
-          title: errorRes?.message,
-          status: "error",
-          position: "bottom",
-          isClosable: false,
-          duration: 2000,
-        });
+      if (partyOrder) {
+        const checkoutRes = await joinPartyOrder(
+          partyOrder.id,
+          partyOrder.shareLink,
+          accessToken!
+        );
+        if (checkoutRes) {
+          setCheckoutResMsg(checkoutRes);
+        }
+        if (errorRes) {
+          toast({
+            title: errorRes?.message,
+            status: "error",
+            position: "bottom",
+            isClosable: false,
+            duration: 2000,
+          });
+        }
+      } else {
+        const checkoutRes = await checkOut(
+          form.timeSlotId,
+          menuId!,
+          locationId!,
+          accessToken!
+        );
+        if (checkoutRes) {
+          setCheckoutResMsg(checkoutRes);
+        }
+        if (errorRes) {
+          toast({
+            title: errorRes?.message,
+            status: "error",
+            position: "bottom",
+            isClosable: false,
+            duration: 2000,
+          });
+        }
       }
     }, 1000);
   };
@@ -277,42 +297,72 @@ export default function CheckoutFormContent({
           </ModalBody>
 
           <ModalFooter>
-            <Flex gap={3}>
-              <Button
-                //backgroundColor="light"
-                //colorScheme={"dark"}
-                fontSize="xl"
-                onClick={() => onClose()}
-              >
-                Quay lại
-              </Button>
-              <Button
-                backgroundColor="primary.main"
-                colorScheme={"primary.main"}
-                fontSize="xl"
-                type="submit"
-                onClick={handleSubmit(createParty)}
-              >
-                Tạo phòng
-              </Button>
-              <CheckoutNotifyModal
-                onClose={onCloseCheckoutNotify}
-                open={isOpenNotify}
-                checkoutRes={checkoutResMsg}
-                receivedDestination={selectedLocation!}
-                errorRes={errorRes}
-              >
+            {partyOrder ? (
+              <Flex gap={3}>
+                <Button
+                  //backgroundColor="light"
+                  //colorScheme={"dark"}
+                  fontSize="xl"
+                  onClick={() => onClose()}
+                >
+                  Quay lại
+                </Button>
+                <CheckoutNotifyModal
+                  onClose={onCloseCheckoutNotify}
+                  open={isOpenNotify}
+                  checkoutRes={checkoutResMsg}
+                  receivedDestination={selectedLocation!}
+                  errorRes={errorRes}
+                >
+                  <Button
+                    backgroundColor="primary.main"
+                    colorScheme={"primary.main"}
+                    fontSize="xl"
+                    type="submit"
+                    onClick={handleSubmit(onSubmit)}
+                  >
+                    Chốt đơn vào phòng hiện tại
+                  </Button>
+                </CheckoutNotifyModal>
+              </Flex>
+            ) : (
+              <Flex gap={3}>
+                <Button
+                  //backgroundColor="light"
+                  //colorScheme={"dark"}
+                  fontSize="xl"
+                  onClick={() => onClose()}
+                >
+                  Quay lại
+                </Button>
                 <Button
                   backgroundColor="primary.main"
                   colorScheme={"primary.main"}
                   fontSize="xl"
                   type="submit"
-                  onClick={handleSubmit(onSubmit)}
+                  onClick={handleSubmit(createParty)}
                 >
-                  Chốt đơn
+                  Tạo phòng
                 </Button>
-              </CheckoutNotifyModal>
-            </Flex>
+                <CheckoutNotifyModal
+                  onClose={onCloseCheckoutNotify}
+                  open={isOpenNotify}
+                  checkoutRes={checkoutResMsg}
+                  receivedDestination={selectedLocation!}
+                  errorRes={errorRes}
+                >
+                  <Button
+                    backgroundColor="primary.main"
+                    colorScheme={"primary.main"}
+                    fontSize="xl"
+                    type="submit"
+                    onClick={handleSubmit(onSubmit)}
+                  >
+                    Chốt đơn
+                  </Button>
+                </CheckoutNotifyModal>
+              </Flex>
+            )}
           </ModalFooter>
         </Container>
       </FormProvider>

@@ -112,6 +112,7 @@ const useCheckout = (currentCart: Cart) => {
   return {
     checkOut,
     createPartyOrder,
+    joinPartyOrder,
     errorRes,
     completePartyOrder,
   };

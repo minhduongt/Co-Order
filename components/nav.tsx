@@ -43,11 +43,19 @@ import useLocalStorage from "hooks/useLocalStorage";
 import useAreaContext from "hooks/useAreaContext";
 import { FormProvider } from "react-hook-form";
 import { useForm } from "react-hook-form";
-
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import cartApi from "api/cart";
+import useCartContext from "hooks/useCartContext";
+import useCheckout from "hooks/cart/useCheckout";
+import usePartyOrder from "hooks/order/usePartyOrder";
+import useUserContext from "hooks/useUserContext";
 type MainHeaderProps = {
   isCartPage?: boolean;
 };
-
+type FindRoomForm = {
+  shareLink: string;
+};
 const Links = [
   { name: "Trang chủ", href: "/" },
   // { name: "Đơn chung", href: "/coorder" },
@@ -102,6 +110,9 @@ const weekday = [
   { name: "Thứ Bảy", value: 6, isAvailable: true },
   { name: "Chủ nhật", value: 0, isAvailable: false },
 ];
+const findRoomSchema = yup.object().shape({
+  shareLink: yup.string().required("Hãy điền vào code"),
+});
 
 const currentDate = new Date();
 
@@ -115,11 +126,14 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
     selectedLocation,
     SetSelectedLocation,
   } = useAreaContext();
-
+  const { cart: currentCart, SetPartyOrder, partyOrder } = useCartContext();
+  const { accessToken } = useUserContext();
   const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
   //apis
   const { data: areas } = useAreas();
+  const { getPartyOrderByCode } = usePartyOrder();
+  const { joinPartyOrder } = useCheckout(currentCart);
   useEffect(() => {
     if (!selectedArea) {
       SetSelectedArea(areas?.[0]);
@@ -133,8 +147,52 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
   const [arrivedTimeRange, setArrivedTimeRange] = useState("");
   //variables
   const defautTabIndex = currentDate.getDay() - 1;
-  const findRoomForm = useForm();
+  const findRoomForm = useForm<FindRoomForm>({
+    resolver: yupResolver(findRoomSchema),
+  });
+  const {
+    handleSubmit,
+    formState: { errors },
+    register,
+  } = findRoomForm;
 
+  const onSubmit = async (form: FindRoomForm) => {
+    try {
+      const targetPartyOrder = await getPartyOrderByCode(form.shareLink);
+      if (targetPartyOrder) {
+        console.log("targetPartyOrder", targetPartyOrder.data);
+        await SetPartyOrder(targetPartyOrder.data);
+        toast({
+          title: "Vào phòng thành công!",
+          status: "success",
+          position: "top",
+          isClosable: false,
+          duration: 2000,
+        });
+        // const res = await joinPartyOrder(
+        //   partyOrderId,
+        //   form.shareLink,
+        //   accessToken!
+        // );
+      } else {
+        toast({
+          title: "Không tìm thấy phòng!",
+          status: "error",
+          position: "top",
+          isClosable: false,
+          duration: 2000,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Có lỗi xảy ra",
+        status: "error",
+        position: "top",
+        isClosable: false,
+        duration: 2000,
+      });
+    }
+  };
   // const useScrollingUp = () => {
   //   let prevScroll = window.pageYOffset;
 
@@ -153,7 +211,6 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
   //   }, []);
   //   return scrollingUp;
   // };
-  const { handleSubmit } = findRoomForm;
 
   const handleSignout = async () => {
     await logOut();
@@ -237,16 +294,34 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
             </Menu>
           </Flex>
           <Flex gap={2} alignItems={"center"}>
-            <FormProvider {...findRoomForm}>
-              <Input
-                type="code"
-                w="10rem"
-                variant="outlined"
-                colorScheme="teal"
-                placeholder="Nhập mã phòng"
-              />
-              <Button colorScheme="teal">Tìm</Button>
-            </FormProvider>
+            {isCartPage ? (
+              <></>
+            ) : partyOrder ? (
+              <>
+                <Flex alignItems={"center"} gap={5}>
+                  <Text>{partyOrder.orderCode}</Text>
+                  <Button
+                    onClick={() => SetPartyOrder(null)}
+                    colorScheme="teal"
+                  >
+                    Thoát phòng
+                  </Button>
+                </Flex>
+              </>
+            ) : (
+              <FormProvider {...findRoomForm}>
+                <Input
+                  {...register("shareLink")}
+                  w="40%"
+                  variant="outlined"
+                  colorScheme="teal"
+                  placeholder="Nhập mã code của phòng"
+                />
+                <Button onClick={handleSubmit(onSubmit)} colorScheme="teal">
+                  Vào phòng
+                </Button>
+              </FormProvider>
+            )}
             {!isCartPage ? (
               <CartDrawer
                 isCartDisable={isCartDisable}

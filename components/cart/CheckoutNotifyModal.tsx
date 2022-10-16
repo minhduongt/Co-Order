@@ -64,7 +64,7 @@ export default function CheckoutNotifyModal({
       >
         <ModalOverlay />
 
-        <ModalContent fontFamily={"beanoi"} textAlign="center">
+        <ModalContent fontFamily={"coorder"} textAlign="center">
           {errorRes && (
             <>
               <ModalCloseButton />
