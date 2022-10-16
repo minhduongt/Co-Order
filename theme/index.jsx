@@ -3,11 +3,11 @@ const theme = extendTheme({
   colors: {
     primary: {
       transparent: "#52D6FF80",
-      lighter: "#C7F6D5",
-      light: "#93e4fc",
-      main: "#5450FF",
-      dark: "#59b0ca",
-      darker: "#37368f",
+      lighter: "#B2F5EA",
+      light: "#81E6D9",
+      main: "#319795",
+      dark: "#2C7A7B",
+      darker: "#234E52",
     },
     secondary: {
       lighter: "#FEFFE3",
