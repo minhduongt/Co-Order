@@ -127,7 +127,7 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
     SetSelectedLocation,
   } = useAreaContext();
   const { cart: currentCart, SetPartyOrder, partyOrder } = useCartContext();
-  const { accessToken } = useUserContext();
+  const { accessToken, user: currentUser } = useUserContext();
   const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
   //apis
@@ -313,18 +313,58 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
           </Flex>
           <Flex gap={2} alignItems={"center"}>
             {isCartPage ? (
-              <></>
+              <NextLink href={"/coorder"} passHref>
+                <Link
+                  color={"primary.darker"}
+                  fontWeight={"bold"}
+                  fontSize="1.3rem"
+                  _hover={{
+                    textDecoration: "none",
+                    color: "primary.main",
+
+                    fontWeight: "bold",
+                  }}
+                  _focus={{ boxShadow: "none" }}
+                  width="8rem"
+                  pl={{ xs: "1rem", lg: 0 }}
+                >
+                  Đơn party
+                </Link>
+              </NextLink>
             ) : partyOrder ? (
               <>
-                <Flex alignItems={"center"} gap={5}>
-                  <Text>{partyOrder.orderCode}</Text>
-                  <Button
-                    onClick={() => SetPartyOrder(null)}
-                    colorScheme="teal"
+                {partyOrder?.customer.phoneNumber ==
+                currentUser?.phoneNumber ? (
+                  <></>
+                ) : (
+                  <Flex alignItems={"center"} gap={5}>
+                    <Text>{partyOrder.orderCode}</Text>
+                    <Button
+                      onClick={() => SetPartyOrder(null)}
+                      colorScheme="teal"
+                    >
+                      Thoát party
+                    </Button>
+                  </Flex>
+                )}
+                <NextLink href={"/coorder"} passHref>
+                  <Link
+                    color={"primary.darker"}
+                    fontWeight={"bold"}
+                    fontSize="lg"
+                    _hover={{
+                      textDecoration: "none",
+                      color: "primary.main",
+
+                      fontWeight: "bold",
+                    }}
+                    _focus={{ boxShadow: "none" }}
+                    width="8rem"
+                    pl={{ xs: "1rem", lg: 0 }}
                   >
-                    Thoát phòng
-                  </Button>
-                </Flex>
+                    Đơn party
+                  </Link>
+                </NextLink>
               </>
             ) : (
               <FormProvider {...findRoomForm}>
@@ -336,11 +376,11 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
                   placeholder="Nhập mã code của phòng"
                 />
                 <Button onClick={handleSubmit(onSubmit)} colorScheme="teal">
-                  Vào phòng
+                  Vào party
                 </Button>
               </FormProvider>
             )}
-            {!isCartPage ? (
+            {!partyOrder ? (
               <CartDrawer
                 isCartDisable={isCartDisable}
                 arrivedTimeRange={arrivedTimeRange}

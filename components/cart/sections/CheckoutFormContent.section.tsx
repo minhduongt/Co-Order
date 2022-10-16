@@ -58,7 +58,12 @@ export default function CheckoutFormContent({
   const cartContext = useCartContext();
   const areaContext = useAreaContext();
   const { user: currentUser, accessToken } = useUserContext();
-  const { cart: currentCart, SetPartyOrder, partyOrder } = cartContext;
+  const {
+    cart: currentCart,
+    SetPartyOrder,
+    partyOrder,
+    SetNewCart,
+  } = cartContext;
   const menuId = areaContext.selectedMenu?.id;
   const locationId = areaContext.selectedLocation?.id;
 
@@ -88,45 +93,93 @@ export default function CheckoutFormContent({
   }, [currentTimeSlotId]);
 
   const onSubmit = (form: CheckoutForm) => {
-    if (!form.timeSlotId && !partyOrder) {
+    try {
+      if (!form.timeSlotId && !partyOrder) {
+        toast({
+          title: "Vui lòng chọn giờ nhận",
+          status: "error",
+          position: "top",
+          isClosable: false,
+          duration: 2000,
+        });
+        return;
+      }
+      setIsOpenNotify(!isOpenNotify);
+      setTimeout(async () => {
+        if (partyOrder) {
+          const checkoutRes = await joinPartyOrder(
+            partyOrder.id,
+            partyOrder.shareLink,
+            accessToken!
+          );
+          if (checkoutRes) {
+            setCheckoutResMsg(checkoutRes);
+          }
+          if (errorRes) {
+            toast({
+              title: errorRes?.message,
+              status: "error",
+              position: "bottom",
+              isClosable: false,
+              duration: 2000,
+            });
+          }
+          SetNewCart(null);
+        } else {
+          const checkoutRes = await checkOut(
+            form.timeSlotId,
+            menuId!,
+            locationId!,
+            accessToken!
+          );
+          if (checkoutRes) {
+            setCheckoutResMsg(checkoutRes);
+          }
+          if (errorRes) {
+            toast({
+              title: errorRes?.message,
+              status: "error",
+              position: "bottom",
+              isClosable: false,
+              duration: 2000,
+            });
+          }
+          SetNewCart(null);
+        }
+      }, 1000);
+    } catch (error) {
       toast({
-        title: "Vui lòng chọn giờ nhận",
+        title: error?.errorCode?.toString(),
         status: "error",
-        position: "top",
+        position: "bottom",
         isClosable: false,
         duration: 2000,
       });
-      return;
     }
-    setIsOpenNotify(!isOpenNotify);
-    setTimeout(async () => {
-      if (partyOrder) {
-        const checkoutRes = await joinPartyOrder(
-          partyOrder.id,
-          partyOrder.shareLink,
-          accessToken!
-        );
-        if (checkoutRes) {
-          setCheckoutResMsg(checkoutRes);
-        }
-        if (errorRes) {
-          toast({
-            title: errorRes?.message,
-            status: "error",
-            position: "bottom",
-            isClosable: false,
-            duration: 2000,
-          });
-        }
-      } else {
-        const checkoutRes = await checkOut(
+  };
+  const createParty = (form: CheckoutForm) => {
+    try {
+      if (!form.timeSlotId) {
+        toast({
+          title: "Vui lòng chọn giờ nhận",
+          status: "error",
+          position: "top",
+          isClosable: false,
+          duration: 2000,
+        });
+        return;
+      }
+      setIsOpenNotify(!isOpenNotify);
+      setTimeout(async () => {
+        const checkoutRes = await createPartyOrder(
           form.timeSlotId,
           menuId!,
           locationId!,
           accessToken!
         );
-        if (checkoutRes) {
-          setCheckoutResMsg(checkoutRes);
+        if (checkoutRes?.data) {
+          await SetPartyOrder(checkoutRes?.data);
+          router.push("/coorder");
         }
         if (errorRes) {
           toast({
@@ -137,32 +190,17 @@ export default function CheckoutFormContent({
             duration: 2000,
           });
         }
-      }
-    }, 1000);
-  };
-  const createParty = (form: CheckoutForm) => {
-    setIsOpenNotify(!isOpenNotify);
-    setTimeout(async () => {
-      const checkoutRes = await createPartyOrder(
-        form.timeSlotId,
-        menuId!,
-        locationId!,
-        accessToken!
-      );
-      if (checkoutRes?.data) {
-        await SetPartyOrder(checkoutRes?.data);
-        router.push("/coorder");
-      }
-      if (errorRes) {
-        toast({
-          title: errorRes?.message,
-          status: "error",
-          position: "bottom",
-          isClosable: false,
-          duration: 2000,
-        });
-      }
-    }, 1000);
+        SetNewCart(null);
+      }, 1000);
+    } catch (error) {
+      toast({
+        title: error?.errorCode?.toString(),
+        status: "error",
+        position: "bottom",
+        isClosable: false,
+        duration: 2000,
+      });
+    }
   };
 
   return (

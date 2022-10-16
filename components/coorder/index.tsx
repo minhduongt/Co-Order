@@ -77,11 +77,11 @@ const MyCoOrder = () => {
             <Text>Điểm giao: {partyOrder?.location.name}</Text>
           </Flex>
           <Flex gap={3} fontSize={"xl"} p={4} alignItems="center">
-            <Text px={3}>Mã phòng: </Text>
+            <Text>Mã phòng:</Text>
             <Box>
-              <Tag>{partyOrder?.shareLink}</Tag>
+              <Tag sx={{ fontSize: "xl" }}>{partyOrder?.shareLink}</Tag>
             </Box>
-            <Button onClick={copy} px={3}>
+            <Button onClick={copy} >
               Copy code
             </Button>
           </Flex>

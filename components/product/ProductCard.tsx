@@ -66,7 +66,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             <Image
               width={"14.5rem"}
               height={"14.5rem"}
-              borderRadius="20%"
+              borderRadius="8%"
               src={product.product?.imageUrl}
               alt={product.product?.name}
               objectFit="cover"
