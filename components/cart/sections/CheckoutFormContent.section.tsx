@@ -124,7 +124,7 @@ export default function CheckoutFormContent({
               duration: 2000,
             });
           }
-          SetNewCart(null);
+          // SetNewCart(null);
         } else {
           const checkoutRes = await checkOut(
             form.timeSlotId,
@@ -144,7 +144,7 @@ export default function CheckoutFormContent({
               duration: 2000,
             });
           }
-          SetNewCart(null);
+          // SetNewCart(null);
         }
       }, 1000);
     } catch (error) {
@@ -190,7 +190,7 @@ export default function CheckoutFormContent({
             duration: 2000,
           });
         }
-        SetNewCart(null);
+        // SetNewCart(null);
       }, 1000);
     } catch (error) {
       toast({
