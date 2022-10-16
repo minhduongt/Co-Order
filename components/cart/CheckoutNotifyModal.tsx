@@ -29,6 +29,7 @@ import { TLocation } from "types/location";
 interface CheckoutModalNotifyProps {
   children: any;
   checkoutRes: PostResponse<OrderResponse> | undefined;
+  partyOrder?: OrderResponse;
   errorRes?: ErrorResponse;
   receivedDestination: TLocation;
   open: boolean;
@@ -39,6 +40,7 @@ export default function CheckoutNotifyModal({
   children,
   checkoutRes,
   errorRes,
+  partyOrder,
   receivedDestination,
   open,
   onClose,
@@ -48,6 +50,7 @@ export default function CheckoutNotifyModal({
 
   const finish = async () => {
     await cartContext.SetNewCart(null);
+    await cartContext.SetPartyOrder(null);
     cartContext.onClose();
     document.documentElement.scrollTop = 0;
   };
@@ -88,20 +91,48 @@ export default function CheckoutNotifyModal({
               <ModalHeader fontSize="3xl"></ModalHeader>
               <ModalBody pb={6}>
                 <Flex flexDirection={"column"} fontSize="2xl">
-                  <Alert status="success" justifyContent={"space-between"}>
-                    <Flex alignItems={"center"} gap={3}>
-                      <Flex alignItems={"center"}>
-                        <AlertIcon />
-                        <Text textAlign={"left"}>{"Mã đơn của bạn là: "}</Text>
-                      </Flex>
-
-                      <Text
-                        textAlign={"right"}
-                        fontWeight={"semibold"}
-                        color="secondary.main"
+                  <Alert status="success">
+                    <Flex flexDirection={"column"} gap={10}>
+                      <Flex
+                        alignItems={"center"}
+                        justifyContent={"space-between"}
+                        gap={3}
                       >
-                        {checkoutRes?.data.orderCode}
-                      </Text>
+                        <Flex alignItems={"center"}>
+                          <AlertIcon />
+                          <Text textAlign={"left"}>
+                            {"Mã đơn của bạn là: "}
+                          </Text>
+                        </Flex>
+
+                        <Text
+                          textAlign={"right"}
+                          fontWeight={"semibold"}
+                          color="secondary.main"
+                        >
+                          {checkoutRes?.data.orderCode}
+                        </Text>
+                      </Flex>
+                      {partyOrder && (
+                        <Flex
+                          alignItems={"center"}
+                          justifyContent={"space-between"}
+                          gap={3}
+                        >
+                          <Flex alignItems={"center"}>
+                            <AlertIcon />
+                            <Text textAlign={"left"}>{"Mã phòng: "}</Text>
+                          </Flex>
+
+                          <Text
+                            textAlign={"right"}
+                            fontWeight={"semibold"}
+                            color="secondary.main"
+                          >
+                            {partyOrder?.shareLink}
+                          </Text>
+                        </Flex>
+                      )}
                     </Flex>
 
                     {/* <Button
@@ -133,7 +164,9 @@ export default function CheckoutNotifyModal({
                       </Flex>
 
                       <Text fontWeight={"bold"} textAlign="right">
-                        {checkoutRes.data.endTime.toString().slice(11, 19)}
+                        {checkoutRes.data.timeSlot.startTime
+                          .toString()
+                          .slice(11, 19)}
                       </Text>
                     </Flex>
                     <Flex

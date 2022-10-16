@@ -6,9 +6,17 @@ import { request } from "./utils";
 
 export const getPartyOrderByCode = (
   shareLink: string,
+  accessToken: string,
   params?: any
 ): Promise<SecondResponse<OrderResponse>> =>
-  request.get(`/party-orders/${shareLink}`, { params }).then((res) => res.data);
+  request
+    .get(`/party-orders/${shareLink}`, {
+      params,
+      headers: {
+        authorization: "Bearer " + accessToken,
+      },
+    })
+    .then((res) => res.data);
 
 const completeOrder = (id: number) => {
   return request

@@ -6,8 +6,11 @@ type Props = {
   params?: any;
 };
 const usePartyOrder = () => {
-  const getPartyOrderByCode = async (shareLink: string) => {
-    const res = await orderApi.getPartyOrderByCode(shareLink);
+  const getPartyOrderByCode = async (
+    shareLink: string,
+    accessToken: string
+  ) => {
+    const res = await orderApi.getPartyOrderByCode(shareLink, accessToken);
     return res;
   };
   return {

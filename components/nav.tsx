@@ -158,23 +158,41 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
 
   const onSubmit = async (form: FindRoomForm) => {
     try {
-      const targetPartyOrder = await getPartyOrderByCode(form.shareLink);
+      const targetPartyOrder = await getPartyOrderByCode(
+        form.shareLink,
+        accessToken!
+      );
       if (targetPartyOrder) {
-        console.log("targetPartyOrder", targetPartyOrder.data);
-        await SetPartyOrder(targetPartyOrder.data);
-        toast({
-          title: "Vào phòng thành công!",
-          status: "success",
-          position: "top",
-          isClosable: false,
-          duration: 2000,
-        });
+        if (targetPartyOrder.error) {
+          toast({
+            title: "Lỗi vào phòng!",
+            status: "error",
+            position: "top",
+            isClosable: false,
+            duration: 2000,
+          });
+          return;
+        }
+        if (targetPartyOrder.data) {
+          console.log("targetPartyOrder", targetPartyOrder.data);
+          await SetPartyOrder(targetPartyOrder.data);
+          toast({
+            title: "Vào phòng thành công!",
+            status: "success",
+            position: "top",
+            isClosable: false,
+            duration: 2000,
+          });
+        }
+
         // const res = await joinPartyOrder(
         //   partyOrderId,
         //   form.shareLink,
         //   accessToken!
         // );
-      } else {
+      }
+    } catch (error) {
+      if (error.statusCode === 404) {
         toast({
           title: "Không tìm thấy phòng!",
           status: "error",
@@ -182,15 +200,15 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
           isClosable: false,
           duration: 2000,
         });
+      } else {
+        toast({
+          title: "Có lỗi xảy ra",
+          status: "error",
+          position: "top",
+          isClosable: false,
+          duration: 2000,
+        });
       }
-    } catch (error) {
-      toast({
-        title: "Có lỗi xảy ra",
-        status: "error",
-        position: "top",
-        isClosable: false,
-        duration: 2000,
-      });
     }
   };
   // const useScrollingUp = () => {

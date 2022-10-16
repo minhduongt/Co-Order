@@ -24,7 +24,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { AiOutlineLike } from "react-icons/ai";
-import React, { Dispatch, useState } from "react";
+import React, { Dispatch, useEffect, useState } from "react";
 import { OrderResponse } from "types/cart";
 import { FormProvider, useForm } from "react-hook-form";
 import CheckoutNotifyModal from "../CheckoutNotifyModal";
@@ -50,7 +50,7 @@ interface CheckoutForm {
   timeSlotId: string;
 }
 const checkoutSchema = yup.object().shape({
-  name: yup.string().required("Hãy chọn giờ nhận hàng"),
+  timeSlotId: yup.string().required("Hãy chọn giờ nhận hàng"),
 });
 export default function CheckoutFormContent({
   onClose,
@@ -87,7 +87,21 @@ export default function CheckoutFormContent({
   const onCloseCheckoutNotify = () => {
     setIsOpenNotify(!isOpenNotify);
   };
+  const currentTimeSlotId = watch("timeSlotId");
+  useEffect(() => {
+    console.log("currentTimeSlotId", currentTimeSlotId);
+  }, [currentTimeSlotId]);
   const onSubmit = (form: CheckoutForm) => {
+    if (!form.timeSlotId) {
+      toast({
+        title: "Vui lòng chọn giờ nhận",
+        status: "error",
+        position: "top",
+        isClosable: false,
+        duration: 2000,
+      });
+      return;
+    }
     setIsOpenNotify(!isOpenNotify);
     setTimeout(async () => {
       if (partyOrder) {
@@ -172,28 +186,35 @@ export default function CheckoutFormContent({
                 <AlertIcon />
                 <Text fontSize={"2xl"}>{"Bạn sẽ nhận vào lúc: "}</Text>
               </Flex>
-              <Flex w={"40%"}>
-                <Select
-                  // placeholder="Chọn giờ giao"
-                  {...register("timeSlotId")}
-                  defaultValue={timeSlots ? timeSlots[0]?.id : ""}
-                  sx={{ fontSize: "xl", borderColor: "primary.main" }}
-                >
-                  {timeSlots?.map((slot) => (
-                    <option key={slot.id} value={slot.id}>
-                      {slot.startTime.toString().slice(11, 19) +
-                        " - " +
-                        slot.endTime.toString().slice(11, 19)}
-                    </option>
-                  ))}
-                  {errors.timeSlotId && (
-                    <Alert status="error">
-                      <AlertIcon />
-                      <Text fontSize="xl">{errors.timeSlotId.message}</Text>
-                    </Alert>
-                  )}
-                </Select>
-              </Flex>
+              {partyOrder ? (
+                <Flex>
+                  {partyOrder?.timeSlot.startTime.toString().slice(11, 19) +
+                    " - " +
+                    partyOrder?.timeSlot.endTime.toString().slice(11, 19)}
+                </Flex>
+              ) : (
+                <Flex w={"40%"}>
+                  <Select
+                    placeholder="Chọn giờ nhận"
+                    {...register("timeSlotId")}
+                    sx={{ fontSize: "xl", borderColor: "primary.main" }}
+                  >
+                    {timeSlots?.map((slot) => (
+                      <option key={slot.id} value={slot.id}>
+                        {slot.startTime.toString().slice(11, 19) +
+                          " - " +
+                          slot.endTime.toString().slice(11, 19)}
+                      </option>
+                    ))}
+                    {errors.timeSlotId && (
+                      <Alert status="error">
+                        <AlertIcon />
+                        <Text fontSize="xl">{errors.timeSlotId.message}</Text>
+                      </Alert>
+                    )}
+                  </Select>
+                </Flex>
+              )}
 
               {/* <ChangeTimeModal>
               <Link>
@@ -311,6 +332,7 @@ export default function CheckoutFormContent({
                   onClose={onCloseCheckoutNotify}
                   open={isOpenNotify}
                   checkoutRes={checkoutResMsg}
+                  partyOrder={partyOrder}
                   receivedDestination={selectedLocation!}
                   errorRes={errorRes}
                 >
