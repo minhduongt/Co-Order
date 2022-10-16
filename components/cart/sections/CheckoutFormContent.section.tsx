@@ -49,9 +49,6 @@ interface Suppliers {
 interface CheckoutForm {
   timeSlotId: string;
 }
-const checkoutSchema = yup.object().shape({
-  timeSlotId: yup.string().required("Hãy chọn giờ nhận hàng"),
-});
 export default function CheckoutFormContent({
   onClose,
 }: CheckoutFormContentProps) {
@@ -75,9 +72,7 @@ export default function CheckoutFormContent({
   const [supplierList, setSupplierList] = useState<Suppliers[]>();
   const [isOpenNotify, setIsOpenNotify] = useState(false);
   //
-  const checkoutForm = useForm<CheckoutForm>({
-    resolver: yupResolver(checkoutSchema),
-  });
+  const checkoutForm = useForm<CheckoutForm>();
   const {
     handleSubmit,
     register,
@@ -91,8 +86,9 @@ export default function CheckoutFormContent({
   useEffect(() => {
     console.log("currentTimeSlotId", currentTimeSlotId);
   }, [currentTimeSlotId]);
+
   const onSubmit = (form: CheckoutForm) => {
-    if (!form.timeSlotId) {
+    if (!form.timeSlotId && !partyOrder) {
       toast({
         title: "Vui lòng chọn giờ nhận",
         status: "error",
@@ -187,7 +183,7 @@ export default function CheckoutFormContent({
                 <Text fontSize={"2xl"}>{"Bạn sẽ nhận vào lúc: "}</Text>
               </Flex>
               {partyOrder ? (
-                <Flex>
+                <Flex fontSize="xl">
                   {partyOrder?.timeSlot.startTime.toString().slice(11, 19) +
                     " - " +
                     partyOrder?.timeSlot.endTime.toString().slice(11, 19)}
@@ -206,12 +202,12 @@ export default function CheckoutFormContent({
                           slot.endTime.toString().slice(11, 19)}
                       </option>
                     ))}
-                    {errors.timeSlotId && (
+                    {/* {errors.timeSlotId && (
                       <Alert status="error">
                         <AlertIcon />
                         <Text fontSize="xl">{errors.timeSlotId.message}</Text>
                       </Alert>
-                    )}
+                    )} */}
                   </Select>
                 </Flex>
               )}

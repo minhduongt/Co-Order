@@ -23,7 +23,7 @@ const getUserInfo = (accessToken: string) => {
       authorization: "Bearer " + accessToken,
     },
   };
-  return request.get("/users", config).then((res) => res.data);
+  return request.get<TUser>("/users", config).then((res) => res.data);
 };
 
 const authApi = {

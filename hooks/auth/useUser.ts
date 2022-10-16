@@ -3,14 +3,13 @@ import { useQuery } from "react-query";
 import { ErrorResponse } from "types/response";
 import { TUser } from "types/user";
 
-const useUser = (idToken: string) => {
-  const getUserInfo = useQuery<TUser, ErrorResponse>(["users"], () =>
-    authApi.getUserInfo(idToken)
-  );
-
+const useUser = () => {
+  const getUserInfo = async (idToken: string) => {
+    const res = await authApi.getUserInfo(idToken);
+    return res;
+  };
   return {
-    ...getUserInfo,
-    data: getUserInfo.data,
+    getUserInfo,
   };
 };
 

@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import Loading from "./Loading";
 import Authenticate from "./index";
 import useAuthContext from "hooks/useAuthContext";
@@ -13,6 +13,7 @@ function AuthCheck({ children }: any) {
   const router = useRouter();
   const toast = useToast();
   const { authorize } = useAuthorize();
+  const [idtoken, setIdToken] = useState(null);
   const { user: FbUser, loading } = useAuthContext();
   const {
     user: currentUser,
@@ -23,7 +24,7 @@ function AuthCheck({ children }: any) {
     SetRefreshToken,
   } = useUserContext();
   const { refresh } = useRefresh();
-  const getUserInfo = useUser(accessToken!);
+  const { getUserInfo } = useUser();
   const authorizeUser = async () => {
     const res = await authorize(await FbUser.getIdToken()!);
     if (res.status === 200) {
@@ -33,16 +34,21 @@ function AuthCheck({ children }: any) {
       SetRefreshToken(refreshToken);
     }
   };
+  const getUserInfoByAccessToken = async () => {
+    const userInfo = await getUserInfo(accessToken!);
+    SetUser(userInfo);
+    console.log("userInfo from be", userInfo);
+  };
+
   // console.log(FbUser);
   // useEffect(() => {
-  //   if (currentUser) {
-  //     console.log("currentUser", currentUser);
+  //   if (FbUser) {
+  //     console.log("FbUser", FbUser);
   //   }
-  // }, [currentUser]);
+  // }, [FbUser]);
   useEffect(() => {
     if (accessToken) {
-      SetUser(getUserInfo.data);
-      console.log("userInfo from be", getUserInfo.data);
+      getUserInfoByAccessToken();
     }
   }, [accessToken]);
 
@@ -53,8 +59,6 @@ function AuthCheck({ children }: any) {
   }, [currentUser, accessToken, FbUser]);
 
   useEffect(() => {
-    const currentPath = router.pathname;
-
     // const getNewToken = async (idToken: string) => {
     //   const refreshToken = await refresh(idToken);
     // };
