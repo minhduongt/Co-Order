@@ -1,7 +1,7 @@
 export enum OrderStatusEnum {
     WAITING = "WAITING",
     FINISHED = "FINISHED",
-    CANCELED = " CANCELED",
+    CANCELED = "CANCELED",
 
 };
 export enum OrderTypeEnum {
@@ -24,4 +24,18 @@ export enum MenuHourFilterEnums {
     LUNCH = "LUNCH",
     TEA = "TEA",
     DINNER = "DINNER",
+}
+export function getOrderStatus(status: String) {
+
+    switch (status) {
+        case OrderStatusEnum.WAITING.toString():
+            return "Đang xử lý";
+        case OrderStatusEnum.FINISHED.toString():
+            return "Hoàn thành";
+        case OrderStatusEnum.CANCELED.toString():
+            return "Đã hủy";
+        default:
+            return "Đang xử lý";
+    }
+
 }

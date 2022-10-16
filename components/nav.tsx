@@ -278,6 +278,9 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
                   <MenuItem onClick={() => router.push("../orderhistory")}>
                     Lịch sử đơn hàng
                   </MenuItem>
+                  <MenuItem onClick={() => router.push("../orderPartyHistory")}>
+                    Lịch sử đơn hàng nhóm
+                  </MenuItem>
                   <MenuDivider />
                   <MenuItem onClick={() => handleSignout()}>Đăng xuất</MenuItem>
                 </MenuList>
