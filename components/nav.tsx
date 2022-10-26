@@ -140,8 +140,8 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
       SetSelectedLocation(areas?.[0].locations[0]);
     }
   }, [selectedArea, areas, SetSelectedArea, SetSelectedLocation]);
+  const { shareLink } = router.query;
 
-  console.log("selectedArea", selectedArea);
   //states
   const [isCartDisable, setIsCartDisable] = useState(false);
   const [arrivedTimeRange, setArrivedTimeRange] = useState("");
@@ -155,11 +155,22 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
     formState: { errors },
     register,
   } = findRoomForm;
+  async function getRoomAndSetToJoin(shareLink: string) {
+    if (partyOrder?.shareLink != shareLink) {
+      await SetPartyOrder(null);
+    } else {
+      toast({
+        title: "Bạn đã vào phòng này rồi",
+        status: "warning",
+        position: "top",
+        isClosable: false,
+        duration: 1500,
+      });
+    }
 
-  const onSubmit = async (form: FindRoomForm) => {
     try {
       const targetPartyOrder = await getPartyOrderByCode(
-        form.shareLink,
+        shareLink,
         accessToken!
       );
       if (targetPartyOrder) {
@@ -202,7 +213,7 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
         });
       } else {
         toast({
-          title: "Có lỗi xảy ra",
+          title: error.message,
           status: "error",
           position: "top",
           isClosable: false,
@@ -210,6 +221,16 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
         });
       }
     }
+  }
+  useEffect(() => {
+    if (shareLink && accessToken) {
+      getRoomAndSetToJoin(shareLink as string);
+      console.log("partyOrder", partyOrder);
+    } else return;
+  }, [shareLink, accessToken]);
+
+  const onSubmit = async (form: FindRoomForm) => {
+    getRoomAndSetToJoin(form.shareLink);
   };
   // const useScrollingUp = () => {
   //   let prevScroll = window.pageYOffset;
@@ -395,12 +416,7 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
                   cursor={"pointer"}
                   minW={0}
                 >
-                  <Avatar
-                    size={"sm"}
-                    src={
-                      "http://uxpanol.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png"
-                    }
-                  />
+                  <Avatar size={"sm"} src={currentUser?.imageUrl} />
                 </MenuButton>
                 <MenuList>
                   <MenuItem onClick={() => router.push("../profile")}>

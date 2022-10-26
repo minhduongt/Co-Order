@@ -14,6 +14,7 @@ import {
   Image,
   Link,
   Select,
+  Tag,
   Text,
   useToast,
 } from "@chakra-ui/react";
@@ -36,6 +37,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { PostResponse } from "types/request";
 import CheckoutNotifyModal from "components/cart/CheckoutNotifyModal";
+import { useRouter } from "next/router";
 
 const items = [...Array(5)].map((_) => {
   return {
@@ -52,7 +54,9 @@ interface CheckoutForm {
   timeSlotId: string;
 }
 const Cart = () => {
+  //hooks
   const toast = useToast();
+  const router = useRouter();
   const cartContext = useCartContext();
   const areaContext = useAreaContext();
   const {
@@ -61,10 +65,13 @@ const Cart = () => {
     SetPartyOrder,
     SetNewCart,
   } = cartContext;
-  const [totalCartItems, setTotalCartItems] = useState<number>(0);
   const totalCurrentCart = currentCart?.items.length;
   const { user: currentUser, accessToken } = useUserContext();
   const { selectedLocation } = areaContext;
+  const { postId } = router.query;
+  //states
+  const [totalCartItems, setTotalCartItems] = useState<number>(0);
+
   const [checkoutResMsg, setCheckoutResMsg] =
     useState<PostResponse<OrderResponse>>();
   const { completePartyOrder, errorRes } = useCheckout(currentCart);
@@ -134,8 +141,40 @@ const Cart = () => {
       }
     }, 1000);
   };
+
+  const copy = async () => {
+    await navigator.clipboard.writeText(`/coorder/${partyOrder?.shareLink!}`);
+    toast({
+      title: "Đã sao lưu vào bộ nhớ tạm",
+      status: "success",
+      position: "bottom",
+      isClosable: false,
+      duration: 2000,
+    });
+  };
   return (
     <Box>
+      <Flex flexDirection={"column"}>
+        <Flex fontSize={"xl"}>
+          <Text>Mã đơn: {partyOrder?.orderCode}</Text>
+        </Flex>
+        <Flex fontSize={"xl"}>
+          <Text>
+            Trạng thái:{" "}
+            {partyOrder?.status == "WAITING" ? "Đang chờ" : "Hoàn thành"}
+          </Text>
+        </Flex>
+        <Flex fontSize={"xl"}>
+          <Text>Điểm giao: {partyOrder?.location.name}</Text>
+        </Flex>
+        <Flex gap={3} fontSize={"xl"} p={4} alignItems="center">
+          <Text>Mã phòng:</Text>
+          <Box>
+            <Tag sx={{ fontSize: "xl" }}>{partyOrder?.shareLink}</Tag>
+          </Box>
+          <Button onClick={copy}>Copy link</Button>
+        </Flex>
+      </Flex>
       <Container maxW="7xl" minH={"30vh"} border="groove" borderRadius={"12px"}>
         <Flex
           justifyContent={"space-between"}

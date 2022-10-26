@@ -23,13 +23,23 @@ const getUserInfo = (accessToken: string) => {
       authorization: "Bearer " + accessToken,
     },
   };
-  return request.get<TUser>("/users", config).then((res) => res.data);
+  return request.get<TUser>("/users/me", config).then((res) => res.data);
+};
+
+const updateUserInfo = (accessToken: string, userInfo: TUser) => {
+  const config = {
+    headers: {
+      authorization: "Bearer " + accessToken,
+    },
+  };
+  return request.put<PostResponse<TAuth>>(`/users/me`, userInfo, config);
 };
 
 const authApi = {
   authorize,
   refresh,
   getUserInfo,
+  updateUserInfo,
 };
 
 export default authApi;

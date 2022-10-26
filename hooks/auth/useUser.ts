@@ -8,8 +8,13 @@ const useUser = () => {
     const res = await authApi.getUserInfo(idToken);
     return res;
   };
+  const updateUserInfo = async (idToken: string, userInfo: TUser) => {
+    const res = await authApi.updateUserInfo(idToken, userInfo);
+    return res;
+  };
   return {
     getUserInfo,
+    updateUserInfo,
   };
 };
 

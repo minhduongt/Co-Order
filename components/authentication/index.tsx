@@ -109,8 +109,8 @@ function Authenticate() {
           title: "Có lỗi xảy ra",
           status: "error",
           position: "top-right",
-          isClosable: false,
-          duration: 2000,
+          isClosable: true,
+          duration: 1000,
         });
         console.log("error", error);
       }
@@ -139,8 +139,8 @@ function Authenticate() {
               title: "Đăng nhập thành công!",
               status: "success",
               position: "top-right",
-              isClosable: false,
-              duration: 2000,
+              isClosable: true,
+              duration: 1000,
             });
             router.push("/");
             console.log("authorize", res);
@@ -149,8 +149,8 @@ function Authenticate() {
               title: "Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!!",
               status: "error",
               position: "top-right",
-              isClosable: false,
-              duration: 2000,
+              isClosable: true,
+              duration: 1000,
             });
           }
           console.log(result);
@@ -166,8 +166,8 @@ function Authenticate() {
           title: "Có lỗi xảy ra",
           status: "error",
           position: "top-right",
-          isClosable: false,
-          duration: 2000,
+          isClosable: true,
+          duration: 1000,
         });
       });
   };
@@ -190,8 +190,8 @@ function Authenticate() {
                 title: "Đăng nhập thành công!",
                 status: "success",
                 position: "top-right",
-                isClosable: false,
-                duration: 2000,
+                isClosable: true,
+                duration: 1000,
               });
               console.log("authorize", res);
               router.push("/");
@@ -200,8 +200,8 @@ function Authenticate() {
                 title: "Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!!",
                 status: "error",
                 position: "top-right",
-                isClosable: false,
-                duration: 2000,
+                isClosable: true,
+                duration: 1000,
               });
             }
           } catch (error) {
@@ -209,8 +209,8 @@ function Authenticate() {
               title: "Có lỗi xảy ra!",
               status: "error",
               position: "top-right",
-              isClosable: false,
-              duration: 2000,
+              isClosable: true,
+              duration: 1000,
             });
             console.log("error", error);
           }
@@ -222,8 +222,8 @@ function Authenticate() {
           title: "Đăng nhập thất bại",
           status: "error",
           position: "top-right",
-          isClosable: false,
-          duration: 2000,
+          isClosable: true,
+          duration: 1000,
         });
       });
   };
