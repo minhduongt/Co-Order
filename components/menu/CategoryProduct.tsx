@@ -28,7 +28,7 @@ function CategoryProduct({
     menuId: filterMenu ? filterMenu?.id : null,
     categoryId: filterCate ? filterCate.id : null,
   });
-  console.log("products", products);
+  // console.log("products", products);
 
   return (
     <>

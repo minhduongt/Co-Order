@@ -164,7 +164,7 @@ export default function CheckoutNotifyModal({
                       </Flex>
 
                       <Text fontWeight={"bold"} textAlign="right">
-                        {checkoutRes.data.timeSlot.startTime
+                        {checkoutRes.data.timeSlot?.startTime
                           .toString()
                           .slice(11, 19)}
                       </Text>
@@ -180,7 +180,7 @@ export default function CheckoutNotifyModal({
                       </Flex>
 
                       <Text fontWeight={"bold"}>
-                        {checkoutRes?.data.location.name}
+                        {checkoutRes?.data.location?.name}
                       </Text>
                     </Flex>
                   </Box>

@@ -14,7 +14,11 @@ const checkout = (cartOrder: OrderRequest, accessToken: string) => {
       authorization: "Bearer " + accessToken,
     },
   };
-  return request.post<PostResponse<OrderResponse>>(`/order`, cartOrder, config);
+  return request.post<PostResponse<OrderResponse>>(
+    `/orders`,
+    cartOrder,
+    config
+  );
 };
 
 const partyOrder = (cartOrder: OrderRequest, accessToken: string) => {

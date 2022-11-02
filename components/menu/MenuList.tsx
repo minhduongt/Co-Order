@@ -13,6 +13,7 @@ import {
   TabPanels,
   Tabs,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 //images and icons
 //components
@@ -41,6 +42,7 @@ import { TArea } from "types/area";
 import { TMenu } from "types/menu";
 import useAreaContext from "hooks/useAreaContext";
 import { TCategory } from "types/category";
+import ChangeMenuModal from "./ChangeMenuModal";
 
 interface filterCate {
   category_id: number;
@@ -87,15 +89,23 @@ const renderer = ({ hours, minutes, seconds, completed, formatted }: any) => {
 const currentDate = new Date();
 
 const MenuList = () => {
-  //hooks
+  //states
   const [filterCate, setFilterCate] = useState<TCategory | null>(null);
-
+  const [tabIndex, setTabIndex] = useState(0);
+  const [selectedTabIndex, setSelectedTabIndex] = useState(0);
+  //hooks
+  const {
+    isOpen: isOpenMenuCheck,
+    onClose: onCloseConfirmChange,
+    onOpen: onOpenConfirmChange,
+  } = useDisclosure();
   const cartContext = useCartContext();
   const menuForm = useForm({});
   //apis
   const { data: areas, isLoading: areaLoading } = useAreas();
   const {
     selectedArea,
+    selectedMenu,
     SetSelectedMenu,
     SetSelectedArea,
     selectedLocation,
@@ -116,18 +126,19 @@ const MenuList = () => {
   let countDownDateTime =
     timeRangeArr &&
     new Date(currentDate.toISOString().substring(0, 11) + timeRangeArr[1]);
-  //Get arrived time range from order time range for displaying
-  // useEffect(() => {
-  //   if (timeRangeArr)
-  //     stores?.map((store) =>
-  //       store.time_slots.map((slot) => {
-  //         if (slot.from == timeRangeArr[0])
-  //           setArrivedTimeRange(
-  //             slot.arrive_time_range[0] + "-" + slot.arrive_time_range[1]
-  //           );
-  //       })
-  //     );
-  // }, [timeRangeArr]);
+
+  function changeMenu(index: number) {
+    setTabIndex(index);
+    if (menus) {
+      SetSelectedMenu(menus[index]);
+      setFilterMenu(menus[index]);
+    }
+    setFilterCate(null);
+  }
+  function openConfirmChangeMenu(index: number) {
+    setSelectedTabIndex(index);
+    onOpenConfirmChange();
+  }
 
   //Delete all item in cart when change time range
 
@@ -188,24 +199,35 @@ const MenuList = () => {
         </TabPanels>
       </Tabs> */}
 
-      <Tabs colorScheme="teal" size="lg" align="center" variant="solid-rounded">
+      <Tabs
+        colorScheme="teal"
+        size="lg"
+        align="center"
+        variant="solid-rounded"
+        index={tabIndex}
+      >
         <TabList>
           {menus &&
-            menus.map((menu: TMenu) => (
+            menus.map((menu: TMenu, index) => (
               <Box key={menu.id}>
                 <Tab
                   sx={{ minW: "10rem" }}
-                  onClick={() => {
-                    SetSelectedMenu(menu);
-                    setFilterMenu(menu);
-                    setFilterCate(null);
-                  }}
+                  onClick={() =>
+                    cartContext.cart.totalItem > 0
+                      ? openConfirmChangeMenu(index)
+                      : changeMenu(index)
+                  }
                 >
-                  {menu.name}
+                  <Text>{menu.name}</Text>
                 </Tab>
               </Box>
             ))}
         </TabList>
+        <ChangeMenuModal
+          isOpen={isOpenMenuCheck}
+          onClose={onCloseConfirmChange}
+          doAction={() => changeMenu(selectedTabIndex)}
+        />
         <Divider sx={{ borderWidth: "3px", marginY: "1rem", opacity: 1 }} />
         <Flex>
           <CategoryCarousel setFilterCate={setFilterCate} />
@@ -219,6 +241,7 @@ const MenuList = () => {
           />
         </Box>
       </Tabs>
+
       {/* 
       <CollectionProducts /> */}
       {/* <SupplierProducts /> */}

@@ -26,7 +26,7 @@ import {
 import { yupResolver } from "@hookform/resolvers/yup";
 import useUser from "hooks/auth/useUser";
 import useUserContext from "hooks/useUserContext";
-import React from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { BsGithub, BsLinkedin, BsPerson, BsTwitter } from "react-icons/bs";
 import { MdEmail, MdOutlineEmail, MdOutlinePhone } from "react-icons/md";
@@ -58,7 +58,7 @@ const checkoutSchema = yup.object().shape({
     .string()
     .required("Hãy điền vào Họ và Tên")
     .min(2, "Ít nhất 2 ký tự"),
-  phone: yup.string().required("Hãy điền vào Số Điện Thoại"),
+  phoneNumber: yup.string().required("Hãy điền vào Số Điện Thoại"),
   // .matches(phoneRegExp, "Hãy đúng dạng Số Điện Thoại"),
   email: yup
     .string()
@@ -70,11 +70,13 @@ export default function MyProfile() {
   const toast = useToast();
   const { hasCopied, onCopy } = useClipboard("example@example.com");
   const { SetUser, user: currentUser, accessToken } = useUserContext();
+  const [currentImage, setCurrentImage] = useState(null);
   const { updateUserInfo } = useUser();
   const customerForm = useForm<CustomerForm>({
     resolver: yupResolver(checkoutSchema),
   });
   const {
+    setValue,
     handleSubmit,
     formState: { errors },
     register,
@@ -113,6 +115,29 @@ export default function MyProfile() {
     // setCustomerInfo(customer);
     // setStep(2);
   };
+
+  const uploadedImage = useRef(null);
+  const imageUploader = useRef(null);
+
+  const handleImageUpload = (e) => {
+    console.log("upload image event: ", e);
+
+    const [file] = e.target.files;
+    if (file) {
+      const reader = new FileReader();
+      const { current } = uploadedImage;
+      if (current) {
+        current.file = file;
+        reader.onload = (e) => {
+          console.log("read image: ", e);
+          current.src = e.target.result;
+          setCurrentImage(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  };
+
   return (
     <FormProvider {...customerForm}>
       <Flex
@@ -145,8 +170,43 @@ export default function MyProfile() {
                 justifyContent="center"
                 alignItems={"center"}
               >
-                <Avatar size={"xl"} src={currentUser?.imageUrl} />
-                <Input type={"file"} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  ref={imageUploader}
+                  style={{
+                    display: "none",
+                  }}
+                />
+                <Box
+                  onClick={() => imageUploader.current.click()}
+                  sx={{ _hover: { opacity: 0.5 } }}
+                >
+                  <Avatar ref={uploadedImage} size={"xl"} src={currentImage} />
+                </Box>
+                Nhấp để đổi ảnh
+                {/* <UploadAvatar
+                  file={values.photoURL}
+                  maxSize={3145728}
+                  onDrop={handleDrop}
+                  error={Boolean(touched.photoURL && errors.photoURL)}
+                  caption={
+                    <Text
+                      variant="caption"
+                      sx={{
+                        mt: 2,
+                        mx: "auto",
+                        display: "block",
+                        textAlign: "center",
+                        color: "text.secondary",
+                      }}
+                    >
+                      Allowed *.jpeg, *.jpg, *.png, *.gif
+                      <br /> max size of {fData(3145728)}
+                    </Text>
+                  }
+                /> */}
               </Flex>
               <Stack
                 spacing={{ base: 4, md: 8, lg: 20 }}
@@ -219,17 +279,19 @@ export default function MyProfile() {
                           </InputLeftElement>
                           <Input
                             readOnly
-                            {...register("phone")}
+                            {...register("phoneNumber")}
                             value={currentUser ? currentUser.phoneNumber : ""}
                           />
                         </InputGroup>
-                        {errors.phone && (
+                        {errors.phoneNumber && (
                           <Alert
                             status="error"
                             sx={{ maxH: "2em", marginY: "1em" }}
                           >
                             <AlertIcon />
-                            <Text fontSize="md">{errors.phone.message}</Text>
+                            <Text fontSize="md">
+                              {errors.phoneNumber.message}
+                            </Text>
                           </Alert>
                         )}
                       </FormControl>

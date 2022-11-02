@@ -35,7 +35,6 @@ import { TCustomer } from "./user";
 //   updated_at: Date;
 // };
 
-
 export type TOrder = {
   id: number;
   orderCode: string;
@@ -55,20 +54,53 @@ export type TOrder = {
   timeSlotId: number;
   customer: TCustomer;
   location: TLocation;
-  menu: TMenu;
-  timeSlot: TTimeSlot;
   orderDetails: TOrderDetail[];
-}
+};
 export type TOrderDetail = {
-  id: number;
-  productInMenuId: number;
-  customerCode: string;
-  quantity: number;
+  orderId: number;
+  orderCode: string;
+  receiveAddress: string;
   notes: string;
-  unitPrice: number;
-  unitCost: number;
-  productInMenu: TProductInMenu;
-  unitDiscount?: any;
+  status: string;
+  totalAmount: number;
+  discount: number;
+  finalAmount: number;
   createdDate: Date;
-  active: boolean;
+  details: Detail[];
+};
+
+export interface PartyDetail {
+  customerCode: string;
+  productName: string;
+  unitPrice: number;
+  quantity: number;
 }
+
+export interface Recipient {
+  customerCode: string;
+  totalAmount: number;
+  discount: number;
+  shippingFee: number;
+  finalAmount: number;
+}
+
+export type TPartyOrderDetail = {
+  orderId: number;
+  orderCode: string;
+  receiveAddress: string;
+  notes: string;
+  status: string;
+  totalAmount: number;
+  discount: number;
+  finalAmount: number;
+  createdDate: Date;
+  partyDetails: PartyDetail[];
+  recipients: Recipient[];
+};
+
+export type Detail = {
+  customerCode: string;
+  productName: string;
+  unitPrice: number;
+  quantity: number;
+};

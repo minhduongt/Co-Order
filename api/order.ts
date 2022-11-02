@@ -4,13 +4,13 @@ import { OrderStatusEnum } from "types/constant";
 import { BaseResponse, SecondResponse } from "types/request";
 import { request } from "./utils";
 
-export const getPartyOrderByCode = (
-  shareLink: string,
+export const getOrderDetail = (
+  orderId: number,
   accessToken: string,
   params?: any
 ): Promise<SecondResponse<OrderResponse>> =>
   request
-    .get(`/party-orders/${shareLink}`, {
+    .get(`/orders/${orderId}/details`, {
       params,
       headers: {
         authorization: "Bearer " + accessToken,
@@ -20,14 +20,14 @@ export const getPartyOrderByCode = (
 
 const completeOrder = (id: number) => {
   return request
-    .put<BaseResponse<any>>(`/order`, {
+    .put<BaseResponse<any>>(`/orders`, {
       id: id,
       status: OrderStatusEnum.FINISHED,
     })
     .then((res) => res.data);
 };
 const orderApi = {
-  getPartyOrderByCode,
+  getOrderDetail,
   completeOrder,
 };
 

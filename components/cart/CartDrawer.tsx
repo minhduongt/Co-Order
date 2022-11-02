@@ -20,13 +20,11 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { FaShoppingBasket } from "react-icons/fa";
-import logoBean from "../../public/assets/image/logo.png";
 import useCartContext from "hooks/useCartContext";
 import { CartItem } from "types/cart";
 import useDeleteCartItem from "hooks/cart/useDeleteCartItem";
 import useCartPrice from "hooks/cart/useCartPrice";
 import { mapCartModelToOrderRequest } from "hooks/cart/helper";
-import beanEmpty from "../../public/assets/image/empty.png";
 import ProductInCart from "components/sections/cart/ProductInCart";
 import CartModal from "./CartModal";
 import { TRoom } from "types/room";
@@ -50,7 +48,7 @@ export default function CartDrawer({
   const areaContext = useAreaContext();
   const { cart: currentCart } = cartContext;
   const [totalCartItems, setTotalCartItems] = useState<number>(0);
-  const totalCurrentCart = currentCart?.items.length;
+  const totalCurrentCart = currentCart?.totalItem;
   useEffect(() => {
     setTotalCartItems(totalCurrentCart);
   }, [totalCurrentCart]);
@@ -99,18 +97,18 @@ export default function CartDrawer({
         >
           <Text>Giỏ hàng</Text>
         </Button>
-        {totalCartItems > 0 && (
+        <Box visibility={totalCartItems > 0 ? "visible" : "hidden"}>
           <Circle
             size="20px"
             bg="tomato"
             color="white"
             position={"relative"}
-            bottom="55px"
-            left="35px"
+            bottom="5px"
+            right="10px"
           >
             {totalCartItems}
           </Circle>
-        )}
+        </Box>
       </Flex>
 
       <Drawer
@@ -157,7 +155,7 @@ export default function CartDrawer({
             <Divider />
             {totalCartItems > 0 ? (
               currentCart?.items?.map((item, index) => (
-                <Box key={index + item.product.id}>
+                <Box key={index + item.product.productId}>
                   <ProductInCart
                     item={item}
                     deleteCartItem={handleDeleteCartItem}

@@ -148,7 +148,7 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
   //variables
   const defautTabIndex = currentDate.getDay() - 1;
   const findRoomForm = useForm<FindRoomForm>({
-    resolver: yupResolver(findRoomSchema),
+    // resolver: yupResolver(findRoomSchema),
   });
   const {
     handleSubmit,
@@ -222,15 +222,31 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
       }
     }
   }
-  useEffect(() => {
-    if (shareLink && accessToken) {
-      getRoomAndSetToJoin(shareLink as string);
-      console.log("partyOrder", partyOrder);
-    } else return;
-  }, [shareLink, accessToken]);
-
   const onSubmit = async (form: FindRoomForm) => {
-    getRoomAndSetToJoin(form.shareLink);
+    try {
+      console.log("form ", form);
+
+      if (form.shareLink) {
+        getRoomAndSetToJoin(form.shareLink);
+      } else {
+        toast({
+          title: "Vui lòng nhập mã phòng",
+          status: "warning",
+          position: "top",
+          isClosable: true,
+          duration: 1500,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: error.message,
+        status: "error",
+        position: "top",
+        isClosable: false,
+        duration: 2000,
+      });
+      console.log("error", error);
+    }
   };
   // const useScrollingUp = () => {
   //   let prevScroll = window.pageYOffset;
@@ -262,6 +278,15 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
       duration: 1000,
     });
   };
+
+  //
+  useEffect(() => {
+    if (shareLink && accessToken) {
+      getRoomAndSetToJoin(shareLink as string);
+      console.log("partyOrder", partyOrder);
+    } else return;
+  }, [shareLink, accessToken]);
+
   return (
     <Box pb="5rem">
       <Box

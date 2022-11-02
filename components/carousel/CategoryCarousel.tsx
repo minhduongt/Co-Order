@@ -31,7 +31,7 @@ export default function CategoryCarousel({
 }: CategoryCarouselProps) {
   // const [isDesktop] = useMediaQuery("(min-width: 1024px)");
   const { data: categories, isLoading, isError } = useCategories();
-  console.log("categories", categories);
+  // console.log("categories", categories);
 
   const settings = {
     arrows: false,

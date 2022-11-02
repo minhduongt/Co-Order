@@ -222,9 +222,9 @@ export default function CheckoutFormContent({
               </Flex>
               {partyOrder ? (
                 <Flex fontSize="xl">
-                  {partyOrder?.timeSlot.startTime.toString().slice(11, 19) +
+                  {partyOrder?.timeSlot?.startTime.toString().slice(11, 19) +
                     " - " +
-                    partyOrder?.timeSlot.endTime.toString().slice(11, 19)}
+                    partyOrder?.timeSlot?.endTime.toString().slice(11, 19)}
                 </Flex>
               ) : (
                 <Flex w={"40%"}>

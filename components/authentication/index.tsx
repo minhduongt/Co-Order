@@ -185,7 +185,6 @@ function Authenticate() {
               const refreshToken = res.data.data.refreshToken;
               SetAccessToken(accessToken);
               SetRefreshToken(refreshToken);
-              console.log("accessToken from be", res.data.data.accessToken);
               toast({
                 title: "Đăng nhập thành công!",
                 status: "success",
@@ -212,7 +211,6 @@ function Authenticate() {
               isClosable: true,
               duration: 1000,
             });
-            console.log("error", error);
           }
         }
       })

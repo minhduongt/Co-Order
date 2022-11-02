@@ -59,29 +59,9 @@ function AuthCheck({ children }: any) {
   }, [currentUser, accessToken, FbUser]);
 
   useEffect(() => {
-    // const getNewToken = async (idToken: string) => {
-    //   const refreshToken = await refresh(idToken);
-    // };
-    // console.log("accessToken", accessToken);
     if (FbUser) {
-      // if (currentPath.includes("authentication")) {
-      //   router.push("/");
-      // }
       return children;
     } else {
-      // if (refreshToken) {
-      //   const newRefreshToken = getNewToken(refreshToken);
-      //   console.log("newRefreshToken", newRefreshToken);
-      //   return children;
-      // } else {
-      //   toast({
-      //     title: "Có lỗi xảy ra!",
-      //     status: "error",
-      //     position: "top-right",
-      //     isClosable: false,
-      //     duration: 2000,
-      //   });
-      // }
       return <Authenticate />;
     }
   }, [FbUser]);
