@@ -16,7 +16,7 @@ const getOrderHistories = (accessToken: string, params: any) => {
         params: params,
     };
     return request
-        .get<BaseResponse<TOrder>>(`/order/me`, config
+        .get<BaseResponse<TOrder>>(`/orders/me`, config
         )
         .then((res) => res.data);
 

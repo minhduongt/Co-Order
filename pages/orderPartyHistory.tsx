@@ -32,14 +32,15 @@ import useOrderHistories from "hooks/order/useOrderHistory";
 import useUserContext from "hooks/useUserContext";
 import { getOrderStatus, OrderStatusEnum, OrderTypeEnum } from "types/constant";
 import useOrderPartyHistories from "hooks/order/userOrderPartyHistory";
-import { TOrder } from "types/order";
+import { TOrder, TOrderDetail } from "types/order";
+import orderApi from "api/order";
 
 const OrderPartyHistoryPage = () => {
   const { accessToken } = useUserContext();
   const [orderStatus, setOrderStatus] = useState<OrderStatusEnum | null>(
     OrderStatusEnum.WAITING
   );
-  const [selectedOrder, setSelectedOrder] = useState<TOrder | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<TOrderDetail | null>(null);
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { data: partyOrders, isLoading: partyOrderLoading } =
@@ -50,6 +51,11 @@ const OrderPartyHistoryPage = () => {
       },
     });
   console.log("orders", partyOrders);
+
+  async function handelOpenOrderDetail(orderId: number, accessToken: string) {
+    const res = await orderApi.getOrderDetail(orderId, accessToken);
+    setSelectedOrder(res);
+  }
   return (
     <Box fontFamily="coorder">
       <AuthCheck>
@@ -62,8 +68,11 @@ const OrderPartyHistoryPage = () => {
           defaultIndex={0}
         >
           <TabList>
+            <Tab onClick={() => setOrderStatus(OrderStatusEnum.PENDING)}>
+              Chờ xác nhận
+            </Tab>
             <Tab onClick={() => setOrderStatus(OrderStatusEnum.WAITING)}>
-              Đơn hàng mới
+              Đang giao
             </Tab>
             <Tab onClick={() => setOrderStatus(OrderStatusEnum.FINISHED)}>
               Hoàn thành
@@ -76,7 +85,7 @@ const OrderPartyHistoryPage = () => {
             {partyOrders?.map((order) => (
               <Box
                 onClick={() => {
-                  setSelectedOrder(order);
+                  handelOpenOrderDetail(order.id, accessToken!);
                   onOpen();
                 }}
                 p={4}
@@ -100,7 +109,9 @@ const OrderPartyHistoryPage = () => {
                         ? "green"
                         : order.status == OrderStatusEnum.CANCELED
                         ? "red"
-                        : "yellow"
+                        : order.status == OrderStatusEnum.PENDING
+                        ? "yellow"
+                        : "blue"
                     }
                   >
                     {getOrderStatus(order.status)}
@@ -148,7 +159,7 @@ const OrderPartyHistoryPage = () => {
                     </Text>
                   </Flex>
                   <Flex fontSize={"xl"}>
-                    <Text>Điểm giao: {selectedOrder?.location?.name}</Text>
+                    <Text>Điểm giao: {selectedOrder?.receiveAddress}</Text>
                   </Flex>
                 </Flex>
 
@@ -157,11 +168,11 @@ const OrderPartyHistoryPage = () => {
                   Sản phẩm
                 </Text>
                 <Divider />
-                {selectedOrder?.orderDetails?.map((item, index) => (
+                {selectedOrder?.details?.map((item, index) => (
                   <Box w="100%" key={index}>
                     <Flex w="100%" flexDir="row">
                       <Text textAlign="left" w="60%" fontSize={"lg"}>
-                        {item.productInMenu?.product?.name}
+                        {item.productName}
                       </Text>
                       <Text w="10%" fontSize={"lg"}>
                         {" "}
