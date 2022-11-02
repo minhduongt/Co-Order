@@ -74,7 +74,6 @@ export default function CheckoutFormContent({
   const { checkOut, errorRes, createPartyOrder, joinPartyOrder } =
     useCheckout(currentCart);
   const { getOrderDetail } = useOrder();
-  const { getPartyOrderDetail } = usePartyOrder();
   const { data: timeSlots } = useTimeSlots(menuId!);
   const [checkoutResMsg, setCheckoutResMsg] =
     useState<PostResponse<OrderResponse>>();
@@ -122,7 +121,6 @@ export default function CheckoutFormContent({
           );
           if (checkoutRes) {
             setCheckoutResMsg(checkoutRes);
-            SetIsHost(true);
           }
           if (errorRes) {
             toast({
@@ -196,6 +194,7 @@ export default function CheckoutFormContent({
         );
         if (checkoutRes?.data) {
           await SetPartyOrder(checkoutRes?.data);
+          await SetIsHost(true);
           cartContext.onClose();
           router.push("/coorder");
         }

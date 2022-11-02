@@ -44,7 +44,7 @@ export default function ChangeTimeModal({ children }: ChangeTimeModalProps) {
       >
         <ModalOverlay />
 
-        <ModalContent fontFamily={"beanoi"}>
+        <ModalContent fontFamily={"coorder"}>
           <ModalCloseButton />
           <ModalHeader fontSize="3xl">Lưu ý</ModalHeader>
           <ModalBody pb={6}>

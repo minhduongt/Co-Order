@@ -30,7 +30,7 @@ import { TOrderDetail } from "types/order";
 interface CheckoutModalNotifyProps {
   children: any;
   checkoutRes: PostResponse<OrderResponse> | undefined;
-  orderDetail: TOrderDetail | undefined;
+  orderDetail?: TOrderDetail | undefined;
   partyOrder?: OrderResponse;
   errorRes?: ErrorResponse;
   receivedDestination: TLocation;

@@ -76,7 +76,7 @@ export interface PartyDetail {
   quantity: number;
 }
 
-export interface Recipient {
+export interface TRecipient {
   customerCode: string;
   totalAmount: number;
   discount: number;
@@ -96,7 +96,7 @@ export type TPartyOrderDetail = {
   finalAmount: number;
   createdDate: Date;
   partyDetails: PartyDetail[];
-  recipients: Recipient[];
+  recipients: TRecipient[];
 };
 
 export type Detail = {

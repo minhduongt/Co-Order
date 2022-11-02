@@ -40,6 +40,10 @@ import CheckoutNotifyModal from "components/cart/CheckoutNotifyModal";
 import { useRouter } from "next/router";
 import usePartyOrder from "hooks/order/usePartyOrder";
 import usePartyOrderDetail from "hooks/order/usePartyOrderDetail";
+import { getOrderStatus, OrderStatusEnum } from "types/constant";
+import RecipientModal from "./sections/RecipientModal";
+import { MdGroup } from "react-icons/md";
+import useCompletePartyOrder from "hooks/order/useUpdatePartyOrder";
 
 const items = [...Array(5)].map((_) => {
   return {
@@ -76,11 +80,12 @@ const Cart = () => {
 
   const [checkoutResMsg, setCheckoutResMsg] =
     useState<PostResponse<OrderResponse>>();
-  const { completePartyOrder, errorRes } = useCheckout(currentCart);
+  const { errorRes } = useCheckout(currentCart);
   const { data: partyDetail } = usePartyOrderDetail(
     partyOrder?.id!,
     accessToken!
   );
+  const { completePartyOrder } = usePartyOrder();
   const [isOpenNotify, setIsOpenNotify] = useState(false);
   //
   const checkoutForm = useForm<CheckoutForm>({
@@ -98,10 +103,6 @@ const Cart = () => {
   useEffect(() => {
     setTotalCartItems(totalCurrentCart);
   }, [totalCurrentCart]);
-
-  useEffect(() => {
-    console.log("partyDetail", partyDetail);
-  }, [partyDetail]);
 
   const deleteItem = useDeleteCartItem;
 
@@ -158,7 +159,7 @@ const Cart = () => {
         `${window.location.origin}/coorder/${partyOrder?.shareLink!}`
       );
       toast({
-        title: "Đã sao lưu vào bộ nhớ tạm",
+        title: "Đã sao lưu vào bộ nhớ đệm",
         status: "success",
         position: "bottom",
         isClosable: false,
@@ -167,7 +168,7 @@ const Cart = () => {
     } else {
       await navigator.clipboard.writeText(partyOrder?.shareLink!);
       toast({
-        title: "Đã sao lưu vào bộ nhớ tạm",
+        title: "Đã sao lưu vào bộ nhớ đệm",
         status: "success",
         position: "bottom",
         isClosable: false,
@@ -178,53 +179,142 @@ const Cart = () => {
   return (
     <Box>
       <Flex flexDirection={"column"}>
-        <Flex fontSize={"xl"}>
-          <Text>Mã đơn: {partyOrder?.orderCode}</Text>
+        <Flex fontSize={"xl"} gap={2}>
+          <Text>Mã đơn: </Text>
+          <Text fontWeight={600}>{partyOrder?.orderCode ?? "NaN"}</Text>
         </Flex>
-        <Flex fontSize={"xl"}>
-          <Text>
-            Trạng thái:{" "}
-            {partyOrder?.status == "WAITING" ? "Đang chờ" : "Hoàn thành"}
-          </Text>
+        <Flex fontSize={"xl"} gap={2}>
+          <Text>Trạng thái: </Text>
+          <Text fontWeight={600}>{getOrderStatus(partyOrder?.status!)}</Text>
         </Flex>
-        <Flex fontSize={"xl"}>
-          <Text>Điểm giao: {partyDetail?.receiveAddress}</Text>
+        <Flex fontSize={"xl"} gap={2}>
+          <Text>Điểm giao: </Text>
+          <Text fontWeight={600}>{partyDetail?.receiveAddress ?? "NaN"}</Text>
         </Flex>
-        <Flex fontSize={"xl"}>
-          <Text>Giờ nhận: {partyDetail?.receiveTime}</Text>
+        <Flex fontSize={"xl"} gap={2}>
+          <Text>Giờ nhận: </Text>
+          <Text fontWeight={600}>{partyDetail?.receiveTime ?? "NaN"}</Text>
         </Flex>
-        <Flex gap={3} fontSize={"xl"} p={4} alignItems="center">
+        <Flex
+          gap={2}
+          fontSize={"xl"}
+          p={6}
+          alignItems="center"
+          alignSelf={"center"}
+        >
           <Text>Mã phòng:</Text>
           <Box>
-            <Tag sx={{ fontSize: "xl" }}>{partyOrder?.shareLink}</Tag>
+            <Tag sx={{ fontSize: "xl" }}>{partyOrder?.shareLink ?? "NaN"}</Tag>
           </Box>
-          <Button onClick={copy}>Copy link</Button>
+          <Button onClick={copy} disabled={partyDetail == null}>
+            Copy link
+          </Button>
         </Flex>
       </Flex>
+      <Flex justifyContent={"space-between"} paddingY="2rem">
+        <Heading fontSize={"3xl"}>
+          <Flex alignItems={"center"} gap={2}>
+            <MdGroup color="#2689E0" />
+            <Text>Party</Text>
+          </Flex>
+        </Heading>
+        {/* <Flex alignItems={"center"} color="secondary.main">
+          <FaFire size="1.2rem" />
+          <NextLink passHref href="/">
+            <Link>Đặt thêm món</Link>
+          </NextLink>
+        </Flex> */}
+      </Flex>
       <Container maxW="7xl" minH={"30vh"} border="groove" borderRadius={"12px"}>
-        {partyDetail?.partyDetails.map((detail) => {
-          return (
-            <Flex
-              key={detail.customerCode}
-              justifyContent={"space-between"}
-              alignItems="center"
-              fontSize="xl"
-              m={3}
-            >
-              <Flex alignItems="center" gap={3}>
-                <Avatar
-                  size={"lg"}
-                  src={
-                    "http://uxpanol.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png"
-                  }
-                />
-                <Text>{detail.customerCode}</Text>
-              </Flex>
-
-              <Flex>Các món đang chọn</Flex>
+        <Flex flexDirection="column">
+          <Flex
+            fontSize="xl"
+            m={3}
+            justifyContent={"space-between"}
+            alignItems="center"
+            fontWeight={600}
+          >
+            <Flex alignItems="center" gap={3} w="33%">
+              <Text fontSize={"2xl"}>Người dùng</Text>
             </Flex>
-          );
-        })}
+
+            <Flex flexDirection={"column"} alignItems={"flex-start"} w="33%">
+              <Text fontSize={"2xl"}>Các món</Text>
+            </Flex>
+            <Flex flexDirection={"column"} alignItems={"flex-end"} w="33%">
+              <Text fontSize={"2xl"}>Tạm tính</Text>
+            </Flex>
+          </Flex>
+          {partyDetail ? (
+            partyDetail?.partyDetails.map((detail, index) => {
+              return (
+                <Flex flexDirection={"column"} key={detail.customerCode}>
+                  <Flex
+                    fontSize="xl"
+                    m={3}
+                    justifyContent={"space-between"}
+                    alignItems="center"
+                  >
+                    <Flex alignItems="center" gap={3} w="33%">
+                      <Avatar
+                        size={"lg"}
+                        src={
+                          "http://uxpanol.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png"
+                        }
+                      />
+                      <Text>{detail.customerCode}</Text>
+                    </Flex>
+
+                    <Flex
+                      flexDirection={"column"}
+                      fontSize="xl"
+                      alignItems={"flex-start"}
+                      w="33%"
+                    >
+                      <Text>
+                        {"x" + detail.quantity} {detail.productName}
+                      </Text>
+                    </Flex>
+                    <Flex
+                      flexDirection={"column"}
+                      fontSize="xl"
+                      alignItems={"flex-end"}
+                      w="33%"
+                    >
+                      <Text>
+                        {(detail.unitPrice * detail.quantity).toLocaleString()}{" "}
+                        đ
+                      </Text>
+                    </Flex>
+                  </Flex>
+
+                  {index != partyDetail?.partyDetails.length - 1 ? (
+                    <Divider sx={{ borderColor: "black" }} />
+                  ) : (
+                    <></>
+                  )}
+                </Flex>
+              );
+            })
+          ) : (
+            <Flex
+              alignItems={"center"}
+              justifyContent="center"
+              fontSize={"2xl"}
+            >
+              Trống
+            </Flex>
+          )}
+          <Flex alignSelf={"center"} pt="1rem" p={3}>
+            {partyDetail ? (
+              <RecipientModal recipients={partyDetail?.recipients!}>
+                <Button>Xem hóa đơn chia tiền</Button>
+              </RecipientModal>
+            ) : (
+              <></>
+            )}
+          </Flex>
+        </Flex>
       </Container>
       <Flex justifyContent={"space-between"} paddingY="2rem">
         <Heading fontSize={"3xl"}>
@@ -243,12 +333,12 @@ const Cart = () => {
       {totalCartItems > 0 ? (
         currentCart?.items?.map((item, index) => (
           <Box key={index + item.product?.id} paddingY={"0.3rem"}>
-            <Box
+            <Flex
               key={index}
               width={"100%"}
-              display={"flex"}
+              gap={3}
               // border="groove"
-              px="1.5rem"
+              px="1rem"
               backgroundColor="light"
               paddingY={"1rem"}
               borderStyle="solid"
@@ -297,9 +387,9 @@ const Cart = () => {
                 templateColumns="repeat(2, 1fr)"
                 gap={6}
                 width="100%"
-                paddingX={"1rem"}
                 paddingY={"0.5rem"}
                 alignItems="center"
+                justifyContent={"space-between"}
               >
                 <Flex flexDirection={"column"}>
                   <Text
@@ -318,24 +408,16 @@ const Cart = () => {
                   </Text>
                 </Flex>
 
-                <Text fontSize="xl" fontWeight={"600"}>
+                <Text fontSize="xl" fontWeight={"600"} textAlign="right">
                   {(item.product?.price * item.quantity).toLocaleString()} đ
                 </Text>
-                <Box minWidth={"10rem"}>
-                  {/* <QuantityInput quantity={item.quantity} /> */}
-                </Box>
 
-                {/* <IconButton
-                    onClick={() => handleDeleteCartItem(item)}
-                    justifySelf={"flex-end"}
-                    width={"1rem"}
-                    colorScheme="red"
-                    aria-label="remove-item"
-                    icon={<SmallCloseIcon />}
-                  /> */}
+                {/* <Box minWidth={"10rem"}>
+                  <QuantityInput quantity={item.quantity} />
+                </Box> */}
               </Grid>
               {/*  Check out */}
-            </Box>
+            </Flex>
           </Box>
         ))
       ) : (
@@ -359,7 +441,6 @@ const Cart = () => {
           minHeight={"20vh"}
           flexDirection="column"
           justifyContent={"space-between"}
-          padding="1rem"
         >
           {/* {cartPrepareRes ? ( */}
           <>
@@ -397,7 +478,7 @@ const Cart = () => {
                 // fontWeight="bold"
               >
                 <Text>{"Tạm tính:"}</Text>
-                <Text>{currentCart?.total.toLocaleString()} đ</Text>
+                <Text>{partyDetail?.totalAmount.toLocaleString()} đ</Text>
               </Flex>
               <Flex
                 justifyContent="space-between"
@@ -417,10 +498,10 @@ const Cart = () => {
               >
                 <Text>{"Tổng cộng:"}</Text>
                 <Text>
-                  {(
+                  {/* {(
                     currentCart?.total + areaContext?.selectedArea?.shippingFee!
-                  ).toLocaleString()}{" "}
-                  đ
+                  ).toLocaleString()} */}
+                  {partyDetail?.finalAmount.toLocaleString()}đ
                 </Text>
               </Flex>
               <Flex
@@ -456,27 +537,28 @@ const Cart = () => {
                       )}
                     </Select>
                   </Flex> */}
-                <Flex w="40%">
-                  <CheckoutNotifyModal
-                    onClose={onCloseCheckoutNotify}
-                    open={isOpenNotify}
-                    checkoutRes={checkoutResMsg}
-                    receivedDestination={selectedLocation!}
-                    errorRes={errorRes}
-                  >
-                    <Button
-                      backgroundColor="primary.main"
-                      colorScheme={"primary.main"}
-                      fontSize="xl"
-                      type="submit"
-                      w={"100%"}
-                      onClick={handleCompletePartyOrder}
-                    >
-                      Chốt đơn nhóm
-                    </Button>
-                  </CheckoutNotifyModal>
-                </Flex>
               </Flex>
+            </Flex>
+            <Flex w="100%" pt={"1rem"}>
+              <CheckoutNotifyModal
+                onClose={onCloseCheckoutNotify}
+                open={isOpenNotify}
+                checkoutRes={checkoutResMsg}
+                receivedDestination={selectedLocation!}
+                errorRes={errorRes}
+              >
+                <Button
+                  backgroundColor="primary.main"
+                  colorScheme={"primary.main"}
+                  fontSize="xl"
+                  type="submit"
+                  w={"100%"}
+                  h="5vh"
+                  onClick={handleCompletePartyOrder}
+                >
+                  Chốt đơn nhóm
+                </Button>
+              </CheckoutNotifyModal>
             </Flex>
             {/*  Check out */}
           </>
