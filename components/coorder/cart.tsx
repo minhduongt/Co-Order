@@ -38,6 +38,8 @@ import * as yup from "yup";
 import { PostResponse } from "types/request";
 import CheckoutNotifyModal from "components/cart/CheckoutNotifyModal";
 import { useRouter } from "next/router";
+import usePartyOrder from "hooks/order/usePartyOrder";
+import usePartyOrderDetail from "hooks/order/usePartyOrderDetail";
 
 const items = [...Array(5)].map((_) => {
   return {
@@ -75,6 +77,10 @@ const Cart = () => {
   const [checkoutResMsg, setCheckoutResMsg] =
     useState<PostResponse<OrderResponse>>();
   const { completePartyOrder, errorRes } = useCheckout(currentCart);
+  const { data: partyDetail } = usePartyOrderDetail(
+    partyOrder?.id!,
+    accessToken!
+  );
   const [isOpenNotify, setIsOpenNotify] = useState(false);
   //
   const checkoutForm = useForm<CheckoutForm>({
@@ -92,6 +98,10 @@ const Cart = () => {
   useEffect(() => {
     setTotalCartItems(totalCurrentCart);
   }, [totalCurrentCart]);
+
+  useEffect(() => {
+    console.log("partyDetail", partyDetail);
+  }, [partyDetail]);
 
   const deleteItem = useDeleteCartItem;
 
@@ -143,14 +153,27 @@ const Cart = () => {
   };
 
   const copy = async () => {
-    await navigator.clipboard.writeText(`/coorder/${partyOrder?.shareLink!}`);
-    toast({
-      title: "Đã sao lưu vào bộ nhớ tạm",
-      status: "success",
-      position: "bottom",
-      isClosable: false,
-      duration: 2000,
-    });
+    if (window) {
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/coorder/${partyOrder?.shareLink!}`
+      );
+      toast({
+        title: "Đã sao lưu vào bộ nhớ tạm",
+        status: "success",
+        position: "bottom",
+        isClosable: false,
+        duration: 2000,
+      });
+    } else {
+      await navigator.clipboard.writeText(partyOrder?.shareLink!);
+      toast({
+        title: "Đã sao lưu vào bộ nhớ tạm",
+        status: "success",
+        position: "bottom",
+        isClosable: false,
+        duration: 2000,
+      });
+    }
   };
   return (
     <Box>
@@ -165,7 +188,10 @@ const Cart = () => {
           </Text>
         </Flex>
         <Flex fontSize={"xl"}>
-          <Text>Điểm giao: {partyOrder?.location?.name}</Text>
+          <Text>Điểm giao: {partyDetail?.receiveAddress}</Text>
+        </Flex>
+        <Flex fontSize={"xl"}>
+          <Text>Giờ nhận: {partyDetail?.receiveTime}</Text>
         </Flex>
         <Flex gap={3} fontSize={"xl"} p={4} alignItems="center">
           <Text>Mã phòng:</Text>
@@ -176,24 +202,29 @@ const Cart = () => {
         </Flex>
       </Flex>
       <Container maxW="7xl" minH={"30vh"} border="groove" borderRadius={"12px"}>
-        <Flex
-          justifyContent={"space-between"}
-          alignItems="center"
-          fontSize="xl"
-          m={3}
-        >
-          <Flex alignItems="center" gap={3}>
-            <Avatar
-              size={"lg"}
-              src={
-                "http://uxpanol.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png"
-              }
-            />
-            <Text>Unknown User</Text>
-          </Flex>
+        {partyDetail?.partyDetails.map((detail) => {
+          return (
+            <Flex
+              key={detail.customerCode}
+              justifyContent={"space-between"}
+              alignItems="center"
+              fontSize="xl"
+              m={3}
+            >
+              <Flex alignItems="center" gap={3}>
+                <Avatar
+                  size={"lg"}
+                  src={
+                    "http://uxpanol.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png"
+                  }
+                />
+                <Text>{detail.customerCode}</Text>
+              </Flex>
 
-          <Flex>Các món đang chọn</Flex>
-        </Flex>
+              <Flex>Các món đang chọn</Flex>
+            </Flex>
+          );
+        })}
       </Container>
       <Flex justifyContent={"space-between"} paddingY="2rem">
         <Heading fontSize={"3xl"}>

@@ -1,28 +1,15 @@
 import { TArea } from "types/area";
 import { OrderResponse } from "types/cart";
 import { OrderStatusEnum } from "types/constant";
+import { TOrderDetail, TPartyOrderDetail } from "types/order";
 import { BaseResponse, SecondResponse } from "types/request";
 import { request } from "./utils";
-
-export const getCurrentPartyOrder = (
-  orderId: number,
-  accessToken: string,
-  params?: any
-): Promise<SecondResponse<OrderResponse>> =>
-  request
-    .get(`/party-orders/me`, {
-      params,
-      headers: {
-        authorization: "Bearer " + accessToken,
-      },
-    })
-    .then((res) => res.data);
 
 export const getPartyOrderDetail = (
   orderId: number,
   accessToken: string,
   params?: any
-): Promise<OrderResponse> =>
+): Promise<TPartyOrderDetail> =>
   request
     .get(`/party-orders/${orderId}/details`, {
       params,
@@ -59,7 +46,6 @@ export const getPartyOrderByCode = (
     .then((res) => res.data);
 
 const partyOrderApi = {
-  getCurrentPartyOrder,
   completePartyOrder,
   getPartyOrderDetail,
   getPartyOrderByCode,

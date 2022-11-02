@@ -87,6 +87,7 @@ export interface Recipient {
 export type TPartyOrderDetail = {
   orderId: number;
   orderCode: string;
+  receiveTime: string;
   receiveAddress: string;
   notes: string;
   status: string;
