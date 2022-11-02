@@ -100,7 +100,7 @@ const Cart = () => {
       const newCart = deleteItem(cartItem, currentCart);
       await cartContext.SetNewCart(newCart);
       toast({
-        title: `Đã xóa ${cartItem.product.product.name} khỏi giỏ hàng`,
+        title: `Đã xóa ${cartItem.product?.product?.name} khỏi giỏ hàng`,
         status: "warning",
         position: "top-right",
         isClosable: false,
@@ -165,7 +165,7 @@ const Cart = () => {
           </Text>
         </Flex>
         <Flex fontSize={"xl"}>
-          <Text>Điểm giao: {partyOrder?.location.name}</Text>
+          <Text>Điểm giao: {partyOrder?.location?.name}</Text>
         </Flex>
         <Flex gap={3} fontSize={"xl"} p={4} alignItems="center">
           <Text>Mã phòng:</Text>
@@ -202,16 +202,16 @@ const Cart = () => {
             <Text>Giỏ hàng của bạn</Text>
           </Flex>
         </Heading>
-        <Flex alignItems={"center"} color="secondary.main">
+        {/* <Flex alignItems={"center"} color="secondary.main">
           <FaFire size="1.2rem" />
           <NextLink passHref href="/">
             <Link>Đặt thêm món</Link>
           </NextLink>
-        </Flex>
+        </Flex> */}
       </Flex>
       {totalCartItems > 0 ? (
         currentCart?.items?.map((item, index) => (
-          <Box key={index + item.product.id} paddingY={"0.3rem"}>
+          <Box key={index + item.product?.id} paddingY={"0.3rem"}>
             <Box
               key={index}
               width={"100%"}
@@ -248,7 +248,7 @@ const Cart = () => {
                 backgroundColor={"gray.200"}
               >
                 <Image
-                  src={item.product.product.imageUrl}
+                  src={item.product.product?.imageUrl}
                   fallbackSrc={NoImage.src}
                   alt={"image"}
                   objectFit={"cover"}
@@ -276,7 +276,7 @@ const Cart = () => {
                     fontSize="2xl"
                     alignSelf={"flex-start"}
                   >
-                    {item.product.product.name}
+                    {item.product.product?.name}
                   </Text>
                   <Text
                     color="primary.darker"

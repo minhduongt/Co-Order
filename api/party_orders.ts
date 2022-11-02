@@ -22,7 +22,7 @@ export const getPartyOrderDetail = (
   orderId: number,
   accessToken: string,
   params?: any
-): Promise<SecondResponse<OrderResponse>> =>
+): Promise<OrderResponse> =>
   request
     .get(`/party-orders/${orderId}/details`, {
       params,
@@ -59,6 +59,8 @@ export const getPartyOrderByCode = (
     .then((res) => res.data);
 
 const partyOrderApi = {
+  getCurrentPartyOrder,
+  completePartyOrder,
   getPartyOrderDetail,
   getPartyOrderByCode,
 };

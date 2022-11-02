@@ -126,7 +126,12 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
     selectedLocation,
     SetSelectedLocation,
   } = useAreaContext();
-  const { cart: currentCart, SetPartyOrder, partyOrder } = useCartContext();
+  const {
+    cart: currentCart,
+    SetPartyOrder,
+    partyOrder,
+    isHost,
+  } = useCartContext();
   const { accessToken, user: currentUser } = useUserContext();
   const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -379,8 +384,7 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
               </NextLink>
             ) : partyOrder ? (
               <>
-                {partyOrder?.customer.phoneNumber ==
-                currentUser?.phoneNumber ? (
+                {isHost ? (
                   <></>
                 ) : (
                   <Flex alignItems={"center"} gap={5}>
@@ -427,10 +431,14 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
               </FormProvider>
             )}
 
-            <CartDrawer
-              isCartDisable={isCartDisable}
-              arrivedTimeRange={arrivedTimeRange}
-            />
+            {isHost ? (
+              <></>
+            ) : (
+              <CartDrawer
+                isCartDisable={isCartDisable}
+                arrivedTimeRange={arrivedTimeRange}
+              />
+            )}
 
             {user ? (
               <Menu>

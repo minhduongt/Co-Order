@@ -26,9 +26,11 @@ import { BiTime } from "react-icons/bi";
 import { useRouter } from "next/router";
 import { IoLocationOutline } from "react-icons/io5";
 import { TLocation } from "types/location";
+import { TOrderDetail } from "types/order";
 interface CheckoutModalNotifyProps {
   children: any;
   checkoutRes: PostResponse<OrderResponse> | undefined;
+  orderDetail: TOrderDetail | undefined;
   partyOrder?: OrderResponse;
   errorRes?: ErrorResponse;
   receivedDestination: TLocation;
@@ -39,6 +41,7 @@ interface CheckoutModalNotifyProps {
 export default function CheckoutNotifyModal({
   children,
   checkoutRes,
+  orderDetail,
   errorRes,
   partyOrder,
   receivedDestination,
@@ -86,7 +89,7 @@ export default function CheckoutNotifyModal({
               </ModalBody>
             </>
           )}
-          {checkoutRes ? (
+          {orderDetail ? (
             <>
               <ModalHeader fontSize="3xl"></ModalHeader>
               <ModalBody pb={6}>
@@ -164,9 +167,7 @@ export default function CheckoutNotifyModal({
                       </Flex>
 
                       <Text fontWeight={"bold"} textAlign="right">
-                        {checkoutRes.data.timeSlot?.startTime
-                          .toString()
-                          .slice(11, 19)}
+                        {checkoutRes?.data.endTime.toString().slice(11, 19)}
                       </Text>
                     </Flex>
                     <Flex
@@ -180,7 +181,7 @@ export default function CheckoutNotifyModal({
                       </Flex>
 
                       <Text fontWeight={"bold"}>
-                        {checkoutRes?.data.location?.name}
+                        {/* {checkoutRes?.data.location?.name} */}
                       </Text>
                     </Flex>
                   </Box>

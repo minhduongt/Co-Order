@@ -29,7 +29,7 @@ import { OrderResponse } from "types/cart";
 import { FormProvider, useForm } from "react-hook-form";
 import CheckoutNotifyModal from "../CheckoutNotifyModal";
 import useCheckout from "hooks/cart/useCheckout";
-import { PostResponse } from "types/request";
+import { PostResponse, SecondResponse } from "types/request";
 import useCartContext from "hooks/useCartContext";
 import useAreaContext from "hooks/useAreaContext";
 import useUserContext from "hooks/useUserContext";
@@ -37,6 +37,9 @@ import useTimeSlots from "hooks/menu/useTimeSlotMenu";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
+import useOrder from "hooks/order/useOrder";
+import usePartyOrder from "hooks/order/usePartyOrder";
+import { TOrderDetail, TPartyOrderDetail } from "types/order";
 interface CheckoutFormContentProps {
   // setStep: Dispatch<SetStateAction<number>>;
   onClose: VoidFunction;
@@ -63,15 +66,20 @@ export default function CheckoutFormContent({
     SetPartyOrder,
     partyOrder,
     SetNewCart,
+    SetIsHost,
   } = cartContext;
   const menuId = areaContext.selectedMenu?.id;
   const locationId = areaContext.selectedLocation?.id;
 
   const { checkOut, errorRes, createPartyOrder, joinPartyOrder } =
     useCheckout(currentCart);
+  const { getOrderDetail } = useOrder();
+  const { getPartyOrderDetail } = usePartyOrder();
   const { data: timeSlots } = useTimeSlots(menuId!);
   const [checkoutResMsg, setCheckoutResMsg] =
     useState<PostResponse<OrderResponse>>();
+  const [orderDetail, setOrderDetail] = useState<TOrderDetail>();
+  const [partyOrderDetail, setPartyOrderDetail] = useState<TPartyOrderDetail>();
   //states
   const { selectedLocation } = areaContext;
   const [supplierList, setSupplierList] = useState<Suppliers[]>();
@@ -114,6 +122,7 @@ export default function CheckoutFormContent({
           );
           if (checkoutRes) {
             setCheckoutResMsg(checkoutRes);
+            SetIsHost(true);
           }
           if (errorRes) {
             toast({
@@ -133,7 +142,15 @@ export default function CheckoutFormContent({
             accessToken!
           );
           if (checkoutRes) {
-            setCheckoutResMsg(checkoutRes);
+            const orderDetail = await getOrderDetail(
+              checkoutRes.data.id,
+              accessToken!
+            );
+            if (orderDetail) {
+              console.log("orderDetail", orderDetail);
+              setCheckoutResMsg(checkoutRes);
+              setOrderDetail(orderDetail);
+            }
           }
           if (errorRes) {
             toast({
@@ -179,6 +196,7 @@ export default function CheckoutFormContent({
         );
         if (checkoutRes?.data) {
           await SetPartyOrder(checkoutRes?.data);
+          cartContext.onClose();
           router.push("/coorder");
         }
         if (errorRes) {
@@ -366,6 +384,7 @@ export default function CheckoutFormContent({
                   onClose={onCloseCheckoutNotify}
                   open={isOpenNotify}
                   checkoutRes={checkoutResMsg}
+                  orderDetail={orderDetail}
                   partyOrder={partyOrder}
                   receivedDestination={selectedLocation!}
                   errorRes={errorRes}
@@ -404,6 +423,7 @@ export default function CheckoutFormContent({
                   onClose={onCloseCheckoutNotify}
                   open={isOpenNotify}
                   checkoutRes={checkoutResMsg}
+                  orderDetail={orderDetail}
                   receivedDestination={selectedLocation!}
                   errorRes={errorRes}
                 >

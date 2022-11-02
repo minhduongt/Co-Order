@@ -8,9 +8,11 @@ import { TRoom } from "types/room";
 
 export type initialStateProps = {
   cart: Cart;
+  isHost: boolean;
   partyOrder: OrderResponse | null;
   SetNewCart: Function;
   SetPartyOrder: Function;
+  SetIsHost: Function;
   isOpen: boolean;
   onOpen: VoidFunction;
   onClose: VoidFunction;
@@ -22,8 +24,10 @@ const initialState: initialStateProps = {
     totalItem: 0,
     total: 0,
   },
+  isHost: false,
   partyOrder: null,
   SetNewCart: () => {},
+  SetIsHost: () => {},
   SetPartyOrder: () => {},
   isOpen: false,
   onOpen: () => {},
@@ -40,6 +44,7 @@ function CartContextProvider({ children }: CartContextProviderProps) {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [cart, setCart] = useState<Cart>(initialState.cart);
+  const [isHost, setIsHost] = useState<boolean>(initialState.isHost);
   const [partyOrder, setPartyOrder] = useState<OrderResponse | null>(
     initialState.partyOrder
   );
@@ -48,6 +53,12 @@ function CartContextProvider({ children }: CartContextProviderProps) {
     if (newPartyOrder != null) setPartyOrder(newPartyOrder);
     else setPartyOrder(null);
   }
+  function SetIsHost(isHost: boolean) {
+    if (isHost) {
+      setIsHost(isHost);
+    } else setIsHost(false);
+  }
+
   function SetNewCart(newCart: Cart) {
     if (newCart != null)
       setCart({
@@ -69,10 +80,12 @@ function CartContextProvider({ children }: CartContextProviderProps) {
   return (
     <CartContext.Provider
       value={{
+        isHost,
         cart,
         partyOrder,
         isOpen,
         SetNewCart,
+        SetIsHost,
         SetPartyOrder,
         onClose,
         onOpen,
