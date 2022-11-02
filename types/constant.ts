@@ -1,4 +1,5 @@
 export enum OrderStatusEnum {
+    PENDING = "PENDING",
     WAITING = "WAITING",
     FINISHED = "FINISHED",
     CANCELED = "CANCELED",
@@ -29,13 +30,15 @@ export function getOrderStatus(status: String) {
 
     switch (status) {
         case OrderStatusEnum.WAITING.toString():
-            return "Đang xử lý";
+            return "Đang giao";
         case OrderStatusEnum.FINISHED.toString():
             return "Hoàn thành";
         case OrderStatusEnum.CANCELED.toString():
             return "Đã hủy";
+        case OrderStatusEnum.PENDING.toString():
+            return "Chờ xác nhận";
         default:
-            return "Đang xử lý";
+            return "Đang giao";
     }
 
 }

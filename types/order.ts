@@ -57,7 +57,7 @@ export type TOrder = {
   orderDetails: TOrderDetail[];
 };
 export type TOrderDetail = {
-  orderId: number;
+  id: number;
   orderCode: string;
   receiveAddress: string;
   notes: string;
@@ -65,6 +65,7 @@ export type TOrderDetail = {
   totalAmount: number;
   discount: number;
   finalAmount: number;
+  receiveTime: String;
   createdDate: Date;
   details: Detail[];
 };

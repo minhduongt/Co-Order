@@ -17,18 +17,20 @@ import {
   Tabs,
   Text,
   useDisclosure,
+  useQuery,
   useToast,
 } from "@chakra-ui/react";
-import orderApi from "api/order";
+import orderApi, { getOrderDetail } from "api/order";
 import AuthCheck from "components/authentication/AuthCheck";
 import MainFooter from "components/foot";
 import MainHeader from "components/nav";
 import ProductCard from "components/product/ProductCard";
+import useOrder from "hooks/order/useOrder";
 import useOrderHistories from "hooks/order/useOrderHistory";
 import useUserContext from "hooks/useUserContext";
 import { useState } from "react";
 import { getOrderStatus, OrderStatusEnum } from "types/constant";
-import { TOrder } from "types/order";
+import { TOrder, TOrderDetail } from "types/order";
 
 const OrderHistoryPage = () => {
   const { accessToken } = useUserContext();
@@ -36,16 +38,21 @@ const OrderHistoryPage = () => {
   const [orderStatus, setOrderStatus] = useState<OrderStatusEnum | null>(
     OrderStatusEnum.WAITING
   );
-  const [selectedOrder, setSelectedOrder] = useState<TOrder | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<TOrderDetail | null>(null);
   const { data: orders, isLoading: orderLoading } = useOrderHistories({
     accessToken,
     params: {
       status: orderStatus,
     },
   });
+  async function handelOpenOrderDetail(orderId: number, accessToken: string) {
+    const res = await orderApi.getOrderDetail(orderId, accessToken);
+    setSelectedOrder(res);
+  }
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   function onCompleteOrder(orderId: number) {
-    orderApi.completeOrder(orderId).then((res) => {
+    orderApi.completeOrder(orderId, accessToken!).then((res) => {
       console.log(res);
       onClose();
       toast({
@@ -84,7 +91,7 @@ const OrderHistoryPage = () => {
             {orders?.map((order) => (
               <Box
                 onClick={() => {
-                  setSelectedOrder(order);
+                  handelOpenOrderDetail(order.id, accessToken!);
                   onOpen();
                 }}
                 p={4}
@@ -108,7 +115,7 @@ const OrderHistoryPage = () => {
                         ? "green"
                         : order.status == OrderStatusEnum.CANCELED
                         ? "red"
-                        : "yellow"
+                        : "blue"
                     }
                   >
                     {getOrderStatus(order.status)}
@@ -142,35 +149,57 @@ const OrderHistoryPage = () => {
             <ModalCloseButton />
             <ModalBody pb={6}>
               <Container maxWidth="6xl" paddingRight={"1rem"}>
-                <Flex flexDirection={"column"}>
-                  <Flex fontSize={"xl"}>
-                    <Text>Mã đơn: {selectedOrder?.orderCode}</Text>
-                  </Flex>
-                  <Flex fontSize={"xl"}>
-                    <Text>
-                      Trạng thái:{" "}
-                      {selectedOrder?.status == OrderStatusEnum.WAITING
-                        ? "Đang xử lý"
-                        : selectedOrder?.status == OrderStatusEnum.FINISHED
-                        ? "Hoàn thành"
-                        : "Đã hủy"}
+                <Flex w="100%" flexDirection={"column"}>
+                  <Flex w="100%" fontSize={"lg"} alignContent="space-between">
+                    <Text textAlign="left" w="30%">
+                      Mã đơn hàng
+                    </Text>
+                    <Text textAlign="right" w="70%">
+                      {selectedOrder?.orderCode}
                     </Text>
                   </Flex>
-                  <Flex fontSize={"xl"}>
-                    <Text>Điểm giao: {selectedOrder?.location.name}</Text>
+                  <Flex w="100%" flexDirection={"row"} fontSize={"lg"}>
+                    <Text>Trạng thái: </Text>
+                    <Badge
+                      ml="1"
+                      colorScheme={
+                        selectedOrder?.status == OrderStatusEnum.FINISHED
+                          ? "green"
+                          : selectedOrder?.status == OrderStatusEnum.CANCELED
+                          ? "red"
+                          : "blue"
+                      }
+                    >
+                      {getOrderStatus(selectedOrder?.status!)}
+                    </Badge>
+                  </Flex>
+                  <Flex w="100%" fontSize={"lg"} alignContent="space-between">
+                    <Text textAlign="left" w="30%">
+                      Điểm giao:
+                    </Text>
+                    <Text textAlign="right" w="70%">
+                      {selectedOrder?.receiveAddress}
+                    </Text>
+                  </Flex>
+                  <Flex w="100%" fontSize={"lg"} alignContent="space-between">
+                    <Text textAlign="left" w="30%">
+                      Thời gian giao:
+                    </Text>
+                    <Text textAlign="right" w="70%">
+                      {selectedOrder?.receiveTime}
+                    </Text>
                   </Flex>
                 </Flex>
 
-                <Text mt={4} fontSize={"xl"}>
-                  {" "}
-                  Sản phẩm
+                <Text fontWeight={"semibold"} mt={4} fontSize={"lg"}>
+                  Danh sách Sản phẩm
                 </Text>
                 <Divider />
-                {selectedOrder?.orderDetails.map((item, index) => (
+                {selectedOrder?.details.map((item, index) => (
                   <Box w="100%" key={index}>
                     <Flex w="100%" flexDir="row">
                       <Text textAlign="left" w="60%" fontSize={"lg"}>
-                        {item.productInMenu.product.name}
+                        {item.productName}
                       </Text>
                       <Text w="10%" fontSize={"lg"}>
                         {" "}
@@ -183,6 +212,52 @@ const OrderHistoryPage = () => {
                     <Divider />
                   </Box>
                 ))}
+                <Text fontWeight={"semibold"} mt={4} fontSize={"lg"}>
+                  Ghi chú
+                </Text>
+                <Divider />
+                <Text textAlign="left" w="50%" fontSize={"md"}>
+                  {selectedOrder?.notes}
+                </Text>
+                <Text fontWeight={"semibold"} mt={4} fontSize={"lg"}>
+                  Thành tiền
+                </Text>
+                <Divider />
+                <Flex w="100%" flexDirection={"column"}>
+                  <Flex w="100%" flexDir="row">
+                    <Text textAlign="left" w="50%" fontSize={"md"}>
+                      Tạm tính
+                    </Text>
+                    <Divider />
+                    <Text textAlign="right" w="50%" fontSize={"md"}>
+                      {selectedOrder?.totalAmount} đ
+                    </Text>
+                  </Flex>
+                  <Divider />
+                  <Flex w="100%" flexDir="row">
+                    <Text textAlign="left" w="50%" fontSize={"md"}>
+                      Giảm giá
+                    </Text>
+                    <Text textAlign="right" w="50%" fontSize={"md"}>
+                      - {selectedOrder?.discount} đ
+                    </Text>
+                  </Flex>
+                  <Divider />
+                  <Flex w="100%" flexDir="row">
+                    <Text textAlign="left" w="50%" fontSize={"md"}>
+                      Tổng cộng
+                    </Text>
+                    <Text
+                      fontWeight={"semibold"}
+                      textAlign="right"
+                      w="50%"
+                      fontSize={"md"}
+                    >
+                      {selectedOrder?.finalAmount} đ
+                    </Text>
+                  </Flex>
+                  <Divider />
+                </Flex>
               </Container>
             </ModalBody>
 
@@ -190,7 +265,7 @@ const OrderHistoryPage = () => {
               {selectedOrder?.status == OrderStatusEnum.WAITING && (
                 <Button
                   onClick={() => onCompleteOrder(selectedOrder!.id)}
-                  colorScheme="blue"
+                  colorScheme="teal"
                   mr={3}
                 >
                   Hoàn thành đơn
