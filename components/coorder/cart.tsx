@@ -86,7 +86,7 @@ const Cart = () => {
     partyOrder?.id!,
     accessToken!
   );
-  const { completePartyOrder } = usePartyOrder();
+  const { finishPartyOrder } = usePartyOrder();
   const [isOpenNotify, setIsOpenNotify] = useState(false);
   //
   const checkoutForm = useForm<CheckoutForm>({
@@ -128,10 +128,10 @@ const Cart = () => {
       });
     }
   };
-  const handleCompletePartyOrder = () => {
+  const handleFinishPartyOrder = () => {
     try {
       setTimeout(async () => {
-        const res = await completePartyOrder(partyOrder?.id!, accessToken!);
+        const res = await finishPartyOrder(partyOrder?.id!, accessToken!);
         if (res) {
           toast({
             title: "Chốt đơn thành công",
@@ -566,7 +566,7 @@ const Cart = () => {
                   type="submit"
                   w={"100%"}
                   h="5vh"
-                  onClick={handleCompletePartyOrder}
+                  onClick={handleFinishPartyOrder}
                 >
                   Chốt đơn nhóm
                 </Button>
