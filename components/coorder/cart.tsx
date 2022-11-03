@@ -70,6 +70,7 @@ const Cart = () => {
     partyOrder,
     SetPartyOrder,
     SetNewCart,
+    SetIsHost,
   } = cartContext;
   const totalCurrentCart = currentCart?.items.length;
   const { user: currentUser, accessToken } = useUserContext();
@@ -128,29 +129,40 @@ const Cart = () => {
     }
   };
   const handleCompletePartyOrder = () => {
-    setTimeout(async () => {
-      const res = await completePartyOrder(partyOrder?.id!, accessToken!);
-      if (res) {
-        toast({
-          title: "Chốt đơn thành công",
-          status: "success",
-          position: "top",
-          isClosable: false,
-          duration: 2000,
-        });
-        SetPartyOrder(null);
-        SetNewCart(null);
-      }
-      if (errorRes) {
-        toast({
-          title: errorRes?.message,
-          status: "error",
-          position: "top",
-          isClosable: false,
-          duration: 2000,
-        });
-      }
-    }, 1000);
+    try {
+      setTimeout(async () => {
+        const res = await completePartyOrder(partyOrder?.id!, accessToken!);
+        if (res) {
+          toast({
+            title: "Chốt đơn thành công",
+            status: "success",
+            position: "top",
+            isClosable: false,
+            duration: 2000,
+          });
+        } else {
+          toast({
+            title: "Có lỗi xảy ra",
+            status: "error",
+            position: "top",
+            isClosable: false,
+            duration: 2000,
+          });
+        }
+      }, 1000);
+      // SetPartyOrder(null);
+      // SetNewCart(null);
+      // SetIsHost(false);
+      // router.replace(`/`);
+    } catch (error) {
+      toast({
+        title: error?.message,
+        status: "error",
+        position: "top",
+        isClosable: false,
+        duration: 2000,
+      });
+    }
   };
 
   const copy = async () => {

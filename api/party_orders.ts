@@ -22,15 +22,37 @@ export const getPartyOrderDetail = (
 export const completePartyOrder = (
   orderId: number,
   accessToken: string
-): Promise<SecondResponse<OrderResponse>> =>
-  request
-    .patch(`/party-orders/${orderId}`, {
-      headers: {
-        authorization: "Bearer " + accessToken,
-      },
-    })
+): Promise<SecondResponse<OrderResponse>> => {
+  const config = {
+    headers: {
+      Authorization: "Bearer " + accessToken,
+    },
+  };
+  const data = null;
+  const res = request
+    .patch(`/party-orders/${orderId}`, data, config)
+    .then((res) => res.data);
+  console.log("complete", res);
+
+  return res;
+};
+
+export const finishPartyOrder = (
+  orderId: number,
+  accessToken: string
+): Promise<SecondResponse<OrderResponse>> => {
+  const config = {
+    headers: {
+      Authorization: "Bearer " + accessToken,
+    },
+  };
+  const data = null;
+  const res = request
+    .patch(`/party-orders/${orderId}/finish`, data, config)
     .then((res) => res.data);
 
+  return res;
+};
 export const getPartyOrderByCode = (
   partyCode: string,
   accessToken: string,
@@ -46,6 +68,7 @@ export const getPartyOrderByCode = (
     .then((res) => res.data);
 
 const partyOrderApi = {
+  finishPartyOrder,
   completePartyOrder,
   getPartyOrderDetail,
   getPartyOrderByCode,

@@ -196,7 +196,8 @@ export default function CheckoutFormContent({
           await SetPartyOrder(checkoutRes?.data);
           await SetIsHost(true);
           cartContext.onClose();
-          router.push("/coorder");
+          router.replace(`/coorder`);
+          // router.replace(`/coorder/${checkoutRes?.data.shareLink}`);
         }
         if (errorRes) {
           toast({
