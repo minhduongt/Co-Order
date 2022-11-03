@@ -112,7 +112,7 @@ const MenuList = () => {
     SetSelectedLocation,
   } = useAreaContext();
   const { data: menus, isLoading: menuLoading } = useMenus(
-    selectedArea?.id ?? 1
+    selectedArea ? selectedArea.id : 1
   );
   const [filterMenu, setFilterMenu] = useState<TMenu | null>(null);
 
@@ -147,7 +147,7 @@ const MenuList = () => {
       setFilterMenu(menus[0]);
       SetSelectedMenu(menus[0]);
     }
-  }, [filterMenu, menus]);
+  }, [menus]);
 
   return (
     <Box

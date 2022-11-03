@@ -73,7 +73,7 @@ function Authenticate() {
 
   useEffect(() => {
     // init captcha object
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && !FbUser) {
       window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
         "captchaContainer",
         {
@@ -227,119 +227,125 @@ function Authenticate() {
   };
 
   return (
-    <Flex
-      minH={"100vh"}
-      align={"center"}
-      justify={"center"}
-      bg={useColorModeValue("gray.50", "gray.800")}
-    >
-      <Stack spacing={8} mx={"auto"} maxW={"2xl"} py={12} px={6}>
-        <Stack align={"center"}>
-          <Heading fontSize={"4xl"}>Chào mừng bạn đến Co-Order</Heading>
-          <Flex flexDirection={"row"}>
-            <Text fontSize={"xl"} color={"gray.600"}>
-              Đặt món cùng nhau dễ dàng hơn ✌️
-              {/* <Text color={"blue.400"}></Text> */}
-            </Text>
-          </Flex>
-        </Stack>
-        <Box
-          rounded={"lg"}
-          bg={useColorModeValue("white", "gray.700")}
-          boxShadow={"lg"}
-          p={8}
+    <>
+      {FbUser ? (
+        <></>
+      ) : (
+        <Flex
+          minH={"100vh"}
+          align={"center"}
+          justify={"center"}
+          bg={useColorModeValue("gray.50", "gray.800")}
         >
-          <Stack spacing={4}>
-            <FormProvider {...authenForm}>
-              <FormControl>
-                {step == 1 && (
-                  <>
-                    <FormLabel>Số điện thoại</FormLabel>
-                    <Input
-                      sx={{ mt: 4 }}
-                      placeholder="Ex: +84939456738"
-                      {...register("phone")}
-                    />
-                    {/* <Spacer></Spacer> */}
+          <Stack spacing={8} mx={"auto"} maxW={"2xl"} py={12} px={6}>
+            <Stack align={"center"}>
+              <Heading fontSize={"4xl"}>Chào mừng bạn đến Co-Order</Heading>
+              <Flex flexDirection={"row"}>
+                <Text fontSize={"xl"} color={"gray.600"}>
+                  Đặt món cùng nhau dễ dàng hơn ✌️
+                  {/* <Text color={"blue.400"}></Text> */}
+                </Text>
+              </Flex>
+            </Stack>
+            <Box
+              rounded={"lg"}
+              bg={useColorModeValue("white", "gray.700")}
+              boxShadow={"lg"}
+              p={8}
+            >
+              <Stack spacing={4}>
+                <FormProvider {...authenForm}>
+                  <FormControl>
+                    {step == 1 && (
+                      <>
+                        <FormLabel>Số điện thoại</FormLabel>
+                        <Input
+                          sx={{ mt: 4 }}
+                          placeholder="Ex: +84939456738"
+                          {...register("phone")}
+                        />
+                        {/* <Spacer></Spacer> */}
 
-                    {errors.phone && (
-                      <Alert
-                        status="error"
-                        sx={{ maxH: "2em", marginY: "1em" }}
-                      >
-                        <AlertIcon />
-                        <Text fontSize="md">{errors.phone.message}</Text>
-                      </Alert>
+                        {errors.phone && (
+                          <Alert
+                            status="error"
+                            sx={{ maxH: "2em", marginY: "1em" }}
+                          >
+                            <AlertIcon />
+                            <Text fontSize="md">{errors.phone.message}</Text>
+                          </Alert>
+                        )}
+                        <Stack sx={{ my: 4 }} spacing={10}>
+                          <Button
+                            bg={"blue.400"}
+                            color={"white"}
+                            _hover={{
+                              bg: "blue.500",
+                            }}
+                            onClick={handleSubmit(LoginWithPhone)}
+                          >
+                            Tiếp theo
+                          </Button>
+                        </Stack>
+                      </>
                     )}
-                    <Stack sx={{ my: 4 }} spacing={10}>
-                      <Button
-                        bg={"blue.400"}
-                        color={"white"}
-                        _hover={{
-                          bg: "blue.500",
-                        }}
-                        onClick={handleSubmit(LoginWithPhone)}
-                      >
-                        Tiếp theo
-                      </Button>
-                    </Stack>
-                  </>
-                )}
-                {step == 2 && (
-                  <>
-                    <FormLabel>Mã OTP</FormLabel>
-                    {/* <Input {...register("otp")} /> */}
-                    <PinInput onChange={(value) => setOtp(value)}>
-                      {[...Array(6)].map((_, i) => (
-                        <PinInputField sx={{ mx: 4 }} key={i} />
-                      ))}
-                    </PinInput>
-                    {/* {errors.otp && (
-                      <Alert
-                        status="error"
-                        sx={{ maxH: "2em", marginY: "1em" }}
-                      >
-                        <AlertIcon />
-                        <Text fontSize="md">{errors.otp.message}</Text>
-                      </Alert>
-                    )} */}
-                    <Stack sx={{ mt: 8 }} spacing={10}>
-                      <Button
-                        bg={"blue.400"}
-                        color={"white"}
-                        _hover={{
-                          bg: "blue.500",
-                        }}
-                        onClick={VerifyCode}
-                      >
-                        Xác nhận
-                      </Button>
-                    </Stack>
-                  </>
-                )}
-              </FormControl>
-            </FormProvider>
-          </Stack>
-          <div id="captchaContainer" />
-        </Box>
-        <Flex sx={{ fontSize: "1em", justifyContent: "center" }}>
-          Hoặc bạn có thể:
+                    {step == 2 && (
+                      <>
+                        <FormLabel>Mã OTP</FormLabel>
+                        {/* <Input {...register("otp")} /> */}
+                        <PinInput onChange={(value) => setOtp(value)}>
+                          {[...Array(6)].map((_, i) => (
+                            <PinInputField sx={{ mx: 4 }} key={i} />
+                          ))}
+                        </PinInput>
+                        {/* {errors.otp && (
+                    <Alert
+                      status="error"
+                      sx={{ maxH: "2em", marginY: "1em" }}
+                    >
+                      <AlertIcon />
+                      <Text fontSize="md">{errors.otp.message}</Text>
+                    </Alert>
+                  )} */}
+                        <Stack sx={{ mt: 8 }} spacing={10}>
+                          <Button
+                            bg={"blue.400"}
+                            color={"white"}
+                            _hover={{
+                              bg: "blue.500",
+                            }}
+                            onClick={VerifyCode}
+                          >
+                            Xác nhận
+                          </Button>
+                        </Stack>
+                      </>
+                    )}
+                  </FormControl>
+                </FormProvider>
+              </Stack>
+              <div id="captchaContainer" />
+            </Box>
+            {/* <Flex sx={{ fontSize: "1em", justifyContent: "center" }}>
+        Hoặc bạn có thể:
+      </Flex>
+      <Button
+        bg={"blue.400"}
+        color={"white"}
+        _hover={{
+          bg: "blue.500",
+        }}
+        onClick={LoginWithGoogle}
+      >
+        <Flex gap={2} sx={{ alignItems: "center" }}>
+          <FcGoogle />
+          <Text>Đăng nhập với Google</Text>
         </Flex>
-        <Button
-          bg={"blue.400"}
-          color={"white"}
-          _hover={{
-            bg: "blue.500",
-          }}
-          onClick={LoginWithGoogle}
-        >
-          <Flex gap={2} sx={{ alignItems: "center" }}>
-            <FcGoogle />
-            <Text>Đăng nhập với Google</Text>
-          </Flex>
-        </Button>
-      </Stack>
-    </Flex>
+      </Button> */}
+          </Stack>
+        </Flex>
+      )}
+    </>
   );
 }
 

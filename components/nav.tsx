@@ -144,7 +144,7 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
       SetSelectedArea(areas?.[0]);
       SetSelectedLocation(areas?.[0].locations[0]);
     }
-  }, [selectedArea, areas, SetSelectedArea, SetSelectedLocation]);
+  }, [areas]);
   const { shareLink } = router.query;
 
   //states

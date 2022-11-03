@@ -69,7 +69,7 @@ function AuthCheck({ children }: any) {
   if (FbUser) {
     return children;
   } else if (!FbUser && !loading) {
-    return <Authenticate />;
+    router.push("/authentication");
   } else {
     return <Loading />;
   }
