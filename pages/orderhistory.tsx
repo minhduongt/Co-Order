@@ -256,6 +256,15 @@ const OrderHistoryPage = () => {
                   <Divider />
                   <Flex w="100%" flexDir="row">
                     <Text textAlign="left" w="50%" fontSize={"md"}>
+                      Phí dịch vụ
+                    </Text>
+                    <Text textAlign="right" w="50%" fontSize={"md"}>
+                      + 5000 đ
+                    </Text>
+                  </Flex>
+                  <Divider />
+                  <Flex w="100%" flexDir="row">
+                    <Text textAlign="left" w="50%" fontSize={"md"}>
                       Tổng cộng
                     </Text>
                     <Text

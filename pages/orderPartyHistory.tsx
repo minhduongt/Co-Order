@@ -38,7 +38,7 @@ import orderApi from "api/order";
 const OrderPartyHistoryPage = () => {
   const { accessToken } = useUserContext();
   const [orderStatus, setOrderStatus] = useState<OrderStatusEnum | null>(
-    OrderStatusEnum.WAITING
+    OrderStatusEnum.PENDING
   );
   const [selectedOrder, setSelectedOrder] = useState<TOrderDetail | null>(null);
   const toast = useToast();
@@ -185,6 +185,8 @@ const OrderPartyHistoryPage = () => {
                             ? "green"
                             : selectedOrder?.status == OrderStatusEnum.CANCELED
                             ? "red"
+                            : selectedOrder?.status == OrderStatusEnum.PENDING
+                            ? "yellow"
                             : "blue"
                         }
                       >
@@ -291,21 +293,18 @@ const OrderPartyHistoryPage = () => {
             </ModalBody>
 
             <ModalFooter>
-              {selectedOrder?.status == OrderStatusEnum.WAITING ||
-                (selectedOrder?.status == OrderStatusEnum.PENDING && (
-                  <Button
-                    onClick={() =>
-                      onCompleteOrder(
-                        selectedOrder!.id,
-                        OrderStatusEnum.CANCELED
-                      )
-                    }
-                    colorScheme="red"
-                    mr={10}
-                  >
-                    Huỷ đơn
-                  </Button>
-                ))}
+              {(selectedOrder?.status == OrderStatusEnum.WAITING ||
+                selectedOrder?.status == OrderStatusEnum.PENDING) && (
+                <Button
+                  onClick={() =>
+                    onCompleteOrder(selectedOrder!.id, OrderStatusEnum.CANCELED)
+                  }
+                  colorScheme="red"
+                  mr={10}
+                >
+                  Huỷ đơn
+                </Button>
+              )}
               {selectedOrder?.status == OrderStatusEnum.WAITING && (
                 <Button
                   onClick={() =>
