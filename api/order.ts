@@ -19,7 +19,7 @@ export const getOrderDetail = (
     })
     .then((res) => res.data);
 
-const completeOrder = (id: number, accessToken: string): Promise<BaseResponse<any>> => {
+const completeOrder = (id: number, accessToken: string, status: OrderStatusEnum): Promise<BaseResponse<any>> => {
   const config = {
     headers: {
       authorization: "Bearer " + accessToken,
@@ -28,7 +28,7 @@ const completeOrder = (id: number, accessToken: string): Promise<BaseResponse<an
   }
   const data = {
     id: id,
-    status: OrderStatusEnum.FINISHED,
+    status: status,
   }
 
   return request

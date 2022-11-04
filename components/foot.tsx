@@ -95,13 +95,13 @@ export default function MainFooter() {
               fontSize={{ xs: "1rem", md: "1.3rem" }}
               mb={2}
             >
-              {/* <Text> Mạng xã hội :</Text>
+              <Text> Mạng xã hội :</Text>
               <Link
                 textDecoration={"underline"}
-                href=" https://www.facebook.com/beanoivn"
+                href="https://www.facebook.com/profile.php?id=100086493931913"
               >
-                https://www.facebook.com/beanoivn
-              </Link> */}
+                Coorder
+              </Link>
               <Box py="1rem">
                 <Text>©2022 CoOrder. All rights reserved.</Text>
               </Box>
