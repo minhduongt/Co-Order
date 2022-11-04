@@ -93,7 +93,7 @@ export interface TRecipient {
 
 export type TPartyOrderDetail = {
   shareLink: string;
-  orderId: number;
+  id: number;
   orderCode: string;
   receiveTime: string;
   receiveAddress: string;

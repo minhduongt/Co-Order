@@ -186,26 +186,25 @@ const Cart = () => {
   };
   const handleFinishPartyOrder = async () => {
     try {
-      setTimeout(async () => {
-        const res = await finishPartyOrder(partyOrder?.id!, accessToken!);
-        if (res) {
-          toast({
-            title: "Chốt đơn thành công",
-            status: "success",
-            position: "top",
-            isClosable: false,
-            duration: 2000,
-          });
-        } else {
-          toast({
-            title: "Có lỗi xảy ra",
-            status: "error",
-            position: "top",
-            isClosable: false,
-            duration: 2000,
-          });
-        }
-      }, 1000);
+      const res = await finishPartyOrder(partyDetail?.id!, accessToken!);
+      if (res) {
+        toast({
+          title: "Chốt đơn thành công",
+          status: "success",
+          position: "top",
+          isClosable: false,
+          duration: 2000,
+        });
+      } else {
+        toast({
+          title: "Có lỗi xảy ra",
+          status: "error",
+          position: "top",
+          isClosable: false,
+          duration: 2000,
+        });
+      }
+
       await SetPartyOrder(null);
       await SetNewCart(null);
       await SetIsHost(false);
@@ -571,15 +570,14 @@ const Cart = () => {
           </Box>
         </Flex> */}
 
-          {totalCartItems > 0 && (
-            <Flex
-              minHeight={"20vh"}
-              flexDirection="column"
-              justifyContent={"space-between"}
-            >
-              {/* {cartPrepareRes ? ( */}
-              <>
-                {/* <Flex
+          <Flex
+            minHeight={"20vh"}
+            flexDirection="column"
+            justifyContent={"space-between"}
+          >
+            {/* {cartPrepareRes ? ( */}
+            <>
+              {/* <Flex
               height={"auto"}
               border={"groove"}
               borderRadius={8}
@@ -667,39 +665,38 @@ const Cart = () => {
                 </Flex>
               </Flex>
             </Flex> */}
-                {/* {isHost && ( */}
-                  <Flex w="100%" pt={"1rem"}>
-                    <CheckoutNotifyModal
-                      onClose={onCloseCheckoutNotify}
-                      open={isOpenNotify}
-                      checkoutRes={checkoutResMsg}
-                      receivedDestination={selectedLocation!}
-                      errorRes={errorRes}
-                    >
-                      <Button
-                        backgroundColor="primary.main"
-                        colorScheme={"primary.main"}
-                        fontSize="xl"
-                        type="submit"
-                        w={"100%"}
-                        h="5vh"
-                        onClick={handleFinishPartyOrder}
-                      >
-                        Chốt đơn nhóm
-                      </Button>
-                    </CheckoutNotifyModal>
-                  </Flex>
-                {/* )} */}
-                {/*  Check out */}
-              </>
-              {/* ) : (
+              {/* {isHost && ( */}
+              <Flex w="100%" pt={"1rem"}>
+                <CheckoutNotifyModal
+                  onClose={onCloseCheckoutNotify}
+                  open={isOpenNotify}
+                  checkoutRes={checkoutResMsg}
+                  receivedDestination={selectedLocation!}
+                  errorRes={errorRes}
+                >
+                  <Button
+                    backgroundColor="primary.main"
+                    colorScheme={"primary.main"}
+                    fontSize="xl"
+                    type="submit"
+                    w={"100%"}
+                    h="5vh"
+                    onClick={handleFinishPartyOrder}
+                  >
+                    Chốt đơn nhóm
+                  </Button>
+                </CheckoutNotifyModal>
+              </Flex>
+              {/* )} */}
+              {/*  Check out */}
+            </>
+            {/* ) : (
                 <>
                   <SkeletonText h="20vh" noOfLines={4} spacing="7" mx="1rem" />
                   <Skeleton h="5vh" mx="1rem" mb="2rem" />
                 </>
               )} */}
-            </Flex>
-          )}
+          </Flex>
         </Box>
       ) : (
         <Flex>
