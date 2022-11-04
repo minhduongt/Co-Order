@@ -120,7 +120,10 @@ export default function CheckoutFormContent({
             accessToken!
           );
           if (checkoutRes) {
-            setCheckoutResMsg(checkoutRes);
+            // setCheckoutResMsg(checkoutRes);
+            await SetPartyOrder(checkoutRes.data);
+            cartContext.onClose();
+            router.push(`/coorder?=${checkoutRes.data.id}`);
           }
           if (errorRes) {
             toast({
@@ -196,7 +199,7 @@ export default function CheckoutFormContent({
           await SetPartyOrder(checkoutRes?.data);
           await SetIsHost(true);
           cartContext.onClose();
-          router.replace(`/coorder`);
+          router.push(`/coorder?=${checkoutRes.data.id}`);
           // router.replace(`/coorder/${checkoutRes?.data.shareLink}`);
         }
         if (errorRes) {
@@ -245,20 +248,25 @@ export default function CheckoutFormContent({
                     partyOrder?.timeSlot?.endTime.toString().slice(11, 19)}
                 </Flex>
               ) : (
-                <Flex w={"40%"}>
-                  <Select
-                    placeholder="Chọn giờ nhận"
-                    {...register("timeSlotId")}
-                    sx={{ fontSize: "xl", borderColor: "primary.main" }}
-                  >
-                    {timeSlots?.map((slot) => (
-                      <option key={slot.id} value={slot.id}>
-                        {slot.startTime.toString().slice(11, 19) +
-                          " - " +
-                          slot.endTime.toString().slice(11, 19)}
-                      </option>
-                    ))}
-                    {/* {errors.timeSlotId && (
+                <>
+                  <Flex alignItems={"center"}>
+                    <AlertIcon />
+                    <Text fontSize={"2xl"}>{"Bạn sẽ nhận vào lúc: "}</Text>
+                  </Flex>{" "}
+                  <Flex w={"40%"}>
+                    <Select
+                      placeholder="Chọn giờ nhận"
+                      {...register("timeSlotId")}
+                      sx={{ fontSize: "xl", borderColor: "primary.main" }}
+                    >
+                      {timeSlots?.map((slot) => (
+                        <option key={slot.id} value={slot.id}>
+                          {slot.startTime.toString().slice(11, 19) +
+                            " - " +
+                            slot.endTime.toString().slice(11, 19)}
+                        </option>
+                      ))}
+                      {/* {errors.timeSlotId && (
                       <Alert status="error">
                         <AlertIcon />
                         <Text fontSize="xl">{errors.timeSlotId.message}</Text>

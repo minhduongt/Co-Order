@@ -78,6 +78,7 @@ const Cart = () => {
     SetPartyOrder,
     SetNewCart,
     SetIsHost,
+    isHost,
   } = cartContext;
   const totalCurrentCart = currentCart?.items.length;
   const { user: currentUser, accessToken } = useUserContext();
@@ -622,55 +623,58 @@ const Cart = () => {
                 pt={10}
                 fontSize="xl"
               >
-                {/* <Flex
-                    width="40%"
-                    justifyContent={"space-between"}
-                    alignItems="center"
+                <Flex
+                  width="40%"
+                  justifyContent={"space-between"}
+                  alignItems="center"
+                >
+                  <Text minW={{ lg: "12rem" }}>Bạn sẽ nhận vào lúc:</Text>
+                  <Select
+                    // placeholder="Chọn giờ giao"
+                    {...register("timeSlotId")}
+                    sx={{ fontSize: "xl", borderColor: "primary.main" }}
                   >
-                    <Text minW={{ lg: "12rem" }}>Bạn sẽ nhận vào lúc:</Text>
-                    <Select
-                      // placeholder="Chọn giờ giao"
-                      {...register("timeSlotId")}
-                      sx={{ fontSize: "xl", borderColor: "primary.main" }}
-                    >
-                      {timeSlots?.map((slot) => (
-                        <option key={slot.id} value={slot.id}>
-                          {slot.startTime.toString().slice(11, 19) +
-                            " - " +
-                            slot.endTime.toString().slice(11, 19)}
-                        </option>
-                      ))}
-                      {errors.timeSlotId && (
-                        <Alert status="error">
-                          <AlertIcon />
-                          <Text fontSize="xl">{errors.timeSlotId.message}</Text>
-                        </Alert>
-                      )}
-                    </Select>
-                  </Flex> */}
+                    {timeSlots?.map((slot) => (
+                      <option key={slot.id} value={slot.id}>
+                        {slot.startTime.toString().slice(11, 19) +
+                          " - " +
+                          slot.endTime.toString().slice(11, 19)}
+                      </option>
+                    ))}
+                    {errors.timeSlotId && (
+                      <Alert status="error">
+                        <AlertIcon />
+                        <Text fontSize="xl">{errors.timeSlotId.message}</Text>
+                      </Alert>
+                    )}
+                  </Select>
+                </Flex>
               </Flex>
             </Flex>
-            <Flex w="100%" pt={"1rem"}>
-              <CheckoutNotifyModal
-                onClose={onCloseCheckoutNotify}
-                open={isOpenNotify}
-                checkoutRes={checkoutResMsg}
-                receivedDestination={selectedLocation!}
-                errorRes={errorRes}
-              >
-                <Button
-                  backgroundColor="primary.main"
-                  colorScheme={"primary.main"}
-                  fontSize="xl"
-                  type="submit"
-                  w={"100%"}
-                  h="5vh"
-                  onClick={handleFinishPartyOrder}
+
+            {isHost && (
+              <Flex w="100%" pt={"1rem"}>
+                <CheckoutNotifyModal
+                  onClose={onCloseCheckoutNotify}
+                  open={isOpenNotify}
+                  checkoutRes={checkoutResMsg}
+                  receivedDestination={selectedLocation!}
+                  errorRes={errorRes}
                 >
-                  Chốt đơn nhóm
-                </Button>
-              </CheckoutNotifyModal>
-            </Flex>
+                  <Button
+                    backgroundColor="primary.main"
+                    colorScheme={"primary.main"}
+                    fontSize="xl"
+                    type="submit"
+                    w={"100%"}
+                    h="5vh"
+                    onClick={handleFinishPartyOrder}
+                  >
+                    Chốt đơn nhóm
+                  </Button>
+                </CheckoutNotifyModal>
+              </Flex>
+            )}
             {/*  Check out */}
           </>
           {/* ) : (

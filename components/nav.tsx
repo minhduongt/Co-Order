@@ -50,6 +50,9 @@ import useCartContext from "hooks/useCartContext";
 import useCheckout from "hooks/cart/useCheckout";
 import usePartyOrder from "hooks/order/usePartyOrder";
 import useUserContext from "hooks/useUserContext";
+import { TOrder } from "types/order";
+import useOrderPartyHistories from "hooks/order/userOrderPartyHistory";
+import { OrderStatusEnum } from "types/constant";
 type MainHeaderProps = {
   isCartPage?: boolean;
 };
@@ -117,6 +120,7 @@ const findRoomSchema = yup.object().shape({
 const currentDate = new Date();
 
 const MainHeader = ({ isCartPage }: MainHeaderProps) => {
+  const [newestPendingOrder, setNewestPendingOrder] = useState<TOrder | null>();
   //hooks
   const toast = useToast();
   const { user, loading } = useAuthContext();
@@ -138,6 +142,17 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
   //apis
   const { data: areas } = useAreas();
   const { getPartyOrderByCode } = usePartyOrder();
+  const {
+    data: pendingPartyOrders,
+    isLoading: partyOrderLoading,
+    refetch: refetchPartyOrders,
+  } = useOrderPartyHistories({
+    accessToken,
+    params: {
+      status: OrderStatusEnum.PENDING,
+    },
+  });
+
   const { joinPartyOrder } = useCheckout(currentCart);
   useEffect(() => {
     if (!selectedArea) {
@@ -145,6 +160,19 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
       SetSelectedLocation(areas?.[0].locations[0]);
     }
   }, [areas]);
+
+  useEffect(() => {
+    if (pendingPartyOrders) {
+      const newestPendingOrder = pendingPartyOrders[0];
+      setNewestPendingOrder(newestPendingOrder);
+    }
+  }, [pendingPartyOrders]);
+
+  useEffect(() => {
+    const refetchPartyOrdersInterval = setInterval(refetchPartyOrders, 5000);
+    return () => clearInterval(refetchPartyOrdersInterval);
+  }, []);
+
   const { shareLink } = router.query;
 
   //states
@@ -179,7 +207,7 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
         accessToken!
       );
       if (targetPartyOrder) {
-        if (targetPartyOrder.error) {
+        if (targetPartyOrder?.error) {
           toast({
             title: "Lỗi vào phòng!",
             status: "error",
@@ -189,8 +217,7 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
           });
           return;
         }
-        if (targetPartyOrder.data) {
-          console.log("targetPartyOrder", targetPartyOrder.data);
+        if (targetPartyOrder?.data) {
           await SetPartyOrder(targetPartyOrder.data);
           toast({
             title: "Vào phòng thành công!",
@@ -358,8 +385,11 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
           </HStack>
           <Flex></Flex>
           <Flex gap={2} alignItems={"center"}>
-            {isCartPage ? (
-              <NextLink href={"/coorder"} passHref>
+            {newestPendingOrder && !partyOrder ? (
+              <NextLink
+                href={`/coorder?orderId=${newestPendingOrder?.id}`}
+                passHref
+              >
                 <Link
                   color={
                     router.pathname.includes("coorder")
@@ -381,20 +411,62 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
                   Đơn party
                 </Link>
               </NextLink>
-            ) : partyOrder ? (
+            ) : (
               <>
-                {isHost ? (
-                  <></>
-                ) : (
-                  <Flex alignItems={"center"} gap={5}>
-                    <Text>{partyOrder.orderCode}</Text>
-                    <Button
-                      onClick={() => SetPartyOrder(null)}
-                      colorScheme="teal"
+                {partyOrder ? (
+                  <>
+                    {isHost ? (
+                      <></>
+                    ) : (
+                      <Flex alignItems={"center"} gap={5}>
+                        <Text>{partyOrder.orderCode}</Text>
+                        <Button
+                          onClick={() => SetPartyOrder(null)}
+                          colorScheme="teal"
+                        >
+                          Thoát party
+                        </Button>
+                      </Flex>
+                    )}
+
+                    <NextLink
+                      href={`/coorder?orderId=${partyOrder?.id}`}
+                      passHref
                     >
-                      Thoát party
+                      <Link
+                        color={
+                          router.pathname.includes("coorder")
+                            ? "primary.main"
+                            : "primary.darker"
+                        }
+                        fontWeight={"bold"}
+                        fontSize="lg"
+                        _hover={{
+                          textDecoration: "none",
+                          color: "primary.main",
+                          fontWeight: "bold",
+                        }}
+                        _focus={{ boxShadow: "none" }}
+                        width="8rem"
+                        pl={{ xs: "1rem", lg: 0 }}
+                      >
+                        Đơn party
+                      </Link>
+                    </NextLink>
+                  </>
+                ) : (
+                  <FormProvider {...findRoomForm}>
+                    <Input
+                      {...register("shareLink")}
+                      w="8rem"
+                      variant="outlined"
+                      colorScheme="teal"
+                      placeholder="Nhập code"
+                    />
+                    <Button onClick={handleSubmit(onSubmit)} colorScheme="teal">
+                      Vào party
                     </Button>
-                  </Flex>
+                  </FormProvider>
                 )}
 
                 <NextLink href={"/coorder"} passHref>
@@ -419,19 +491,6 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
                   </Link>
                 </NextLink>
               </>
-            ) : (
-              <FormProvider {...findRoomForm}>
-                <Input
-                  {...register("shareLink")}
-                  w="8rem"
-                  variant="outlined"
-                  colorScheme="teal"
-                  placeholder="Nhập code"
-                />
-                <Button onClick={handleSubmit(onSubmit)} colorScheme="teal">
-                  Vào party
-                </Button>
-              </FormProvider>
             )}
 
             {isHost ? (
