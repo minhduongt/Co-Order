@@ -151,7 +151,7 @@ const MenuList = () => {
 
   return (
     <Box
-      p={4}
+      p={2}
       overflow={"clip"}
       w={"100%"}
       justifyContent="center"
@@ -228,12 +228,12 @@ const MenuList = () => {
           onClose={onCloseConfirmChange}
           doAction={() => changeMenu(selectedTabIndex)}
         />
-        <Divider sx={{ borderWidth: "3px", marginY: "1rem", opacity: 1 }} />
+        <Divider sx={{ borderWidth: "4px", marginTop: "1rem", opacity: 1 }} />
         <Flex>
           <CategoryCarousel setFilterCate={setFilterCate} />
         </Flex>
 
-        <Box px="1rem" pt="5rem">
+        <Box px="1rem" pt="1rem">
           <CategoryProduct
             filterMenu={filterMenu}
             setFilterCate={setFilterCate}

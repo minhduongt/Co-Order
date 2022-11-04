@@ -84,7 +84,11 @@ export default function CategoryCarousel({
   const left = useBreakpointValue({ base: "50%", xs: "1%", md: "1%" });
 
   return (
-    <Box w={"100vw"} pt={{ xs: "3rem", xl: "5rem" }} mx={{ xs: 0, lg: "7rem" }}>
+    <Box
+      w={"100vw"}
+      pt={{ xs: "1rem", xl: "1rem" }}
+      mx={{ xs: "1rem", lg: "7rem" }}
+    >
       {/* CSS files for react-slick */}
       {/* 
       <link
@@ -147,11 +151,11 @@ export default function CategoryCarousel({
             xs: "repeat(3, 1fr)",
             md: "repeat(5, 1fr)",
           }}
-          gap={{ md: 5, xl: 10 }}
+          gap={{ xs: 3, md: 5, xl: 10 }}
           width="100%"
           paddingY={"0.5rem"}
           alignItems="center"
-          mx={{ xs: 2, lg: 5 }}
+          mx={{ xs: 1, lg: 5 }}
         >
           {/* <Slider {...settings} ref={(slider) => setSlider(slider)}> */}
           {categories?.map((cate) => (

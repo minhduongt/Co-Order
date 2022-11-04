@@ -159,7 +159,7 @@ const OrderPartyHistoryPage = () => {
           </Box>
         </Tabs>
         <Modal
-          size="xl"
+          size="2xl"
           closeOnOverlayClick={false}
           isOpen={isOpen}
           onClose={onClose}
@@ -172,28 +172,27 @@ const OrderPartyHistoryPage = () => {
               <Container maxWidth="6xl" paddingRight={"1rem"}>
                 <Flex w="100%" flexDirection={"column"}>
                   <Flex w="100%" fontSize={"lg"} alignContent="space-between">
-                    <Text textAlign="left" w="30%">
-                      Mã đơn hàng
-                    </Text>
-                    <Text textAlign="right" w="70%">
-                      {selectedOrder?.orderCode}
-                    </Text>
+                    <Flex w="50%" flexDirection={"row"} fontSize={"lg"}>
+                      <Text>Mã đơn:</Text>
+                      <Text ml={4}>{selectedOrder?.orderCode}</Text>
+                    </Flex>
+                    <Flex w="50%" flexDirection={"row"} fontSize={"lg"}>
+                      <Text textAlign="left">Trạng thái: </Text>
+                      <Badge
+                        ml={4}
+                        colorScheme={
+                          selectedOrder?.status == OrderStatusEnum.FINISHED
+                            ? "green"
+                            : selectedOrder?.status == OrderStatusEnum.CANCELED
+                            ? "red"
+                            : "blue"
+                        }
+                      >
+                        {getOrderStatus(selectedOrder?.status!)}
+                      </Badge>
+                    </Flex>
                   </Flex>
-                  <Flex w="100%" flexDirection={"row"} fontSize={"lg"}>
-                    <Text>Trạng thái: </Text>
-                    <Badge
-                      ml="1"
-                      colorScheme={
-                        selectedOrder?.status == OrderStatusEnum.FINISHED
-                          ? "green"
-                          : selectedOrder?.status == OrderStatusEnum.CANCELED
-                          ? "red"
-                          : "blue"
-                      }
-                    >
-                      {getOrderStatus(selectedOrder?.status!)}
-                    </Badge>
-                  </Flex>
+
                   <Flex w="100%" fontSize={"lg"} alignContent="space-between">
                     <Text textAlign="left" w="30%">
                       Điểm giao:
@@ -212,21 +211,21 @@ const OrderPartyHistoryPage = () => {
                   </Flex>
                 </Flex>
 
-                <Text fontWeight={"semibold"} mt={4} fontSize={"lg"}>
+                <Text fontWeight={"semibold"} mt={4} fontSize={"md"}>
                   Danh sách Sản phẩm
                 </Text>
                 <Divider />
                 {selectedOrder?.details.map((item, index) => (
                   <Box w="100%" key={index}>
                     <Flex w="100%" flexDir="row">
-                      <Text textAlign="left" w="60%" fontSize={"lg"}>
+                      <Text textAlign="left" w="60%" fontSize={"md"}>
                         {item.productName}
                       </Text>
-                      <Text w="10%" fontSize={"lg"}>
+                      <Text w="10%" fontSize={"md"}>
                         {" "}
                         X {item.quantity}
                       </Text>
-                      <Text textAlign="right" w="30%" fontSize={"lg"}>
+                      <Text textAlign="right" w="30%" fontSize={"md"}>
                         {item.unitPrice} đ
                       </Text>
                     </Flex>
@@ -261,6 +260,15 @@ const OrderPartyHistoryPage = () => {
                     </Text>
                     <Text textAlign="right" w="50%" fontSize={"md"}>
                       - {selectedOrder?.discount} đ
+                    </Text>
+                  </Flex>
+                  <Divider />
+                  <Flex w="100%" flexDir="row">
+                    <Text textAlign="left" w="50%" fontSize={"md"}>
+                      Phí dịch vụ
+                    </Text>
+                    <Text textAlign="right" w="50%" fontSize={"md"}>
+                      + 5000 đ
                     </Text>
                   </Flex>
                   <Divider />

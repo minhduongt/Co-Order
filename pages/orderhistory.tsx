@@ -163,28 +163,27 @@ const OrderHistoryPage = () => {
               <Container maxWidth="6xl" paddingRight={"1rem"}>
                 <Flex w="100%" flexDirection={"column"}>
                   <Flex w="100%" fontSize={"lg"} alignContent="space-between">
-                    <Text textAlign="left" w="30%">
-                      Mã đơn hàng
-                    </Text>
-                    <Text textAlign="right" w="70%">
-                      {selectedOrder?.orderCode}
-                    </Text>
+                    <Flex w="50%" flexDirection={"row"} fontSize={"lg"}>
+                      <Text>Mã đơn:</Text>
+                      <Text ml={4}>{selectedOrder?.orderCode}</Text>
+                    </Flex>
+                    <Flex w="50%" flexDirection={"row"} fontSize={"lg"}>
+                      <Text textAlign="left">Trạng thái: </Text>
+                      <Badge
+                        ml={4}
+                        colorScheme={
+                          selectedOrder?.status == OrderStatusEnum.FINISHED
+                            ? "green"
+                            : selectedOrder?.status == OrderStatusEnum.CANCELED
+                            ? "red"
+                            : "blue"
+                        }
+                      >
+                        {getOrderStatus(selectedOrder?.status!)}
+                      </Badge>
+                    </Flex>
                   </Flex>
-                  <Flex w="100%" flexDirection={"row"} fontSize={"lg"}>
-                    <Text>Trạng thái: </Text>
-                    <Badge
-                      ml="1"
-                      colorScheme={
-                        selectedOrder?.status == OrderStatusEnum.FINISHED
-                          ? "green"
-                          : selectedOrder?.status == OrderStatusEnum.CANCELED
-                          ? "red"
-                          : "blue"
-                      }
-                    >
-                      {getOrderStatus(selectedOrder?.status!)}
-                    </Badge>
-                  </Flex>
+
                   <Flex w="100%" fontSize={"lg"} alignContent="space-between">
                     <Text textAlign="left" w="30%">
                       Điểm giao:

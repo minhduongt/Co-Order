@@ -11,11 +11,12 @@ export default function ProductList({ products, from }: ProductListProps) {
   return (
     <Grid
       templateColumns={{
+        xs: "repeat(2, 1fr)",
         md: "repeat(3, 1fr)",
         lg: "repeat(4, 1fr)",
         xl: "repeat(5, 1fr)",
       }}
-      gap={{ md: 10, xl: 5 }}
+      gap={{ xs: 3, md: 10, xl: 6 }}
       width="100%"
       paddingY={"0.5rem"}
       alignItems="center"

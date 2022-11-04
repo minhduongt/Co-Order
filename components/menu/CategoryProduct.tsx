@@ -49,7 +49,7 @@ function CategoryProduct({
         >
           <BiCategoryAlt size={"2rem"} color="#F5B340" />
 
-          <Text>Danh sách sản phẩm </Text>
+          <Text fontSize="3xl">Danh sách sản phẩm </Text>
           <Text color="primary.main">{filterCate ? filterCate.name : ""}</Text>
 
           {filterCate ? (
