@@ -106,7 +106,9 @@ const Cart = () => {
   const copy = async () => {
     if (window) {
       await navigator.clipboard.writeText(
-        `${window.location.origin}/joinparty/${partyOrder?.shareLink!}`
+        `${
+          window.location.origin
+        }/joinparty?shareLink=${partyDetail?.shareLink!}`
       );
       toast({
         title: "Đã sao lưu vào bộ nhớ đệm",
@@ -116,7 +118,7 @@ const Cart = () => {
         duration: 2000,
       });
     } else {
-      await navigator.clipboard.writeText(partyOrder?.shareLink!);
+      await navigator.clipboard.writeText(partyDetail?.shareLink!);
       toast({
         title: "Đã sao lưu vào bộ nhớ đệm",
         status: "success",
@@ -244,11 +246,11 @@ const Cart = () => {
     }
   }, [partyDetail]);
 
-  useEffect(() => {
-    if (orderId) {
-      console.log("orderId", orderId);
-    }
-  }, [orderId]);
+  // useEffect(() => {
+  //   if (orderId) {
+  //     console.log("orderId", orderId);
+  //   }
+  // }, [orderId]);
 
   useEffect(() => {
     if (partyDetailError) {

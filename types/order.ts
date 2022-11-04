@@ -57,6 +57,7 @@ export type TOrder = {
   orderDetails: TOrderDetail[];
 };
 export type TOrderDetail = {
+  shareLink: string;
   endTime: string;
   id: number;
   orderCode: string;
@@ -91,6 +92,7 @@ export interface TRecipient {
 }
 
 export type TPartyOrderDetail = {
+  shareLink: string;
   orderId: number;
   orderCode: string;
   receiveTime: string;

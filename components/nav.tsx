@@ -468,28 +468,6 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
                     </Button>
                   </FormProvider>
                 )}
-
-                <NextLink href={`/coorder/${partyOrder?.id}`} passHref>
-                  <Link
-                    color={
-                      router.pathname.includes("coorder")
-                        ? "primary.main"
-                        : "primary.darker"
-                    }
-                    fontWeight={"bold"}
-                    fontSize="lg"
-                    _hover={{
-                      textDecoration: "none",
-                      color: "primary.main",
-                      fontWeight: "bold",
-                    }}
-                    _focus={{ boxShadow: "none" }}
-                    width="8rem"
-                    pl={{ xs: "1rem", lg: 0 }}
-                  >
-                    Đơn party
-                  </Link>
-                </NextLink>
               </>
             )}
 
