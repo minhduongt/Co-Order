@@ -75,6 +75,7 @@ const Cart = () => {
     SetPartyOrder,
     SetNewCart,
     SetIsHost,
+    isHost,
   } = cartContext;
   const totalCurrentCart = currentCart?.items.length;
   const { user: currentUser, accessToken } = useUserContext();
@@ -664,27 +665,29 @@ const Cart = () => {
                 </Flex>
               </Flex>
             </Flex> */}
-                <Flex w="100%" pt={"1rem"}>
-                  <CheckoutNotifyModal
-                    onClose={onCloseCheckoutNotify}
-                    open={isOpenNotify}
-                    checkoutRes={checkoutResMsg}
-                    receivedDestination={selectedLocation!}
-                    errorRes={errorRes}
-                  >
-                    <Button
-                      backgroundColor="primary.main"
-                      colorScheme={"primary.main"}
-                      fontSize="xl"
-                      type="submit"
-                      w={"100%"}
-                      h="5vh"
-                      onClick={handleFinishPartyOrder}
+                {isHost && (
+                  <Flex w="100%" pt={"1rem"}>
+                    <CheckoutNotifyModal
+                      onClose={onCloseCheckoutNotify}
+                      open={isOpenNotify}
+                      checkoutRes={checkoutResMsg}
+                      receivedDestination={selectedLocation!}
+                      errorRes={errorRes}
                     >
-                      Chốt đơn nhóm
-                    </Button>
-                  </CheckoutNotifyModal>
-                </Flex>
+                      <Button
+                        backgroundColor="primary.main"
+                        colorScheme={"primary.main"}
+                        fontSize="xl"
+                        type="submit"
+                        w={"100%"}
+                        h="5vh"
+                        onClick={handleFinishPartyOrder}
+                      >
+                        Chốt đơn nhóm
+                      </Button>
+                    </CheckoutNotifyModal>
+                  </Flex>
+                )}
                 {/*  Check out */}
               </>
               {/* ) : (

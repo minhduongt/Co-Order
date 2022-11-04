@@ -24,6 +24,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { firebaseStorage } from "../../firebase/firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import useUser from "hooks/auth/useUser";
 import useUserContext from "hooks/useUserContext";
 import React, { useCallback, useRef, useState } from "react";
@@ -69,6 +71,8 @@ const checkoutSchema = yup.object().shape({
 export default function MyProfile() {
   const toast = useToast();
   const { hasCopied, onCopy } = useClipboard("example@example.com");
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>();
   const { SetUser, user: currentUser, accessToken } = useUserContext();
   const [currentImage, setCurrentImage] = useState(null);
   const { updateUserInfo } = useUser();
@@ -84,23 +88,33 @@ export default function MyProfile() {
 
   const onSubmit = async (customer: CustomerForm) => {
     try {
-      const res = await updateUserInfo(accessToken!, customer);
-      if (res) {
-        toast({
-          title: "Cập nhật thành công",
-          status: "success",
-          position: "top-right",
-          isClosable: true,
-          duration: 1000,
-        });
-      } else {
-        toast({
-          title: "Có lỗi xảy ra",
-          status: "error",
-          position: "top-right",
-          isClosable: true,
-          duration: 1000,
-        });
+      if (imageUrl) {
+        setTimeout(async () => {
+          const newCustomer = {
+            email: customer.email,
+            name: customer.name,
+            phoneNumber: customer.phoneNumber,
+            imageUrl: imageUrl,
+          };
+          const res = await updateUserInfo(accessToken!, newCustomer);
+          if (res) {
+            toast({
+              title: "Cập nhật thành công",
+              status: "success",
+              position: "top-right",
+              isClosable: true,
+              duration: 1000,
+            });
+          } else {
+            toast({
+              title: "Có lỗi xảy ra",
+              status: "error",
+              position: "top-right",
+              isClosable: true,
+              duration: 1000,
+            });
+          }
+        }, 500);
       }
     } catch (error) {
       toast({
@@ -119,22 +133,93 @@ export default function MyProfile() {
   const uploadedImage = useRef(null);
   const imageUploader = useRef(null);
 
-  const handleImageUpload = (e) => {
-    console.log("upload image event: ", e);
+  const handleUploadImageToFB = async () => {
+    // console.log(this.state.image);
+    try {
+      if (currentImage) {
+        const uploadPath = `images/${currentImage.name}`; // geting the image path
+        const storageRef = ref(firebaseStorage, uploadPath); // getting the storageRef
+        await uploadBytes(storageRef, currentImage)
+          .then(async (snapshot) => {
+            console.log("upload image to firebase", snapshot);
+            await getDownloadURL(snapshot.ref).then((downloadURL) => {
+              console.log("File available at", downloadURL);
+              setImageUrl(downloadURL);
+              setPreviewImage(downloadURL);
+            });
+          })
+          .catch((err) =>
+            toast({
+              title: err.message,
+              status: "success",
+              position: "top-right",
+              isClosable: true,
+              duration: 1000,
+            })
+          );
+      }
+    } catch (error) {
+      toast({
+        title: "Có lỗi xảy ra",
+        status: "error",
+        position: "top-right",
+        isClosable: true,
+        duration: 1000,
+      });
+    }
 
+    // const uploadTask = storageRef
+    //   .child("folder/" + currentImage.name)
+    //   .put(currentImage);
+
+    // uploadTask.on(
+    //   Firebase.storage.TaskEvent.STATE_CHANGED,
+    //   (snapshot: any) => {
+    //     const progress =
+    //       Math.round(snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    //     setProgress(progress);
+    //   },
+    //   (error) => {
+    //     throw error;
+    //   },
+    //   () => {
+    //     uploadTask.snapshot.ref.getDownloadURL().then((url) => {
+    //       setImageUrl(url);
+    //     });
+    //   }
+    // );
+  };
+
+  const handleImageUpload = async (e) => {
     const [file] = e.target.files;
     if (file) {
-      const reader = new FileReader();
-      const { current } = uploadedImage;
-      if (current) {
-        current.file = file;
-        reader.onload = (e) => {
-          console.log("read image: ", e);
-          current.src = e.target.result;
-          setCurrentImage(e.target.result);
-        };
-        reader.readAsDataURL(file);
+      console.log("file: ", file);
+      setCurrentImage(file);
+      if (file.size > 1000000) {
+        toast({
+          title: "Vui lòng chọn tệp có kích thước nhỏ hơn",
+          status: "error",
+          position: "top-right",
+          isClosable: true,
+          duration: 1000,
+        });
+        return;
       }
+
+      // const reader = new FileReader();
+      // const { current } = uploadedImage;
+      // if (current) {
+      //   current.file = file;
+      //   reader.onload = (e) => {
+      //     console.log("image", e);
+
+      //     current.src = e.target.result;
+      //     setPreviewImage(e.target.result);
+      //   };
+      //   reader.readAsDataURL(file);
+      // }
+
+      handleUploadImageToFB();
     }
   };
 
@@ -183,7 +268,11 @@ export default function MyProfile() {
                   onClick={() => imageUploader.current.click()}
                   sx={{ _hover: { opacity: 0.5 } }}
                 >
-                  <Avatar ref={uploadedImage} size={"xl"} src={currentImage} />
+                  <Avatar
+                    size={"xl"}
+                    ref={uploadedImage}
+                    src={previewImage ? previewImage : currentUser?.imageUrl!}
+                  />
                 </Box>
                 Nhấp để đổi ảnh
                 {/* <UploadAvatar

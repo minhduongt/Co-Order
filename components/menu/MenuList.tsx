@@ -43,6 +43,10 @@ import { TMenu } from "types/menu";
 import useAreaContext from "hooks/useAreaContext";
 import { TCategory } from "types/category";
 import ChangeMenuModal from "./ChangeMenuModal";
+import useOrderPartyHistories from "hooks/order/userOrderPartyHistory";
+import { OrderStatusEnum } from "types/constant";
+import useUserContext from "hooks/useUserContext";
+import { TOrder } from "types/order";
 
 interface filterCate {
   category_id: number;
@@ -93,6 +97,7 @@ const MenuList = () => {
   const [filterCate, setFilterCate] = useState<TCategory | null>(null);
   const [tabIndex, setTabIndex] = useState(0);
   const [selectedTabIndex, setSelectedTabIndex] = useState(0);
+
   //hooks
   const {
     isOpen: isOpenMenuCheck,
@@ -114,6 +119,7 @@ const MenuList = () => {
   const { data: menus, isLoading: menuLoading } = useMenus(
     selectedArea ? selectedArea.id : 1
   );
+  const { accessToken } = useUserContext();
   const [filterMenu, setFilterMenu] = useState<TMenu | null>(null);
 
   const sortMenus = menus?.sort((a, b) => a.displayOrder - b.displayOrder);
@@ -148,6 +154,8 @@ const MenuList = () => {
       SetSelectedMenu(menus[0]);
     }
   }, [menus]);
+
+  
 
   return (
     <Box

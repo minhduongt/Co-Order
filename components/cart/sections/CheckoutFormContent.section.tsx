@@ -150,7 +150,10 @@ export default function CheckoutFormContent({
             accessToken!
           );
           if (checkoutRes) {
-            setCheckoutResMsg(checkoutRes);
+            // setCheckoutResMsg(checkoutRes);
+            await SetPartyOrder(checkoutRes.data);
+            cartContext.onClose();
+            router.push(`/coorder?=${checkoutRes.data.id}`);
           }
           if (errorRes) {
             toast({
@@ -226,7 +229,7 @@ export default function CheckoutFormContent({
           await SetPartyOrder(checkoutRes?.data);
           await SetIsHost(true);
           cartContext.onClose();
-          router.replace(`/coorder/${checkoutRes.data.id}`);
+          router.push(`/coorder?=${checkoutRes.data.id}`);
           // router.replace(`/coorder/${checkoutRes?.data.shareLink}`);
         }
         if (errorRes) {
@@ -278,7 +281,6 @@ export default function CheckoutFormContent({
                 </>
               ) : (
                 <>
-                  {" "}
                   <Flex alignItems={"center"}>
                     <AlertIcon />
                     <Text fontSize={"2xl"}>{"Bạn sẽ nhận vào lúc: "}</Text>
