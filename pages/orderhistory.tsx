@@ -39,7 +39,11 @@ const OrderHistoryPage = () => {
     OrderStatusEnum.WAITING
   );
   const [selectedOrder, setSelectedOrder] = useState<TOrderDetail | null>(null);
-  const { data: orders, isLoading: orderLoading } = useOrderHistories({
+  const {
+    data: orders,
+    isLoading: orderLoading,
+    refetch,
+  } = useOrderHistories({
     accessToken,
     params: {
       status: orderStatus,
@@ -51,10 +55,11 @@ const OrderHistoryPage = () => {
   }
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  function onCompleteOrder(orderId: number) {
-    orderApi.completeOrder(orderId, accessToken!).then((res) => {
+  function onCompleteOrder(orderId: number, status: OrderStatusEnum) {
+    orderApi.completeOrder(orderId, accessToken!, status).then((res) => {
       console.log(res);
       onClose();
+      refetch();
       toast({
         title: `Cập nhật thành công`,
         status: "success",
@@ -88,52 +93,59 @@ const OrderHistoryPage = () => {
             </Tab>
           </TabList>
           <Box w="100%" p={4}>
-            {orders?.map((order) => (
-              <Box
-                onClick={() => {
-                  handelOpenOrderDetail(order.id, accessToken!);
-                  onOpen();
-                }}
-                p={4}
-                mt={4}
-                gap={2}
-                borderWidth="4px"
-                borderRadius="lg"
-                overflow="hidden"
-                key={order.id}
-              >
-                <Flex
-                  w="100%"
-                  justifyContent="space-between"
-                  flexDirection="row"
-                >
-                  <Text color="black">{order.orderCode}</Text>
-                  <Badge
-                    size="lg"
-                    colorScheme={
-                      order.status == OrderStatusEnum.FINISHED
-                        ? "green"
-                        : order.status == OrderStatusEnum.CANCELED
-                        ? "red"
-                        : "blue"
-                    }
-                  >
-                    {getOrderStatus(order.status)}
-                  </Badge>
-                </Flex>
-                <Flex
+            {orders == null || orders.length == 0 ? (
+              <Text mb={500} fontSize={"2xl"}>
+                Không có đơn hàng nào
+              </Text>
+            ) : (
+              orders.map((order) => (
+                <Box
+                  onClick={() => {
+                    handelOpenOrderDetail(order.id, accessToken!);
+                    onOpen();
+                  }}
+                  p={4}
                   mt={4}
-                  w="100%"
-                  justifyContent="space-between"
-                  flexDirection="row"
+                  gap={1}
+                  borderWidth="2px"
+                  borderRadius="lg"
+                  borderColor={"teal.400"}
+                  overflow="hidden"
+                  key={order.id}
                 >
-                  <Text color="black">
-                    {order.createdDate.toString().replace("T", " ")}
-                  </Text>
-                  <Text color="black">{order.finalAmount} đ</Text>
-                </Flex>
-              </Box>
-            ))}
+                  <Flex
+                    w="100%"
+                    justifyContent="space-between"
+                    flexDirection="row"
+                  >
+                    <Text color="black">{order.orderCode}</Text>
+                    <Badge
+                      size="lg"
+                      colorScheme={
+                        order.status == OrderStatusEnum.FINISHED
+                          ? "green"
+                          : order.status == OrderStatusEnum.CANCELED
+                          ? "red"
+                          : "blue"
+                      }
+                    >
+                      {getOrderStatus(order.status)}
+                    </Badge>
+                  </Flex>
+                  <Flex
+                    mt={4}
+                    w="100%"
+                    justifyContent="space-between"
+                    flexDirection="row"
+                  >
+                    <Text color="black">
+                      {order.createdDate.toString().replace("T", " ")}
+                    </Text>
+                    <Text color="black">{order.finalAmount} đ</Text>
+                  </Flex>
+                </Box>
+              ))
+            )}
           </Box>
         </Tabs>
 
@@ -264,7 +276,20 @@ const OrderHistoryPage = () => {
             <ModalFooter>
               {selectedOrder?.status == OrderStatusEnum.WAITING && (
                 <Button
-                  onClick={() => onCompleteOrder(selectedOrder!.id)}
+                  onClick={() =>
+                    onCompleteOrder(selectedOrder!.id, OrderStatusEnum.CANCELED)
+                  }
+                  colorScheme="red"
+                  mr={10}
+                >
+                  Huỷ đơn
+                </Button>
+              )}
+              {selectedOrder?.status == OrderStatusEnum.WAITING && (
+                <Button
+                  onClick={() =>
+                    onCompleteOrder(selectedOrder!.id, OrderStatusEnum.FINISHED)
+                  }
                   colorScheme="teal"
                   mr={3}
                 >
