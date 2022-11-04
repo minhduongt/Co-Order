@@ -226,7 +226,7 @@ export default function CheckoutFormContent({
           await SetPartyOrder(checkoutRes?.data);
           await SetIsHost(true);
           cartContext.onClose();
-          router.replace(`/coorder`);
+          router.replace(`/coorder/${checkoutRes.data.id}`);
           // router.replace(`/coorder/${checkoutRes?.data.shareLink}`);
         }
         if (errorRes) {

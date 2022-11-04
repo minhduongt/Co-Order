@@ -43,12 +43,6 @@ import useCartContext from "hooks/useCartContext";
 import useCheckout from "hooks/cart/useCheckout";
 import usePartyOrder from "hooks/order/usePartyOrder";
 import useUserContext from "hooks/useUserContext";
-type MainHeaderProps = {
-  isCartPage?: boolean;
-};
-type FindRoomForm = {
-  shareLink: string;
-};
 const Links = [
   { name: "Trang chủ", href: "/" },
   // { name: "Đơn chung", href: "/coorder" },
@@ -113,6 +107,7 @@ const PartyOrderHeader = () => {
   //apis
   const { data: areas } = useAreas();
   const { getPartyOrderByCode } = usePartyOrder();
+  const { orderId } = router.query;
   async function getPartyDetail(shareLink: string) {
     try {
       const targetPartyOrder = await getPartyOrderByCode(
@@ -213,7 +208,7 @@ const PartyOrderHeader = () => {
             display={{ base: "none", md: "block" }}
           />
           <Flex gap={2} alignItems={"center"} justifyContent="space-between">
-            <NextLink href={"/coorder"} passHref>
+            <NextLink href={`/coorder/${orderId ?? partyOrder?.id}`} passHref>
               <Link
                 color={
                   router.pathname.includes("coorder")

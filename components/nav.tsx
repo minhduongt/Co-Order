@@ -397,7 +397,7 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
                   </Flex>
                 )}
 
-                <NextLink href={"/coorder"} passHref>
+                <NextLink href={`/coorder/${partyOrder?.id}`} passHref>
                   <Link
                     color={
                       router.pathname.includes("coorder")

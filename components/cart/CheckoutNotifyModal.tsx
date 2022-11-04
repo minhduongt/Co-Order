@@ -309,21 +309,20 @@ export default function CheckoutNotifyModal({
               </ModalBody>
             </>
           )}
-          {!orderDetail ||
-            (!checkoutRes && (
-              <>
-                <ModalCloseButton />
-                <ModalHeader fontSize="3xl">
-                  <CircularProgress isIndeterminate />
-                </ModalHeader>
-                <ModalBody pb={6} textAlign="center">
-                  <Alert status="info" justifyContent={"center"}>
-                    <AlertIcon />
-                    <Text fontSize="2xl">Đang xử lý...</Text>
-                  </Alert>
-                </ModalBody>
-              </>
-            ))}
+          {(!orderDetail || !checkoutRes) && (
+            <>
+              <ModalCloseButton />
+              <ModalHeader fontSize="3xl">
+                <CircularProgress isIndeterminate />
+              </ModalHeader>
+              <ModalBody pb={6} textAlign="center">
+                <Alert status="info" justifyContent={"center"}>
+                  <AlertIcon />
+                  <Text fontSize="2xl">Đang xử lý...</Text>
+                </Alert>
+              </ModalBody>
+            </>
+          )}
 
           {checkoutRes && (
             <ModalFooter width={"100%"} justifyContent={"center"}>
