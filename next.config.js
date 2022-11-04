@@ -20,7 +20,7 @@ const nextConfig = {
     NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: "701228866647",
     NEXT_PUBLIC_FIREBASE_APP_ID: "1:701228866647:web:e0f4810236be685792d712",
   },
-  trailingSlash: true,
+  // trailingSlash: true,
 };
 
 module.exports = nextConfig;

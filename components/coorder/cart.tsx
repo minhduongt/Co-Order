@@ -157,12 +157,6 @@ const Cart = () => {
   const onCloseCheckoutNotify = () => {
     setIsOpenNotify(!isOpenNotify);
   };
-  useEffect(() => {
-    setTotalCartItems(totalCurrentCart);
-  }, [totalCurrentCart]);
-  useEffect(() => {
-    if (!orderId || orderId == "") router.replace("/");
-  }, [orderId]);
 
   const deleteItem = useDeleteCartItem;
 
@@ -235,11 +229,25 @@ const Cart = () => {
     });
     setCustomerList(newCustomerList);
   };
+
+  useEffect(() => {
+    setTotalCartItems(totalCurrentCart);
+  }, [totalCurrentCart]);
+  // useEffect(() => {
+  //   if (!orderId || orderId == "") router.replace("/");
+  // }, [orderId]);
+
   useEffect(() => {
     if (partyDetail) {
       getCustomerInfos(partyDetail);
     }
   }, [partyDetail]);
+
+  useEffect(() => {
+    if (orderId) {
+      console.log("orderId", orderId);
+    }
+  }, [orderId]);
 
   useEffect(() => {
     if (partyDetailError) {

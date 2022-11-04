@@ -309,7 +309,7 @@ export default function CheckoutNotifyModal({
               </ModalBody>
             </>
           )}
-          {(!orderDetail || !checkoutRes) && (
+          {!checkoutRes && (
             <>
               <ModalCloseButton />
               <ModalHeader fontSize="3xl">
