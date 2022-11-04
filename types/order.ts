@@ -43,7 +43,7 @@ export type TOrder = {
   totalAmount: number;
   finalAmount: number;
   discount: number;
-  endTime: Date;
+  endTime: string;
   status: string;
   createdDate: Date;
   active: boolean;
@@ -70,11 +70,15 @@ export type TOrderDetail = {
   details: Detail[];
 };
 
-export interface PartyDetail {
-  customerCode: string;
+export interface ItemsList {
   productName: string;
   unitPrice: number;
   quantity: number;
+}
+
+export interface PartyDetail {
+  customerCode: string;
+  itemsList: ItemsList[];
 }
 
 export interface TRecipient {

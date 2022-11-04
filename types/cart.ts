@@ -57,7 +57,7 @@ export interface OrderResponse {
   totalAmount: number;
   finalAmount: number;
   discount: number;
-  endTime: Date;
+  endTime: string;
   status: string;
   createdDate: Date;
   active: boolean;

@@ -366,7 +366,11 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
             {isCartPage ? (
               <NextLink href={"/coorder"} passHref>
                 <Link
-                  color={"primary.darker"}
+                  color={
+                    router.pathname.includes("coorder")
+                      ? "primary.main"
+                      : "primary.darker"
+                  }
                   fontWeight={"bold"}
                   fontSize="1.3rem"
                   _hover={{
@@ -397,15 +401,19 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
                     </Button>
                   </Flex>
                 )}
+
                 <NextLink href={"/coorder"} passHref>
                   <Link
-                    color={"primary.darker"}
+                    color={
+                      router.pathname.includes("coorder")
+                        ? "primary.main"
+                        : "primary.darker"
+                    }
                     fontWeight={"bold"}
                     fontSize="lg"
                     _hover={{
                       textDecoration: "none",
                       color: "primary.main",
-
                       fontWeight: "bold",
                     }}
                     _focus={{ boxShadow: "none" }}
@@ -439,7 +447,6 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
                 arrivedTimeRange={arrivedTimeRange}
               />
             )}
-
             {user ? (
               <Menu>
                 <MenuButton
