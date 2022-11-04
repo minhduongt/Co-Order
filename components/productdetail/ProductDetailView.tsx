@@ -52,7 +52,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
   //   product.child_products?.find((pro) => pro.attributes.size == sizeValue);
 
   return (
-    <SimpleGrid columns={2} spacing={10} py={10}>
+    <SimpleGrid columns={2} spacing={10} py={8}>
       <Flex>
         <Image
           rounded={"md"}
@@ -65,11 +65,22 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
           fallbackSrc={NoImage.src}
         />
       </Flex>
-      <Stack spacing={{ base: 6, md: 10 }} justifyContent="space-between">
-        <Flex flexDirection={"column"} gap={10}>
-          <Heading lineHeight={1.1} fontWeight={"semibold"} fontSize={"3xl"}>
+      <Stack spacing={{ sx: 4, base: 4, md: 6 }} justifyContent="space-between">
+        <Flex flexDirection={"column"} gap={8}>
+          <Heading
+            color={"primary.main"}
+            lineHeight={1.1}
+            fontWeight={"semibold"}
+            fontSize={"3xl"}
+          >
             {product.product?.name}
           </Heading>
+          <Text fontWeight={"semibold"} fontSize={"xl"}>
+            Nhà hàng: {product.product.supplier.name}
+          </Text>
+          <Text fontWeight={"semibold"} fontSize={"xl"}>
+            Danh mục: {product.product.category.name}
+          </Text>
           <Text color={"secondary.main"} fontWeight={"bold"} fontSize={"3xl"}>
             {product.price?.toLocaleString()}
             {" đ"}

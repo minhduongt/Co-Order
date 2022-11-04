@@ -307,7 +307,7 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
           alignItems={"center"}
           justifyContent={"space-between"}
           minWidth={"100vw"}
-          px="3em"
+          px="2em"
         >
           <IconButton
             size={"md"}
@@ -316,29 +316,23 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
             display={{ md: "none" }}
             onClick={isOpen ? onClose : onOpen}
           />
-          <HStack spacing={8} alignItems={"center"}>
+          <HStack spacing={8} alignItems={"left"}>
             <Image
               alt="logo"
-              sx={{ width: "50px", marginLeft: "20px" }}
+              sx={{ width: "50px" }}
               src={logo.src}
               onClick={() => router.push("/")}
+              display={{ base: "none", md: "block" }}
             ></Image>
-            <HStack
-              as={"nav"}
-              spacing={4}
-              display={{ base: "none", md: "flex" }}
-            >
-              {/* <NavLink /> */}
-            </HStack>
-          </HStack>
-          <Flex>
+
             <Menu>
               <MenuButton
+                fontSize={{ xs: "md", md: "block", xl: "xl" }}
                 isActive={isOpen}
                 as={Button}
                 rightIcon={<ChevronDownIcon />}
               >
-                Giao tại: {selectedLocation?.name} - {selectedArea?.name}
+                Giao tại: {selectedLocation?.name} -{selectedArea?.name}
               </MenuButton>
               <MenuList>
                 {areas?.map((area, idx) => (
@@ -361,7 +355,8 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
                 ))}
               </MenuList>
             </Menu>
-          </Flex>
+          </HStack>
+          <Flex></Flex>
           <Flex gap={2} alignItems={"center"}>
             {isCartPage ? (
               <NextLink href={"/coorder"} passHref>
@@ -420,10 +415,10 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
               <FormProvider {...findRoomForm}>
                 <Input
                   {...register("shareLink")}
-                  w="40%"
+                  w="8rem"
                   variant="outlined"
                   colorScheme="teal"
-                  placeholder="Nhập mã code của phòng"
+                  placeholder="Nhập code"
                 />
                 <Button onClick={handleSubmit(onSubmit)} colorScheme="teal">
                   Vào party
@@ -447,7 +442,8 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
                   rounded={"full"}
                   variant={"link"}
                   cursor={"pointer"}
-                  minW={0}
+                  minW={6}
+                  marginRight={4}
                 >
                   <Avatar size={"sm"} src={currentUser?.imageUrl} />
                 </MenuButton>
