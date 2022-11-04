@@ -89,7 +89,118 @@ export default function CheckoutNotifyModal({
               </ModalBody>
             </>
           )}
-          {orderDetail ? (
+          {checkoutRes ? (
+            <>
+              <ModalHeader fontSize="3xl"></ModalHeader>
+              <ModalBody pb={6}>
+                <Flex flexDirection={"column"} fontSize="2xl">
+                  <Alert status="success">
+                    <Flex flexDirection={"column"} gap={10}>
+                      <Flex
+                        alignItems={"center"}
+                        justifyContent={"space-between"}
+                        gap={3}
+                      >
+                        <Flex alignItems={"center"}>
+                          <AlertIcon />
+                          <Text textAlign={"left"}>
+                            {"Mã đơn của bạn là: "}
+                          </Text>
+                        </Flex>
+
+                        <Text
+                          textAlign={"right"}
+                          fontWeight={"semibold"}
+                          color="secondary.main"
+                        >
+                          {checkoutRes?.data.orderCode}
+                        </Text>
+                      </Flex>
+                      {partyOrder && (
+                        <Flex
+                          alignItems={"center"}
+                          justifyContent={"space-between"}
+                          gap={3}
+                        >
+                          <Flex alignItems={"center"}>
+                            <AlertIcon />
+                            <Text textAlign={"left"}>{"Mã phòng: "}</Text>
+                          </Flex>
+
+                          <Text
+                            textAlign={"right"}
+                            fontWeight={"semibold"}
+                            color="secondary.main"
+                          >
+                            {partyOrder?.shareLink}
+                          </Text>
+                        </Flex>
+                      )}
+                    </Flex>
+
+                    {/* <Button
+                      fontSize={"xl"}
+                      bgColor="secondary.main"
+                      color="light"
+                      onClick={() =>
+                        router.push(
+                          "https://www.facebook.com/messages/t/103238875095890"
+                        )
+                      }
+                    >
+                      Liên hệ hỗ trợ
+                    </Button> */}
+                  </Alert>
+                  <Text py="1rem" fontWeight={"bold"}>
+                    Bạn vui lòng nhận đơn:
+                  </Text>
+                  <Box border="solid" p={2} borderColor="secondary.main">
+                    <Flex
+                      textAlign="left"
+                      alignItems={"center"}
+                      py="1rem"
+                      justifyContent="space-between"
+                    >
+                      <Flex gap={2} alignItems="center">
+                        <BiTime size={"2.2rem"} color="green" />
+                        <Text minW="6rem">Vào lúc:</Text>
+                      </Flex>
+
+                      <Text fontWeight={"bold"} textAlign="right">
+                        {checkoutRes.data.timeSlotId}
+                      </Text>
+                    </Flex>
+                    <Flex
+                      alignItems={"center"}
+                      py="1rem"
+                      justifyContent="space-between"
+                    >
+                      <Flex gap={2}>
+                        <IoLocationOutline size={"2.2rem"} color="green" />
+                        <Text>Tại:</Text>
+                      </Flex>
+
+                      <Text fontWeight={"bold"}>
+                        {checkoutRes.data.locationId}
+                      </Text>
+                    </Flex>
+                  </Box>
+                </Flex>
+
+                {/* <Image
+                  loading="lazy"
+                  alt="riding bean"
+                  src={ridingBean.src}
+                  w="50%"
+                  h="50%"
+                  mx="auto"
+                /> */}
+              </ModalBody>
+            </>
+          ) : (
+            <></>
+          )}
+          {orderDetail && (
             <>
               <ModalHeader fontSize="3xl"></ModalHeader>
               <ModalBody pb={6}>
@@ -197,8 +308,9 @@ export default function CheckoutNotifyModal({
                 /> */}
               </ModalBody>
             </>
-          ) : (
-            !errorRes && (
+          )}
+          {!orderDetail ||
+            (!checkoutRes && (
               <>
                 <ModalCloseButton />
                 <ModalHeader fontSize="3xl">
@@ -211,8 +323,7 @@ export default function CheckoutNotifyModal({
                   </Alert>
                 </ModalBody>
               </>
-            )
-          )}
+            ))}
 
           {checkoutRes && (
             <ModalFooter width={"100%"} justifyContent={"center"}>

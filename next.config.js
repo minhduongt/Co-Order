@@ -1,3 +1,6 @@
+/** @type {import('next').NextConfig} */
+require("dotenv").config({ path: `./config/.env.${process.env.NODE_ENV}` });
+
 const nextConfig = {
   reactStrictMode: true,
   // distDir: "build",

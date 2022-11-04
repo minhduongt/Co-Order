@@ -82,15 +82,22 @@ const Cart = () => {
   const totalCurrentCart = currentCart?.items.length;
   const { user: currentUser, accessToken } = useUserContext();
   const { selectedLocation } = areaContext;
-  const { postId } = router.query;
+  const { orderId } = router.query;
   //states
   const [totalCartItems, setTotalCartItems] = useState<number>(0);
   const [customerList, setCustomerList] = useState<TCustomer[]>([]);
+  const [partyDetailInterval, setPartyDetailInterval] = useState<any>();
   const [checkoutResMsg, setCheckoutResMsg] =
     useState<PostResponse<OrderResponse>>();
   const { errorRes } = useCheckout(currentCart);
-  const { data: partyDetail, refetch: refetchPartyDetail } =
-    usePartyOrderDetail(partyOrder?.id!, accessToken!);
+  const {
+    data: partyDetail,
+    refetch: refetchPartyDetail,
+    error: partyDetailError,
+  } = usePartyOrderDetail(
+    partyOrder ? partyOrder?.id!.toString() : (orderId! as string),
+    accessToken!
+  );
   const { getCustomerInfo } = useCustomer();
   const { finishPartyOrder } = usePartyOrder();
   const [isOpenNotify, setIsOpenNotify] = useState(false);
@@ -98,18 +105,67 @@ const Cart = () => {
   const checkoutForm = useForm<CheckoutForm>({
     resolver: yupResolver(checkoutSchema),
   });
-  const {
-    handleSubmit,
-    register,
-    watch,
-    formState: { errors },
-  } = useForm<CheckoutForm>();
+  const copy = async () => {
+    if (window) {
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/joinparty/${partyOrder?.shareLink!}`
+      );
+      toast({
+        title: "Đã sao lưu vào bộ nhớ đệm",
+        status: "success",
+        position: "bottom",
+        isClosable: false,
+        duration: 2000,
+      });
+    } else {
+      await navigator.clipboard.writeText(partyOrder?.shareLink!);
+      toast({
+        title: "Đã sao lưu vào bộ nhớ đệm",
+        status: "success",
+        position: "bottom",
+        isClosable: false,
+        duration: 2000,
+      });
+    }
+  };
+
+  const countdownRender = ({ hours, minutes, seconds, completed }: any) => {
+    if (completed) {
+      console.log("finish");
+      setTimeout(() => {
+        SetPartyOrder(null);
+        SetNewCart(null);
+        SetIsHost(false);
+        router.push(`/`);
+      }, 4000);
+
+      // Render a completed state
+      return (
+        <Flex>
+          <Text>Party đã hết hạn, tự động trở về trang chủ sau 3 giây</Text>
+        </Flex>
+      );
+    } else {
+      // Render a countdown
+      return (
+        <Flex color={"primary.dark"}>
+          {hours < 10 ? "0" + hours : hours}:{" "}
+          {minutes < 10 ? "0" + minutes : minutes}:{" "}
+          {seconds < 10 ? "0" + seconds : seconds}
+        </Flex>
+      );
+    }
+  };
+
   const onCloseCheckoutNotify = () => {
     setIsOpenNotify(!isOpenNotify);
   };
   useEffect(() => {
     setTotalCartItems(totalCurrentCart);
   }, [totalCurrentCart]);
+  useEffect(() => {
+    if (!orderId || orderId == "") router.replace("/");
+  }, [orderId]);
 
   const deleteItem = useDeleteCartItem;
 
@@ -138,8 +194,6 @@ const Cart = () => {
     try {
       setTimeout(async () => {
         const res = await finishPartyOrder(partyOrder?.id!, accessToken!);
-        console.log("finish party", res);
-
         if (res) {
           toast({
             title: "Chốt đơn thành công",
@@ -189,261 +243,232 @@ const Cart = () => {
       getCustomerInfos(partyDetail);
     }
   }, [partyDetail]);
-  const copy = async () => {
-    if (window) {
-      await navigator.clipboard.writeText(
-        `${window.location.origin}/coorder/${partyOrder?.shareLink!}`
-      );
+
+  useEffect(() => {
+    if (partyDetailError) {
+      console.log("partyDetailError", partyDetailError);
       toast({
-        title: "Đã sao lưu vào bộ nhớ đệm",
-        status: "success",
-        position: "bottom",
+        title: partyDetailError.message,
+        status: "error",
+        position: "top",
         isClosable: false,
-        duration: 2000,
-      });
-    } else {
-      await navigator.clipboard.writeText(partyOrder?.shareLink!);
-      toast({
-        title: "Đã sao lưu vào bộ nhớ đệm",
-        status: "success",
-        position: "bottom",
-        isClosable: false,
-        duration: 2000,
+        duration: 1000,
       });
     }
-  };
-
-  const countdownRender = ({ hours, minutes, seconds, completed }: any) => {
-    if (completed) {
-      console.log("finish");
-      setTimeout(() => {
-        SetPartyOrder(null);
-        SetNewCart(null);
-        SetIsHost(false);
-        router.push(`/`);
-      }, 4000);
-
-      // Render a completed state
-      return (
-        <Flex>
-          <Text>Party đã hết hạn và bạn sẽ trở về trang chũ sau 3 giây...</Text>
-        </Flex>
-      );
-    } else {
-      // Render a countdown
-      return (
-        <Flex color={"primary.dark"}>
-          {hours < 10 ? "0" + hours : hours}:{" "}
-          {minutes < 10 ? "0" + minutes : minutes}:{" "}
-          {seconds < 10 ? "0" + seconds : seconds}
-        </Flex>
-      );
-    }
-  };
+    // clearInterval(partyDetailInterval);
+  }, [partyDetailError]);
 
   //Call party order detail every 5s
   useEffect(() => {
-    const refetchPartyInterval = setInterval(refetchPartyDetail, 5000);
-    return () => clearInterval(refetchPartyInterval);
+    const newRefetchPartyInterval = setInterval(refetchPartyDetail, 5000);
+    setPartyDetailInterval(newRefetchPartyInterval);
+    return () => clearInterval(newRefetchPartyInterval);
   }, []);
-  const finishTime = new Date(partyOrder?.endTime.slice(0, 19)!);
+  const finishTime = new Date(partyDetail?.endTime.slice(0, 19)!);
+
   return (
-    <Box>
-      <Flex flexDirection={"column"}>
-        <Flex fontSize={"xl"} gap={2}>
-          <Text>Mã đơn: </Text>
-          <Text fontWeight={600}>{partyOrder?.orderCode ?? "NaN"}</Text>
-        </Flex>
-        <Flex fontSize={"xl"} gap={2}>
-          <Text>Trạng thái: </Text>
-          <Text fontWeight={600}>{getOrderStatus(partyOrder?.status!)}</Text>
-        </Flex>
-        <Flex fontSize={"xl"} gap={2}>
-          <Text>Điểm giao: </Text>
-          <Text fontWeight={600}>{partyDetail?.receiveAddress ?? "NaN"}</Text>
-        </Flex>
-        <Flex fontSize={"xl"} gap={2}>
-          <Text>Giờ nhận: </Text>
-          <Text fontWeight={600}>{partyDetail?.receiveTime ?? "NaN"}</Text>
-        </Flex>
-        <Flex fontSize={"xl"} gap={2}>
-          <Text>Party kết thúc sau: </Text>
-          <Countdown date={finishTime} renderer={countdownRender} />
-        </Flex>
-        <Flex
-          gap={2}
-          fontSize={"xl"}
-          p={6}
-          alignItems="center"
-          alignSelf={"center"}
-        >
-          <Text>Mã phòng:</Text>
-          <Box>
-            <Tag sx={{ fontSize: "xl" }}>{partyOrder?.shareLink ?? "NaN"}</Tag>
-          </Box>
-          <Button onClick={copy} disabled={partyDetail == null}>
-            Copy link
-          </Button>
-        </Flex>
-      </Flex>
-      <Flex justifyContent={"space-between"} paddingY="2rem">
-        <Heading fontSize={"3xl"}>
-          <Flex alignItems={"center"} gap={2}>
-            <MdGroup color="#2689E0" />
-            <Text>Party</Text>
+    <>
+      {partyDetail ? (
+        <Box>
+          <Flex flexDirection={"column"}>
+            <Flex fontSize={"xl"} gap={2}>
+              <Text>Mã đơn: </Text>
+              <Text fontWeight={600}>{partyDetail?.orderCode ?? "NaN"}</Text>
+            </Flex>
+            <Flex fontSize={"xl"} gap={2}>
+              <Text>Trạng thái: </Text>
+              <Text fontWeight={600}>
+                {getOrderStatus(partyDetail?.status!)}
+              </Text>
+            </Flex>
+            <Flex fontSize={"xl"} gap={2}>
+              <Text>Điểm giao: </Text>
+              <Text fontWeight={600}>
+                {partyDetail?.receiveAddress ?? "NaN"}
+              </Text>
+            </Flex>
+            <Flex fontSize={"xl"} gap={2}>
+              <Text>Giờ nhận: </Text>
+              <Text fontWeight={600}>{partyDetail?.receiveTime ?? "NaN"}</Text>
+            </Flex>
+            <Flex fontSize={"xl"} gap={2}>
+              <Text>Party kết thúc sau: </Text>
+              <Countdown date={finishTime} renderer={countdownRender} />
+            </Flex>
+            <Flex
+              gap={2}
+              fontSize={"xl"}
+              p={6}
+              alignItems="center"
+              alignSelf={"center"}
+            >
+              <Text>Mã phòng:</Text>
+              <Box>
+                <Tag sx={{ fontSize: "xl" }}>
+                  {partyDetail?.shareLink ?? "NaN"}
+                </Tag>
+              </Box>
+              <Button onClick={copy} disabled={partyDetail == null}>
+                Copy link
+              </Button>
+            </Flex>
           </Flex>
-        </Heading>
-        {/* <Flex alignItems={"center"} color="secondary.main">
+          <Flex justifyContent={"space-between"} paddingY="2rem">
+            <Heading fontSize={"3xl"}>
+              <Flex alignItems={"center"} gap={2}>
+                <MdGroup color="#2689E0" />
+                <Text>Party</Text>
+              </Flex>
+            </Heading>
+            {/* <Flex alignItems={"center"} color="secondary.main">
           <FaFire size="1.2rem" />
           <NextLink passHref href="/">
             <Link>Đặt thêm món</Link>
           </NextLink>
         </Flex> */}
-      </Flex>
-      <Container maxW="7xl" minH={"30vh"} border="groove" borderRadius={"12px"}>
-        <Flex flexDirection="column">
-          <Grid
-            templateColumns={{
-              md: "repeat(2, 1fr)",
-              lg: "repeat(2, 1fr)",
-              xl: "repeat(2, 1fr)",
-            }}
-            fontSize="xl"
-            m={3}
-            justifyContent={"space-between"}
-            alignItems="center"
-            fontWeight={600}
-          >
-            <Flex alignItems="center" gap={3} w="100%">
-              <Text fontSize={"2xl"}>Người dùng</Text>
-            </Flex>
-            <Flex justifyContent={"space-between"} w="100%">
-              <Flex flexDirection={"column"} alignItems={"flex-start"}>
-                <Text fontSize={"2xl"}>Các món</Text>
-              </Flex>
-              <Flex flexDirection={"column"} alignItems={"flex-end"}>
-                <Text fontSize={"2xl"}>Tạm tính</Text>
-              </Flex>
-            </Flex>
-          </Grid>
-          {partyDetail ? (
-            partyDetail?.partyDetails.map((detail, index) => {
-              return (
-                <Box key={index + detail.customerCode}>
-                  <Grid
-                    templateColumns={{
-                      md: "repeat(2, 1fr)",
-                      lg: "repeat(2, 1fr)",
-                      xl: "repeat(2, 1fr)",
-                    }}
-                    fontSize="xl"
-                    m={3}
-                    justifyContent={"space-between"}
-                    alignItems="center"
-                  >
-                    {customerList?.length > 0 ? (
-                      customerList?.map((cus) => {
-                        if (cus.code == detail.customerCode)
-                          return (
-                            <Flex alignItems="center" gap={3} w="100%">
-                              <Avatar
-                                size={"lg"}
-                                src={
-                                  "http://uxpanol.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png"
-                                }
-                              />
-                              <Text>{cus.fullName}</Text>
-                            </Flex>
-                          );
-                      })
-                    ) : (
-                      <Flex alignItems={"center"} gap={3}>
-                        <SkeletonCircle
-                          sx={{ height: "3.5rem", width: "10%" }}
-                        />
-                        <Skeleton w={"40%"} h={"2rem"} />
-                      </Flex>
-                    )}
-
-                    <Flex w="100%" flexDirection={"column"}>
-                      {detail.itemsList.map((item, index) => {
-                        return (
-                          <Flex
-                            key={index + item.productName}
-                            justifyContent={"space-between"}
-                          >
-                            <Flex
-                              fontSize="xl"
-                              alignItems={"flex-start"}
-                              // flexDirection={"column"}
-                            >
-                              <Text>
-                                {"x" + item.quantity} {item.productName}
-                              </Text>
-                            </Flex>
-                            <Flex
-                              fontSize="xl"
-
-                              // flexDirection={"column"}
-                            >
-                              <Text>
-                                {(
-                                  item.unitPrice * item.quantity
-                                ).toLocaleString()}{" "}
-                                đ
-                              </Text>
-                            </Flex>
-                          </Flex>
-                        );
-                      })}
-                    </Flex>
-                  </Grid>
-
-                  {index != partyDetail?.partyDetails.length - 1 ? (
-                    <Divider sx={{ borderColor: "black" }} />
-                  ) : (
-                    <></>
-                  )}
-                </Box>
-              );
-            })
-          ) : (
-            <Flex
-              alignItems={"center"}
-              justifyContent="center"
-              fontSize={"2xl"}
-            >
-              Trống
-            </Flex>
-          )}
-          <Flex alignSelf={"center"} mt="1.5rem" p={3}>
-            {partyDetail ? (
-              <RecipientModal recipients={partyDetail?.recipients!}>
-                <Button>Xem hóa đơn chia tiền</Button>
-              </RecipientModal>
-            ) : (
-              <></>
-            )}
           </Flex>
-        </Flex>
-      </Container>
-      <Flex justifyContent={"space-between"} paddingY="2rem">
+          <Container
+            maxW="7xl"
+            minH={"30vh"}
+            border="groove"
+            borderRadius={"12px"}
+          >
+            <Flex flexDirection="column">
+              <Grid
+                templateColumns={{
+                  md: "repeat(2, 1fr)",
+                  lg: "repeat(2, 1fr)",
+                  xl: "repeat(2, 1fr)",
+                }}
+                fontSize="xl"
+                m={3}
+                justifyContent={"space-between"}
+                alignItems="center"
+                fontWeight={600}
+              >
+                <Flex alignItems="center" gap={3} w="100%">
+                  <Text fontSize={"2xl"}>Người dùng</Text>
+                </Flex>
+                <Flex justifyContent={"space-between"} w="100%">
+                  <Flex flexDirection={"column"} alignItems={"flex-start"}>
+                    <Text fontSize={"2xl"}>Các món</Text>
+                  </Flex>
+                  <Flex flexDirection={"column"} alignItems={"flex-end"}>
+                    <Text fontSize={"2xl"}>Tạm tính</Text>
+                  </Flex>
+                </Flex>
+              </Grid>
+              {partyDetail ? (
+                partyDetail?.partyDetails.map((detail, index) => {
+                  return (
+                    <Box key={index + detail.customerCode}>
+                      <Grid
+                        templateColumns={{
+                          md: "repeat(2, 1fr)",
+                          lg: "repeat(2, 1fr)",
+                          xl: "repeat(2, 1fr)",
+                        }}
+                        fontSize="xl"
+                        m={3}
+                        justifyContent={"space-between"}
+                        alignItems="center"
+                      >
+                        {customerList?.length > 0 ? (
+                          customerList?.map((cus) => {
+                            if (cus.code == detail.customerCode)
+                              return (
+                                <Flex alignItems="center" gap={3} w="100%">
+                                  <Avatar
+                                    size={"lg"}
+                                    src={
+                                      "http://uxpanol.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png"
+                                    }
+                                  />
+                                  <Text>{cus.fullName}</Text>
+                                </Flex>
+                              );
+                          })
+                        ) : (
+                          <Flex alignItems={"center"} gap={3}>
+                            <SkeletonCircle
+                              sx={{ height: "3.5rem", width: "10%" }}
+                            />
+                            <Skeleton w={"40%"} h={"2rem"} />
+                          </Flex>
+                        )}
+
+                        <Flex w="100%" flexDirection={"column"}>
+                          {detail.itemsList.map((item, index) => {
+                            return (
+                              <Flex
+                                key={index + item.productName}
+                                justifyContent={"space-between"}
+                              >
+                                <Flex
+                                  fontSize="xl"
+                                  alignItems={"flex-start"}
+                                  // flexDirection={"column"}
+                                >
+                                  <Text>
+                                    {"x" + item.quantity} {item.productName}
+                                  </Text>
+                                </Flex>
+                                <Flex
+                                  fontSize="xl"
+
+                                  // flexDirection={"column"}
+                                >
+                                  <Text>
+                                    {(
+                                      item.unitPrice * item.quantity
+                                    ).toLocaleString()}{" "}
+                                    đ
+                                  </Text>
+                                </Flex>
+                              </Flex>
+                            );
+                          })}
+                        </Flex>
+                      </Grid>
+
+                      {index != partyDetail?.partyDetails.length - 1 ? (
+                        <Divider sx={{ borderColor: "black" }} />
+                      ) : (
+                        <></>
+                      )}
+                    </Box>
+                  );
+                })
+              ) : (
+                <Flex
+                  alignItems={"center"}
+                  justifyContent="center"
+                  fontSize={"2xl"}
+                >
+                  Trống
+                </Flex>
+              )}
+              <Flex alignSelf={"center"} mt="1.5rem" p={3}>
+                {partyDetail ? (
+                  <RecipientModal recipients={partyDetail?.recipients!}>
+                    <Button>Xem hóa đơn chia tiền</Button>
+                  </RecipientModal>
+                ) : (
+                  <></>
+                )}
+              </Flex>
+            </Flex>
+          </Container>
+          {/* <Flex justifyContent={"space-between"} paddingY="2rem">
         <Heading fontSize={"3xl"}>
           <Flex alignItems={"center"} gap={2}>
             <FaShoppingCart color="#2689E0" />
             <Text>Giỏ hàng của bạn</Text>
           </Flex>
         </Heading>
-        {/* <Flex alignItems={"center"} color="secondary.main">
-          <FaFire size="1.2rem" />
-          <NextLink passHref href="/">
-            <Link>Đặt thêm món</Link>
-          </NextLink>
-        </Flex> */}
-      </Flex>
-      {totalCartItems > 0 ? (
-        currentCart?.items?.map((item, index) => (
-          <Box key={index + item.product?.id} paddingY={"0.3rem"}>
+      </Flex> */}
+
+          {/* <Box key={index + item.product?.id} paddingY={"0.3rem"}>
             <Flex
               key={index}
               width={"100%"}
@@ -456,8 +481,6 @@ const Cart = () => {
               borderWidth={"5px"}
               borderRadius="12px"
             >
-              {/* <NextLink passHref href={"#"}>
-                <Link _hover={{ textDecoration: "none" }}> */}
               <Box
                 overflow="hidden"
                 borderRadius={"1rem"}
@@ -491,8 +514,6 @@ const Cart = () => {
                   }}
                 />
               </Box>
-              {/* </Link>
-              </NextLink> */}
 
               <Grid
                 templateColumns="repeat(2, 1fr)"
@@ -523,15 +544,11 @@ const Cart = () => {
                   {(item.product?.price * item.quantity).toLocaleString()} đ
                 </Text>
 
-                {/* <Box minWidth={"10rem"}>
-                  <QuantityInput quantity={item.quantity} />
-                </Box> */}
               </Grid>
-              {/*  Check out */}
             </Flex>
           </Box>
-        ))
-      ) : (
+
+
         <Flex w="100%" h="100%" justifyContent={"center"} alignItems="center">
           <Box maxW="50%" textAlign={"center"}>
             <Text fontSize={"3xl"}>Giỏ hàng trống</Text>
@@ -541,21 +558,20 @@ const Cart = () => {
                     src={beanEmpty.src}
                     w="100%"
                     h="250px"
-                  /> */}
+                  /> 
             <Text>Hãy thêm món bạn thích vào nhé!</Text>
           </Box>
-        </Flex>
-      )}
+        </Flex> */}
 
-      {totalCartItems > 0 && (
-        <Flex
-          minHeight={"20vh"}
-          flexDirection="column"
-          justifyContent={"space-between"}
-        >
-          {/* {cartPrepareRes ? ( */}
-          <>
+          {totalCartItems > 0 && (
             <Flex
+              minHeight={"20vh"}
+              flexDirection="column"
+              justifyContent={"space-between"}
+            >
+              {/* {cartPrepareRes ? ( */}
+              <>
+                {/* <Flex
               height={"auto"}
               border={"groove"}
               borderRadius={8}
@@ -564,25 +580,23 @@ const Cart = () => {
               justifyContent={"space-between"}
               flexDirection="column"
             >
-              {/* <Box>
-                    <Flex justifyContent="space-between" fontSize={"xl"}>
-                      <Text>{"Tạm tính:"}</Text>
-                      <Text>
-                        {cartPrepareRes.total_amount.toLocaleString()} đ
-                      </Text>
-                    </Flex>
+              <Box>
+                <Flex justifyContent="space-between" fontSize={"xl"}>
+                  <Text>{"Tạm tính:"}</Text>
+                  <Text>{cartPrepareRes.total_amount.toLocaleString()} đ</Text>
+                </Flex>
 
-                    {cartPrepareRes.other_amounts.map((other, index) => (
-                      <Flex
-                        key={index}
-                        justifyContent="space-between"
-                        fontSize={"xl"}
-                      >
-                        <Text>{other.name}</Text>
-                        <Text> {other.amount.toLocaleString()} đ</Text>
-                      </Flex>
-                    ))}
-                  </Box> */}
+                {cartPrepareRes.other_amounts.map((other, index) => (
+                  <Flex
+                    key={index}
+                    justifyContent="space-between"
+                    fontSize={"xl"}
+                  >
+                    <Text>{other.name}</Text>
+                    <Text> {other.amount.toLocaleString()} đ</Text>
+                  </Flex>
+                ))}
+              </Box>
               <Flex
                 justifyContent="space-between"
                 fontSize={"xl"}
@@ -608,12 +622,7 @@ const Cart = () => {
                 fontWeight="bold"
               >
                 <Text>{"Tổng cộng:"}</Text>
-                <Text>
-                  {/* {(
-                    currentCart?.total + areaContext?.selectedArea?.shippingFee!
-                  ).toLocaleString()} */}
-                  {partyDetail?.finalAmount.toLocaleString()}đ
-                </Text>
+                <Text>{partyDetail?.finalAmount.toLocaleString()}đ</Text>
               </Flex>
               <Flex
                 width="100%"
@@ -622,66 +631,73 @@ const Cart = () => {
                 pt={10}
                 fontSize="xl"
               >
-                {/* <Flex
-                    width="40%"
-                    justifyContent={"space-between"}
-                    alignItems="center"
-                  >
-                    <Text minW={{ lg: "12rem" }}>Bạn sẽ nhận vào lúc:</Text>
-                    <Select
-                      // placeholder="Chọn giờ giao"
-                      {...register("timeSlotId")}
-                      sx={{ fontSize: "xl", borderColor: "primary.main" }}
-                    >
-                      {timeSlots?.map((slot) => (
-                        <option key={slot.id} value={slot.id}>
-                          {slot.startTime.toString().slice(11, 19) +
-                            " - " +
-                            slot.endTime.toString().slice(11, 19)}
-                        </option>
-                      ))}
-                      {errors.timeSlotId && (
-                        <Alert status="error">
-                          <AlertIcon />
-                          <Text fontSize="xl">{errors.timeSlotId.message}</Text>
-                        </Alert>
-                      )}
-                    </Select>
-                  </Flex> */}
-              </Flex>
-            </Flex>
-            <Flex w="100%" pt={"1rem"}>
-              <CheckoutNotifyModal
-                onClose={onCloseCheckoutNotify}
-                open={isOpenNotify}
-                checkoutRes={checkoutResMsg}
-                receivedDestination={selectedLocation!}
-                errorRes={errorRes}
-              >
-                <Button
-                  backgroundColor="primary.main"
-                  colorScheme={"primary.main"}
-                  fontSize="xl"
-                  type="submit"
-                  w={"100%"}
-                  h="5vh"
-                  onClick={handleFinishPartyOrder}
+                <Flex
+                  width="40%"
+                  justifyContent={"space-between"}
+                  alignItems="center"
                 >
-                  Chốt đơn nhóm
-                </Button>
-              </CheckoutNotifyModal>
-            </Flex>
-            {/*  Check out */}
-          </>
-          {/* ) : (
+                  <Text minW={{ lg: "12rem" }}>Bạn sẽ nhận vào lúc:</Text>
+                  <Select
+                    // placeholder="Chọn giờ giao"
+                    {...register("timeSlotId")}
+                    sx={{ fontSize: "xl", borderColor: "primary.main" }}
+                  >
+                    {timeSlots?.map((slot) => (
+                      <option key={slot.id} value={slot.id}>
+                        {slot.startTime.toString().slice(11, 19) +
+                          " - " +
+                          slot.endTime.toString().slice(11, 19)}
+                      </option>
+                    ))}
+                    {errors.timeSlotId && (
+                      <Alert status="error">
+                        <AlertIcon />
+                        <Text fontSize="xl">{errors.timeSlotId.message}</Text>
+                      </Alert>
+                    )}
+                  </Select>
+                </Flex>
+              </Flex>
+            </Flex> */}
+                <Flex w="100%" pt={"1rem"}>
+                  <CheckoutNotifyModal
+                    onClose={onCloseCheckoutNotify}
+                    open={isOpenNotify}
+                    checkoutRes={checkoutResMsg}
+                    receivedDestination={selectedLocation!}
+                    errorRes={errorRes}
+                  >
+                    <Button
+                      backgroundColor="primary.main"
+                      colorScheme={"primary.main"}
+                      fontSize="xl"
+                      type="submit"
+                      w={"100%"}
+                      h="5vh"
+                      onClick={handleFinishPartyOrder}
+                    >
+                      Chốt đơn nhóm
+                    </Button>
+                  </CheckoutNotifyModal>
+                </Flex>
+                {/*  Check out */}
+              </>
+              {/* ) : (
                 <>
                   <SkeletonText h="20vh" noOfLines={4} spacing="7" mx="1rem" />
                   <Skeleton h="5vh" mx="1rem" mb="2rem" />
                 </>
               )} */}
+            </Flex>
+          )}
+        </Box>
+      ) : (
+        <Flex>
+          <Skeleton w="90vw" h="20rem" px="1rem" />
+          <Skeleton w="90vw" h="20rem" px="1rem" />
         </Flex>
       )}
-    </Box>
+    </>
   );
 };
 

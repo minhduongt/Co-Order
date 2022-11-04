@@ -6,7 +6,7 @@ import { BaseResponse, SecondResponse } from "types/request";
 import { request } from "./utils";
 
 export const getPartyOrderDetail = (
-  orderId: number,
+  orderId: string,
   accessToken: string,
   params?: any
 ): Promise<TPartyOrderDetail> =>

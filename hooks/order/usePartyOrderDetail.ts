@@ -5,7 +5,7 @@ import { TCategory } from "types/category";
 import { TPartyOrderDetail } from "types/order";
 import { ErrorResponse } from "types/response";
 
-const usePartyOrderDetail = (orderId: number, accessToken: string) => {
+const usePartyOrderDetail = (orderId: string, accessToken: string) => {
   const category = useQuery<TPartyOrderDetail>(
     ["party-orders", orderId, "detail"],
     () => partyOrderApi.getPartyOrderDetail(orderId, accessToken)

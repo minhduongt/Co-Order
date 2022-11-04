@@ -40,6 +40,7 @@ import { useRouter } from "next/router";
 import useOrder from "hooks/order/useOrder";
 import usePartyOrder from "hooks/order/usePartyOrder";
 import { TOrderDetail, TPartyOrderDetail } from "types/order";
+import Countdown from "react-countdown";
 interface CheckoutFormContentProps {
   // setStep: Dispatch<SetStateAction<number>>;
   onClose: VoidFunction;
@@ -98,6 +99,35 @@ export default function CheckoutFormContent({
   useEffect(() => {
     console.log("currentTimeSlotId", currentTimeSlotId);
   }, [currentTimeSlotId]);
+
+  const countdownRender = ({ hours, minutes, seconds, completed }: any) => {
+    if (completed) {
+      console.log("finish");
+      setTimeout(() => {
+        SetPartyOrder(null);
+        SetNewCart(null);
+        SetIsHost(false);
+        router.push(`/`);
+      }, 4000);
+
+      // Render a completed state
+      return (
+        <Flex>
+          <Text>Party đã hết hạn và bạn sẽ trở về sau 3 giây...</Text>
+        </Flex>
+      );
+    } else {
+      // Render a countdown
+      return (
+        <Flex color={"dark"}>
+          {hours < 10 ? "0" + hours : hours}:{" "}
+          {minutes < 10 ? "0" + minutes : minutes}:{" "}
+          {seconds < 10 ? "0" + seconds : seconds}
+        </Flex>
+      );
+    }
+  };
+  const finishTime = new Date(partyOrder?.endTime.slice(0, 19)!);
 
   const onSubmit = (form: CheckoutForm) => {
     try {
@@ -234,38 +264,47 @@ export default function CheckoutFormContent({
           <ModalHeader fontSize="3xl">
             Đơn hàng
             <Alert status="success" justifyContent={"space-between"}>
-              <Flex alignItems={"center"}>
-                <AlertIcon />
-                <Text fontSize={"2xl"}>{"Bạn sẽ nhận vào lúc: "}</Text>
-              </Flex>
               {partyOrder ? (
-                <Flex fontSize="xl">
-                  {partyOrder?.timeSlot?.startTime.toString().slice(11, 19) +
-                    " - " +
-                    partyOrder?.timeSlot?.endTime.toString().slice(11, 19)}
-                </Flex>
+                <>
+                  <Flex alignItems={"center"}>
+                    <AlertIcon />
+                    <Text fontSize={"2xl"}>
+                      {"Thời gian chốt party còn lại: "}
+                    </Text>
+                  </Flex>
+                  <Flex fontSize="xl">
+                    <Countdown date={finishTime} renderer={countdownRender} />
+                  </Flex>
+                </>
               ) : (
-                <Flex w={"40%"}>
-                  <Select
-                    placeholder="Chọn giờ nhận"
-                    {...register("timeSlotId")}
-                    sx={{ fontSize: "xl", borderColor: "primary.main" }}
-                  >
-                    {timeSlots?.map((slot) => (
-                      <option key={slot.id} value={slot.id}>
-                        {slot.startTime.toString().slice(11, 19) +
-                          " - " +
-                          slot.endTime.toString().slice(11, 19)}
-                      </option>
-                    ))}
-                    {/* {errors.timeSlotId && (
+                <>
+                  {" "}
+                  <Flex alignItems={"center"}>
+                    <AlertIcon />
+                    <Text fontSize={"2xl"}>{"Bạn sẽ nhận vào lúc: "}</Text>
+                  </Flex>{" "}
+                  <Flex w={"40%"}>
+                    <Select
+                      placeholder="Chọn giờ nhận"
+                      {...register("timeSlotId")}
+                      sx={{ fontSize: "xl", borderColor: "primary.main" }}
+                    >
+                      {timeSlots?.map((slot) => (
+                        <option key={slot.id} value={slot.id}>
+                          {slot.startTime.toString().slice(11, 19) +
+                            " - " +
+                            slot.endTime.toString().slice(11, 19)}
+                        </option>
+                      ))}
+                      {/* {errors.timeSlotId && (
                       <Alert status="error">
                         <AlertIcon />
                         <Text fontSize="xl">{errors.timeSlotId.message}</Text>
                       </Alert>
                     )} */}
-                  </Select>
-                </Flex>
+                    </Select>
+                  </Flex>
+                </>
               )}
 
               {/* <ChangeTimeModal>

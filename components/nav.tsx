@@ -165,7 +165,7 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
       await SetPartyOrder(null);
     } else {
       toast({
-        title: "Bạn đã vào phòng này rồi",
+        title: "Bạn đã vào party này rồi",
         status: "warning",
         position: "top",
         isClosable: false,
@@ -181,7 +181,7 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
       if (targetPartyOrder) {
         if (targetPartyOrder.error) {
           toast({
-            title: "Lỗi vào phòng!",
+            title: "Lỗi vào party!",
             status: "error",
             position: "top",
             isClosable: false,
@@ -193,7 +193,7 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
           console.log("targetPartyOrder", targetPartyOrder.data);
           await SetPartyOrder(targetPartyOrder.data);
           toast({
-            title: "Vào phòng thành công!",
+            title: "Vào party thành công!",
             status: "success",
             position: "top",
             isClosable: false,
@@ -210,7 +210,7 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
     } catch (error) {
       if (error.statusCode === 404) {
         toast({
-          title: "Không tìm thấy phòng!",
+          title: "Không tìm thấy party!",
           status: "error",
           position: "top",
           isClosable: false,
@@ -235,7 +235,7 @@ const MainHeader = ({ isCartPage }: MainHeaderProps) => {
         getRoomAndSetToJoin(form.shareLink);
       } else {
         toast({
-          title: "Vui lòng nhập mã phòng",
+          title: "Vui lòng nhập mã party",
           status: "warning",
           position: "top",
           isClosable: true,
