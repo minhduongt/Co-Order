@@ -667,7 +667,7 @@ const Cart = () => {
                 </Flex>
               </Flex>
             </Flex> */}
-                {isHost && (
+                {/* {isHost && ( */}
                   <Flex w="100%" pt={"1rem"}>
                     <CheckoutNotifyModal
                       onClose={onCloseCheckoutNotify}
@@ -689,7 +689,7 @@ const Cart = () => {
                       </Button>
                     </CheckoutNotifyModal>
                   </Flex>
-                )}
+                {/* )} */}
                 {/*  Check out */}
               </>
               {/* ) : (
