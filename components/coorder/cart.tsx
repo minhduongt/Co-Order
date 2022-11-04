@@ -21,15 +21,12 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { mapCartModelToOrderRequest } from "hooks/cart/helper";
-import useCartPrice from "hooks/cart/useCartPrice";
 import useDeleteCartItem from "hooks/cart/useDeleteCartItem";
 import useCartContext from "hooks/useCartContext";
 import NextLink from "next/link";
 import { useEffect, useState } from "react";
 import { FaFire, FaShoppingCart } from "react-icons/fa";
 import { CartItem, OrderResponse } from "types/cart";
-import QuantityInput from "./QuantityInput";
 import NoImage from "../../public/assets/image/noimage.png";
 import useAreaContext from "hooks/useAreaContext";
 import { FormProvider, useForm } from "react-hook-form";

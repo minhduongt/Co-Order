@@ -57,6 +57,7 @@ export type TOrder = {
   orderDetails: TOrderDetail[];
 };
 export type TOrderDetail = {
+  endTime: string;
   id: number;
   orderCode: string;
   receiveAddress: string;
