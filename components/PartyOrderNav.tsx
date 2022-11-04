@@ -208,7 +208,10 @@ const PartyOrderHeader = () => {
             display={{ base: "none", md: "block" }}
           />
           <Flex gap={2} alignItems={"center"} justifyContent="space-between">
-            <NextLink href={`/coorder/${orderId ?? partyOrder?.id}`} passHref>
+            <NextLink
+              href={`/coorder?orderId=${orderId ?? partyOrder?.id}`}
+              passHref
+            >
               <Link
                 color={
                   router.pathname.includes("coorder")
