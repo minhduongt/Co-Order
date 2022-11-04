@@ -150,10 +150,10 @@ const Cart = () => {
           });
         }
       }, 1000);
-      // SetPartyOrder(null);
-      // SetNewCart(null);
-      // SetIsHost(false);
-      // router.replace(`/`);
+      SetPartyOrder(null);
+      SetNewCart(null);
+      SetIsHost(false);
+      router.replace(`/`);
     } catch (error) {
       toast({
         title: error?.message,
