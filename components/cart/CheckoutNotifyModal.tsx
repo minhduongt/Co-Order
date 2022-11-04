@@ -167,7 +167,7 @@ export default function CheckoutNotifyModal({
                       </Flex>
 
                       <Text fontWeight={"bold"} textAlign="right">
-                        {checkoutRes?.data.endTime.toString().slice(11, 19)}
+                        {orderDetail.receiveTime}
                       </Text>
                     </Flex>
                     <Flex
@@ -181,7 +181,7 @@ export default function CheckoutNotifyModal({
                       </Flex>
 
                       <Text fontWeight={"bold"}>
-                        {/* {checkoutRes?.data.location?.name} */}
+                        {orderDetail.receiveAddress}
                       </Text>
                     </Flex>
                   </Box>
